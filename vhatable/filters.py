@@ -34,7 +34,7 @@ import logging
 from .cell import BaseCell
 
 
-class Filter(object):
+class Filter:
     """TODO"""
 
     def __init__(self, prop, values=None):
@@ -82,7 +82,7 @@ class PartialOr(Filter):
      a list of values"""
 
     def __init__(self, prop, values, ignorecase=False, match_raw=False):
-        super(PartialOr, self).__init__(prop, values)
+        super().__init__(prop, values)
         self.match_raw = match_raw
         if self.is_enable():
             if not isinstance(values, list):
@@ -131,7 +131,7 @@ class PartialMultipleAnd(Filter):
      a list of values"""
 
     def __init__(self, propvalues, ignorecase=False):
-        super(PartialMultipleAnd, self).__init__(list(propvalues.keys()), list(propvalues.values()))
+        super().__init__(list(propvalues.keys()), list(propvalues.values()))
         self.regex = {}
         self.propvalues = propvalues
         if self.is_enable():
@@ -160,7 +160,7 @@ class PartialDate(Filter):
      a list of values"""
 
     def __init__(self, prop, value):
-        super(PartialDate, self).__init__(prop, value)
+        super().__init__(prop, value)
         if self.is_enable():
             pattern = r"^.*" + value + ".*$"
             self.regex = re.compile(pattern)

@@ -473,7 +473,7 @@ class Action:
         if meta is None:
             meta = {}
         msg = "WARN: " + msg % meta
-        self.log.warn(msg)
+        self.log.warning(msg)
         print(msg)
 
     def pprint_error(self, msg, meta=None):
