@@ -35,6 +35,7 @@ import logging
 from linshareapi.core import ResourceBuilder
 from vhatable.core import Action
 from vhatable.core import TableFactory
+from vhatable.core import SampleAction
 from vhatable.cell import CellBuilder
 from vhatable.cell import ComplexCellBuilder
 from vhatable.filters import PartialOr
@@ -150,7 +151,7 @@ class Endpoint2(AbstractEndpoint):
                 "creationDate": 1625647954855,
                 "modificationDate": 1625647954855,
                 "name": "My first element",
-                "foo": 0.01,
+                "foo": 0.51,
                 "id": 1
             },
             {
@@ -164,7 +165,7 @@ class Endpoint2(AbstractEndpoint):
                 "creationDate": 1631023612633,
                 "modificationDate": 1631023612862,
                 "name": "My third element",
-                "foo": 0.1,
+                "foo": 0.3,
                 "id": 3
             },
             {
@@ -496,14 +497,141 @@ def sample9():
     tbu.load_args(args).build().load_v2(api.endpoint3.list()).render()
 
 def sample10():
-    """TODO"""
+    """Using count_only flag to disable rendering and displayed only the count
+    of elements. Using cli_mode to displayed only essential data.
+    """
     args = get_default_args()
     api = API()
-    tbu = TableFactory(api, api.endpoint1, "creationDate")
+    tbu = TableFactory(api, api.endpoint1, "creationDate",
+                       cli_mode_identifier="id")
     # tbu.add_action
-    # tbu.add_filter_cond
-    helper_print_header()
+    helper_print_header("    >>>> count mode <<<<")
+    args.count_only=True
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+    helper_print_header("    >>>> cli mode: only id column is displayed <<<<")
+    args.cli_mode=True
+    args.count_only=False
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+    helper_print_header("    >>>> cli mode: only count result is displayed <<<<")
+    args.cli_mode=True
+    args.count_only=True
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+def sample11():
+    """Using SampleAction to illustrate custom behaviour that can be triggered by a simple flag.
+    This SampleAction does not nothing except displaying data passed to this action.
+    For example, you can use an action to delete some row.
+    """
+    args = get_default_args()
+    args.names = ["My fi"]
+    api = API()
+    tbu = TableFactory(api, api.endpoint1, "creationDate")
+    tbu.add_filters(
+        PartialOr("name", args.names, True)
+    )
+    tbu.add_action('display_sample', SampleAction("Just a sample action"))
+
+    helper_print_header("    >>>> Normal mode <<<<")
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+    helper_print_header("    >>>> Action mode <<<<")
+    args.display_sample=True
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+def sample12():
+    """Sample using limit, end and start keywords"""
+    args = get_default_args()
+    args.limit = 0
+    args.start = 0
+    args.end = 0
+
+    api = API()
+    tbu = TableFactory(api, api.endpoint1, "creationDate")
+
+    helper_print_header("    >>>> limit to last 2 elements <<<<")
+    args.end = 2
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+    helper_print_header("    >>>> limit to first 2 elements <<<<")
+    args.end = 0
+    args.limit = 2
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+    helper_print_header("    >>>> skip the first 2 rows and then limit to first 2 elements <<<<")
+    args.end = 0
+    args.limit = 2
+    args.start = 2
+    tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
+def sample13():
+    """Sample using reverse or sort_by keywords"""
+    args = get_default_args()
+    args.extended = True
+
+    api = API()
+    tbu = TableFactory(api, api.endpoint2, "creationDate")
+
+    helper_print_header("    >>>> Default  <<<<")
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+    helper_print_header("    >>>> Sort by foo  <<<<")
+    args.sort_by = "foo"
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+    helper_print_header("    >>>> Sort by foo reverse <<<<")
+    args.sort_by = "foo"
+    args.reverse = True
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+def sample14():
+    """Sample csv mode"""
+    args = get_default_args()
+
+    api = API()
+    tbu = TableFactory(api, api.endpoint2, "creationDate")
+
+    helper_print_header("    >>>> CSV  <<<<")
+    args.csv = True
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+    helper_print_header("    >>>> CSV without header  <<<<")
+    args.no_headers = True
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+def sample15():
+    """Sample json mode"""
+    args = get_default_args()
+
+    api = API()
+    tbu = TableFactory(api, api.endpoint2, "creationDate")
+    # we override the list of the fields we want to display
+    tbu.fields = ["id", "name"]
+
+    helper_print_header("    >>>> Default  <<<<")
+    args.end = 2
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+    helper_print_header("    >>>> Json  <<<<")
+    args.json = True
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+    helper_print_header("    >>>> raw json <<<<")
+    args.raw_json = True
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
+def sample16():
+    """Sample csv mode"""
+    args = get_default_args()
+    args.csv = True
+
+    api = API()
+    tbu = TableFactory(api, api.endpoint2, "creationDate")
+
+    helper_print_header("    >>>> Default  <<<<")
+    tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
 
 def main():
     """ Main entrypoint of this sample program."""

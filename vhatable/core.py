@@ -538,8 +538,8 @@ class SampleAction(Action):
         """TODO"""
         self.init(args, cli, endpoint)
         print(("ACTION:", self.name))
-        print(cli)
-        print(endpoint)
+        print("CLI:", cli)
+        print("endpoint:", endpoint)
         print(">--- Filtered data ----")
         for row in data:
             print(row)
