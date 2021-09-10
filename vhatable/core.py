@@ -375,7 +375,7 @@ class VTable(BaseTable):
 
     def add_row(self, row):
         """TODO"""
-        super(VTable, self).add_row(row)
+        super().add_row(row)
         self.update_max_lengthkey(row)
 
     def update_max_lengthkey(self, row):
@@ -515,7 +515,7 @@ class CliModeAction(Action):
     # pylint: disable=too-few-public-methods
 
     def __init__(self, identifier="uuid"):
-        super(CliModeAction, self).__init__()
+        super().__init__()
         self.identifier = identifier
 
     def __call__(self, args, cli, endpoint, data):
@@ -531,7 +531,7 @@ class SampleAction(Action):
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, name):
-        super(SampleAction, self).__init__()
+        super().__init__()
         self.name = name
 
     def __call__(self, args, cli, endpoint, data):
@@ -632,9 +632,9 @@ class TableFactory:
         """Add some custom action class trigger by a flag."""
         self._action_classes[flag] = clazz
 
-    def add_filter_cond(self, cond, *filters):
-        """Add some filters only if cond is true"""
-        if cond:
+    def add_filter_cond(self, condition, *filters):
+        """Add some filters only if condition is true"""
+        if condition:
             for filterr in filters:
                 self.filters.append(filterr)
 
