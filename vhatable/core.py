@@ -656,17 +656,22 @@ class TableFactory:
         if self.json:
             self.raw = True
             self.no_cell = True
-        if self.fields:
-            self.columns = self.fields
-        if not self.columns:
-            self.columns = self.endpoint.get_rbu().get_keys(self.extended)
+        columns = self.fields
+        if not columns:
+            if not self.columns:
+                if hasattr(self.endpoint, "get_rbu"):
+                    columns = self.endpoint.get_rbu().get_keys(self.extended)
+            else:
+                columns = self.columns
+        if not columns:
+            raise ValueError("Missing columns")
         table = None
         action_classes = OrderedDict(self._action_classes)
         action_classes['cli_mode'] = CliModeAction(self.cli_mode_identifier)
         self.log.debug("action_classes: %s", action_classes)
         for flag, action in list(action_classes.items()):
             if getattr(self.args, flag, False):
-                table = self._action_table(self.columns)
+                table = self._action_table(columns)
                 # a little bit ugly. :(
                 table.action = action
                 # if no_cell property does not exist, we keep the old behaviour
@@ -675,9 +680,9 @@ class TableFactory:
                 break
         if table is None:
             if self.vertical:
-                table = self._vertical_clazz(self.columns)
+                table = self._vertical_clazz(columns)
             else:
-                table = self._horizontal_clazz(self.columns)
+                table = self._horizontal_clazz(columns)
                 table.padding_width = 1
             for clazz in self._pre_render_classes:
                 table.add_pre_render_class(clazz)
@@ -688,10 +693,10 @@ class TableFactory:
         for attr in attrs:
             setattr(table, attr, getattr(self, attr))
         if self.sort_by is None:
-            if self.default_sort_column and self.default_sort_column in self.columns:
+            if self.default_sort_column and self.default_sort_column in columns:
                 table.sortby = self.default_sort_column
         else:
-            if self.sort_by in self.columns:
+            if self.sort_by in columns:
                 table.sortby = self.sort_by
         self.log.debug("default_sort_column: %s", self.default_sort_column)
         self.log.debug("sort_by: %s", self.sort_by)
@@ -711,5 +716,5 @@ class TableFactory:
         table._filters = self.filters
         # compat
         table.args = self.args
-        table.keys = self.columns
+        table.keys = columns
         return table

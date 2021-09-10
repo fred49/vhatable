@@ -77,5 +77,13 @@ setup(
     install_requires=[
         'veryprettytable==0.8.1',
         'humanfriendly==9.0'
-    ]
+    ],
+    extras_require={
+        "SAMPLE": [],
+    },
+    entry_points={
+        "console_scripts": [
+            "vhatable-sample = vhatable.sample:main [SAMPLE]"
+        ],
+    },
 )
