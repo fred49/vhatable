@@ -80,6 +80,12 @@ setup(
     ],
     extras_require={
         "SAMPLE": [],
+        'DEV': [
+            'pytest',
+            'flake8',
+            'tox',
+            'pylint',
+        ]
     },
     entry_points={
         "console_scripts": [
