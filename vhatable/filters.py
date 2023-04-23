@@ -4,20 +4,20 @@
 of a Vertical or Horizotal table."""
 
 
-# This file is part of Linshare cli.
+# This file is part of Vhatable cli.
 #
-# LinShare cli is free software: you can redistribute it and/or modify
+# Vhatable cli is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# LinShare cli is distributed in the hope that it will be useful,
+# Vhatable cli is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with LinShare cli.  If not, see <http://www.gnu.org/licenses/>.
+# along with Vhatable cli.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Copyright 2014 Frédéric MARTIN
 #
@@ -27,10 +27,10 @@ of a Vertical or Horizotal table."""
 #
 
 
-
 import datetime
 import re
 import logging
+
 from .cell import BaseCell
 
 
@@ -42,10 +42,10 @@ class Filter:
         self.prop = prop
         self.values = values
         classname = self.__class__.__name__.lower()
-        self.log = logging.getLogger("linsharecli.filters." + classname)
+        self.log = logging.getLogger("vhatablecli.filters." + classname)
 
     def is_enable(self):
-        """Return true is the current filter is enabled and should be applied."""
+        """Return true is the filter is enabled and should be applied."""
         if self.values is None:
             return False
         if isinstance(self.values, list):
@@ -94,6 +94,7 @@ class PartialOr(Filter):
                 self.regex = re.compile(pattern, re.IGNORECASE)
             else:
                 self.regex = re.compile(pattern)
+
     def __str__(self):
         return "PartialOr: " + str(self.values)
 
@@ -157,7 +158,9 @@ class PartialMultipleAnd(Filter):
 
 class PartialDate(Filter):
     """Get the current property into the current row, and match the result with
-     a list of values"""
+     a list of values.
+     This filter will be activated/enabled if 'value' is not None.
+     """
 
     def __init__(self, prop, value):
         super().__init__(prop, value)

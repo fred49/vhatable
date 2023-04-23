@@ -3,20 +3,20 @@
 """TODO"""
 
 
-# This file is part of Linshare api.
+# This file is part of Vhatable api.
 #
-# LinShare api is free software: you can redistribute it and/or modify
+# Vhatable api is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# LinShare api is distributed in the hope that it will be useful,
+# Vhatable api is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with LinShare api.  If not, see <http://www.gnu.org/licenses/>.
+# along with Vhatable api.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Copyright 2014 Frédéric MARTIN
 #
@@ -222,7 +222,7 @@ class BaseTable(AbstractTable):
     def __init__(self, keys=[], reverse=False, debug=0):
         self.debug = debug
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('linsharecli.' + classname)
+        self.log = logging.getLogger('vhatable.' + classname)
         self.keys = keys
         # field only use for compatibility with HTable
         self.align = {}
@@ -449,7 +449,7 @@ class Action:
         self.dry_run = False
         self.debug = 0
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('linsharecli.' + classname)
+        self.log = logging.getLogger('vhatable.' + classname)
         self.cli = None
         self.endpoint = None
 
@@ -568,7 +568,7 @@ class TableFactory:
         """TODO"""
         # pylint: disable=too-many-arguments
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('linsharecli.' + classname)
+        self.log = logging.getLogger('vhatable.' + classname)
         self.cli = cli
         self.endpoint = endpoint
         self.args = None
