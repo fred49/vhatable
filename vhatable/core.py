@@ -26,8 +26,6 @@
 #
 
 
-
-
 import json
 import time
 import logging
@@ -99,7 +97,8 @@ class AbstractTable:
                 matches = 0
                 enabled_filters = 0
                 for func in filters:
-                    self.log.debug("filter: %s (enabled=%s)", func, func.is_enable())
+                    self.log.debug(
+                            "filter: %s (enabled=%s)", func, func.is_enable())
                     if func.is_enable():
                         enabled_filters += 1
                         if func(row):
@@ -345,7 +344,8 @@ class VTable(BaseTable):
             record = []
             for k in self.keys:
                 try:
-                    t_format = "{key:" + str(self._maxlengthkey) + "s} | {value:s}"
+                    slength = str(self._maxlengthkey)
+                    t_format = "{key:" + slength + "s} | {value:s}"
                     dataa = None
                     column_data = row.get(k)
                     if isinstance(column_data, str):
@@ -368,7 +368,8 @@ class VTable(BaseTable):
             cptline += 1
             header = "-[ RECORD " + str(cptline) + " ]-"
             # pylint: disable=unused-variable
-            header += "".join(["-" for i in range(max_length_line - len(header))])
+            range_limit = max_length_line - len(header)
+            header += "".join(["-" for i in range(range_limit)])
             out.append(header)
             out.append(record)
         return "\n".join(out)
@@ -649,6 +650,8 @@ class TableFactory:
 
     def build(self):
         # pylint: disable=too-many-branches
+        # pylint: disable=too-many-statements
+        # pylint: disable=too-many-locals
         # This method is a little bit diry, need some refactoring.
         """Build table object"""
         if self.json or self.csv:
@@ -693,8 +696,9 @@ class TableFactory:
         for attr in attrs:
             setattr(table, attr, getattr(self, attr))
         if self.sort_by is None:
-            if self.default_sort_column and self.default_sort_column in columns:
-                table.sortby = self.default_sort_column
+            if self.default_sort_column:
+                if self.default_sort_column in columns:
+                    table.sortby = self.default_sort_column
         else:
             if self.sort_by in columns:
                 table.sortby = self.sort_by
