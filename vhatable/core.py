@@ -504,7 +504,7 @@ class Action:
         raise NotImplementedError()
 
 
-class ActionV2:
+class ActionV2(Action):
     """TODO"""
     # pylint: disable=too-few-public-methods
 
