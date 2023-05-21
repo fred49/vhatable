@@ -442,7 +442,17 @@ class HTable(BaseTable):
 class Action:
     """TODO"""
 
-    no_cell = True
+    # we must convert row to cells, otherwise filters won't work.
+    # Filters are expecting cells, not raw data.
+    # Changing from True to False  will break every already existing actions
+    versions = {1: {'no_cell': True}, 2: {'no_cell': False}}
+    # Default version will be 1 to avoid breaking changes.
+    version = 1
+
+    def __getattr__(self, attr):
+        if attr == "no_cell":
+            return self.versions[self.version][attr]
+        raise AttributeError(attr)
 
     def __init__(self):
         self.cli_mode = False
@@ -494,7 +504,14 @@ class Action:
         raise NotImplementedError()
 
 
-class CountAction(Action):
+class ActionV2:
+    """TODO"""
+    # pylint: disable=too-few-public-methods
+
+    version = 2
+
+
+class CountAction(ActionV2):
     """TODO"""
     # pylint: disable=too-few-public-methods
 
