@@ -57,6 +57,8 @@ class Time:
             res = original_func(*args, **kwargs)
             end = time.time()
             diff = end - start
+            # enforce string length to avoid random length
+            diff = f'{diff:.15f}'
             if len(args) > 0:
                 first_arg = args[0]
                 self.enabled = getattr(first_arg, "verbose", self.enabled)
