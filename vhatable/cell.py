@@ -26,7 +26,6 @@
 #
 
 
-
 import datetime
 import logging
 
@@ -54,7 +53,7 @@ class CellFactory:
         self.custom_cells = {}
 
     def __call__(self, name, value, row=None):
-        if name in list(self.custom_cells.keys()):
+        if name in self.custom_cells:
             clazz = self.custom_cells.get(name)
         elif name in self.date_cells:
             clazz = DateCell
@@ -227,19 +226,23 @@ class DateCell(BaseCell):
 
     # pylint: disable=too-few-public-methods
     def __init__(self, value):
-        super(DateCell, self).__init__(value)
-        self._d_formatt = "{da:%Y-%m-%d %H:%M:%S}"
+        super().__init__(value)
+        fmt = "{da:%Y-%m-%d %H:%M:%S}"
+        self._format = fmt
+        self._format_vertical = fmt
+        # self._format_filter = fmt
 
     def __unicode__(self):
         if self.raw:
             return str(self.value)
         if self.value is not None:
-            # if self.vertical:
-            #     self._d_formatt = "{da:%Y-%m-%d}"
+            fmt = self._format
+            if self.vertical:
+                fmt = self._format_vertical
             div = 1
             if self.millisecond:
                 div = 1000
-            return self._d_formatt.format(
+            return fmt.format(
                 da=datetime.datetime.fromtimestamp(self.value / div))
         return self.none
 
@@ -252,7 +255,7 @@ class ICell(int, BaseCell):
     # pylint: disable=too-few-public-methods
 
     def __init__(self, value):
-        super(ICell, self).__init__(value)
+        super().__init__(value)
         self.value = value
 
     def __unicode__(self):
@@ -345,4 +348,4 @@ class ComplexCellBuilder(CellBuilder):
     # pylint: disable=too-few-public-methods
 
     def __init__(self, formatt, formatv=None, formatf=None):
-        super(ComplexCellBuilder, self).__init__(formatt, formatv, formatf, cell=ComplexCell)
+        super().__init__(formatt, formatv, formatf, cell=ComplexCell)
