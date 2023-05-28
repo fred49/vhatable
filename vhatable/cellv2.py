@@ -57,8 +57,8 @@ class CellBuilder:
         self.fmt_vertical = fmtv
         self.fmt_for_filtering = fmtf
 
-    def build(self, cell_value, raw_display=False, vertical=False,
-              extended=False, hidden=False, context=None):
+    def __call__(self, cell_value, raw_display=False, vertical=False,
+                 extended=False, hidden=False, context=None):
         """Build and return a new cell"""
         cell = self.clazz(cell_value)
         cell.name = self.cell_name
@@ -74,9 +74,9 @@ class CellBuilder:
         cell.hidden = hidden
         if context is not None:
             cell.row = context
-        return self.post_build(cell)
+        return self._post_build(cell)
 
-    def post_build(self, cell):
+    def _post_build(self, cell):
         """Hook use to enhance cell with extra property once created."""
         # pylint: disable=no-self-use
         return cell
@@ -113,7 +113,7 @@ class DateCellBuilder(CellBuilder):
         super().__init__(*args, **kwargs)
         self.millisecond = millisecond
 
-    def post_build(self, cell):
+    def _post_build(self, cell):
         """TODO"""
         cell.millisecond = self.millisecond
         return cell
@@ -197,7 +197,7 @@ class CellBuilderFactory:
             self.log.debug("cell_value: %s", cell_value)
             self.log.debug("raw: %s", self.raw)
             self.log.debug("vertical: %s", self.vertical)
-        cell = builder.build(
+        cell = builder(
                 cell_value,
                 raw_display=self.raw,
                 vertical=self.vertical,
