@@ -111,14 +111,12 @@ class AbstractTable:
                     return True
                 if matches == enabled_filters:
                     return True
-            else:
-                if filters.is_enable():
-                    if filters(row):
-                        return True
-                else:
+                return False
+            if filters.is_enable():
+                if filters(row):
                     return True
-        else:
-            return True
+                return False
+        return True
 
     def get_raw(self):
         """TODO"""
