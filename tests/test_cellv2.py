@@ -214,7 +214,7 @@ def test_complex2(logger):
     assert str(cell) == str(value)
 
 
-def test_factory(logger):
+def test_factory1(logger):
     """Testing factory"""
     cell_name = "size"
     cell_value = 2000
@@ -224,3 +224,82 @@ def test_factory(logger):
 
     cell = cfa(cell_name, cell_value)
     logger.info("cell: %s", cell)
+    assert isinstance(cell, SizeCellBuilder.clazz)
+
+
+def test_factory2(logger):
+    """Testing factory"""
+    cell_name = "creationDate"
+    cell_value = 1685211807.637026
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, DateCellBuilder.clazz)
+
+
+def test_factory3(logger):
+    """Testing factory"""
+    cell_name = "a_list_value"
+    cell_value = [1, 2, 3, 4]
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, ComplexCellBuilder.clazz)
+
+
+def test_factory4(logger):
+    """Testing factory"""
+    cell_name = "isBlue"
+    cell_value = True
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, BoolCellBuilder.clazz)
+
+
+def test_factory5(logger):
+    """Testing factory"""
+    cell_name = "count"
+    cell_value = 99
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, IntCellBuilder.clazz)
+
+
+def test_factory6(logger):
+    """Testing factory"""
+    cell_name = "isBlue"
+    cell_value = "ddd"
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, StringCellBuilder.clazz)
+
+
+def test_factory7(logger):
+    """Testing factory"""
+    cell_name = "dict_value"
+    cell_value = {"a": 1, "b": 2}
+
+    cfa = CellBuilderFactory()
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, ComplexCellBuilder.clazz)

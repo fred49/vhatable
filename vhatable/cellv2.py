@@ -186,7 +186,8 @@ class CellBuilderFactory:
             builder_clazz = StringCellBuilder
         return builder_clazz(cell_name)
 
-    def __call__(self, cell_name, cell_value, context=None):
+    def __call__(self, cell_name, cell_value, context=None,
+                 extended=False, hidden=False):
         builder = self.get_cell_builder(cell_name, cell_value)
         if self.debug >= 2:
             self.log.debug("builder: %s", builder)
@@ -200,8 +201,8 @@ class CellBuilderFactory:
                 cell_value,
                 raw_display=self.raw,
                 vertical=self.vertical,
-                extended=False,
-                hidden=False,
+                extended=extended,
+                hidden=hidden,
                 context=context)
         if self.debug >= 3:
             self.log.debug("cell type: %s", type(cell))
