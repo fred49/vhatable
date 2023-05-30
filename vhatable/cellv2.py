@@ -149,7 +149,7 @@ class CellBuilderFactory:
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self):
-        self.raw = False
+        self.raw_display = False
         self.debug = 0
         self.vertical = False
         classname = str(self.__class__.__name__.lower())
@@ -187,19 +187,23 @@ class CellBuilderFactory:
         return builder_clazz(cell_name)
 
     def __call__(self, cell_name, cell_value, context=None,
-                 extended=False, hidden=False):
+                 extended=False, vertical=None, hidden=False,
+                 raw_display=None):
+        if vertical is not None:
+            self.vertical = vertical
+        if raw_display is not None:
+            self.raw_display = raw_display
         builder = self.get_cell_builder(cell_name, cell_value)
         if self.debug >= 2:
-            self.log.debug("builder: %s", builder)
             self.log.debug("building cell ...")
-            self.log.debug("property: %s", cell_name)
-            self.log.debug("cell_value type: %s", type(cell_value))
+            self.log.debug("builder: %s", builder)
+            self.log.debug("name: %s, type: %s", cell_name, type(cell_value))
             self.log.debug("cell_value: %s", cell_value)
-            self.log.debug("raw: %s", self.raw)
+            self.log.debug("raw_display: %s", self.raw_display)
             self.log.debug("vertical: %s", self.vertical)
         cell = builder(
                 cell_value,
-                raw_display=self.raw,
+                raw_display=self.raw_display,
                 vertical=self.vertical,
                 extended=extended,
                 hidden=hidden,
