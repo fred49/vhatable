@@ -168,9 +168,7 @@ class CellBuilderFactory:
         the input cell_value.
         """
         builder_clazz = None
-        if cell_name in self.custom_cells:
-            builder_clazz = self.custom_cells.get(cell_name)
-        elif cell_name in self.date_cells:
+        if cell_name in self.date_cells:
             builder_clazz = DateCellBuilder
         elif cell_name in self.size_cells:
             builder_clazz = SizeCellBuilder
@@ -193,7 +191,10 @@ class CellBuilderFactory:
             self.vertical = vertical
         if raw_display is not None:
             self.raw_display = raw_display
-        builder = self.get_cell_builder(cell_name, cell_value)
+        if cell_name in self.custom_cells:
+            builder = self.custom_cells.get(cell_name)
+        else:
+            builder = self.get_cell_builder(cell_name, cell_value)
         if self.debug >= 2:
             self.log.debug("building cell ...")
             self.log.debug("builder: %s", builder)

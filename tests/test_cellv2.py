@@ -303,3 +303,18 @@ def test_factory7(logger):
     cell = cfa(cell_name, cell_value)
     logger.info("cell: %s", cell)
     assert isinstance(cell, ComplexCellBuilder.clazz)
+
+
+def test_factory8(logger):
+    """Testing factory"""
+    cell_name = "foobar"
+    cell_value = 1685211807.637026
+
+    cfa = CellBuilderFactory()
+    builder = DateCellBuilder("foobar", millisecond=True)
+    cfa.custom_cells['foobar'] = builder
+    logger.info("cfa: %s", cfa)
+
+    cell = cfa(cell_name, cell_value)
+    logger.info("cell: %s", cell)
+    assert isinstance(cell, DateCellBuilder.clazz)
