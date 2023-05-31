@@ -76,9 +76,12 @@ setup(
     # project is installed.
     install_requires=[
         'veryprettytable==0.8.1',
+        'tabulate==0.9.0',
         'humanfriendly==9.0'
     ],
     extras_require={
+        "SAMPLE": [],
+        "SAMPLEV2": [],
         'DEV': [
             'pytest',
             'flake8',
@@ -89,7 +92,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "vhatable-sample = vhatable.sample:main [SAMPLE]"
+            "vhatable-sample = vhatable.sample:main [SAMPLE]",
+            "vhatable-samplev2 = vhatable.samplev2:main [SAMPLEV2]"
         ],
     },
 )
