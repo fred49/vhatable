@@ -62,15 +62,16 @@ def test_3():
 
 def test_3b():
     """TODO"""
-    module = SortingModule()
+    module = SortingModule(identifier="prefix")
     assert not module.reverse
     assert module.sort_by is None
     assert module.debug == 0
 
-    args = Namespace(debug=2)
+    args = Namespace(prefix_debug=2, prefix_reverse=True,
+                     prefix_sort_by="name")
     module.setup_from_args(args)
-    assert not module.reverse
-    assert module.sort_by is None
+    assert module.reverse
+    assert module.sort_by == "name"
     assert module.debug == 2
 
 
@@ -365,3 +366,15 @@ def test_19():
     table.render()
     assert len(table.get_string()) == 195
     print("\n")
+
+
+def test_20():
+    """TODO"""
+    args = Namespace(sort_debug=2, sort_reverse=True, sort_sort_by="name",
+                     format_vertical=False, format_extended=True)
+    table = BaseTable(debug=3)
+    table.setup_from_args(args)
+    assert table.sort.reverse
+    assert table.sort.sort_by == "name"
+    assert not table.format.vertical
+    assert table.format.extended

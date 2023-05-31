@@ -48,9 +48,10 @@ class Module:
     """TODO"""
     __dict__ = ["debug"]
 
-    def __init__(self, debug=0):
+    def __init__(self, debug=0, identifier=None):
         self.log = logging.getLogger(__name__)
         self._debug = debug
+        self.identifier = identifier
 
     @property
     def debug(self):
@@ -65,8 +66,13 @@ class Module:
     def setup_from_args(self, args):
         """TODO"""
         for attr in self.__dict__:
-            if hasattr(args, attr):
-                setattr(self, attr, getattr(args, attr))
+            if self.identifier:
+                attr_with_prefix = self.identifier + "_" + attr
+                if hasattr(args, attr_with_prefix):
+                    setattr(self, attr, getattr(args, attr_with_prefix))
+            else:
+                if hasattr(args, attr):
+                    setattr(self, attr, getattr(args, attr))
         return self
 
 
@@ -74,8 +80,8 @@ class FilteringModule(Module):
     """TODO"""
     __dict__ = ["debug"]
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, debug=0, identifier=None):
+        super().__init__(debug=debug, identifier=identifier)
         self._filters = []
         self._rows = []
 
@@ -123,8 +129,8 @@ class SortingModule(Module):
     """TODO"""
     __dict__ = ["debug", "reverse", "sort_by"]
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, debug=0, identifier=None):
+        super().__init__(debug=debug, identifier=identifier)
         self.reverse = False
         self.sort_by = None
 
@@ -144,8 +150,8 @@ class FormattingModule(Module):
     """TODO"""
     __dict__ = ["debug", "no_cell", "vertical", "extended"]
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, debug=0, identifier=None):
+        super().__init__(debug=debug, identifier=identifier)
         self.no_cell = False
         self.vertical = False
         self.extended = False
@@ -206,8 +212,8 @@ class SlicingModule(Module):
     """TODO"""
     __dict__ = ["debug", "start", "end", "limit"]
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, debug=0, identifier=None):
+        super().__init__(debug=debug, identifier=identifier)
         self.limit = 0
         self.start = 0
         self.end = 0
@@ -250,8 +256,8 @@ class CollectorModule(Module):
     """TODO"""
     __dict__ = ["debug"]
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, debug=0, identifier=None):
+        super().__init__(debug=debug, identifier=identifier)
         self.required_columns = []
 
     def __call__(self, rows):
@@ -338,11 +344,11 @@ class BaseTable(AbstractTable):
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
         self.modules = OrderedDict()
-        self.modules['format'] = FormattingModule(debug=debug)
-        self.modules['filter'] = FilteringModule(debug=debug)
-        self.modules['sort'] = SortingModule(debug=debug)
-        self.modules['slicing'] = SlicingModule(debug=debug)
-        self.modules['collector'] = CollectorModule(debug=debug)
+        self.add_module('format', FormattingModule)
+        self.add_module('filter', FilteringModule)
+        self.add_module('sort', SortingModule)
+        self.add_module('slice', SlicingModule)
+        self.add_module('collector', CollectorModule)
         self._column_names = []
         self._rows = []
         self._raw_cache = None
@@ -351,6 +357,10 @@ class BaseTable(AbstractTable):
         self.messages = {
             "count_elt": "\nRessources found: {count}"
         }
+
+    def add_module(self, identifier, module):
+        """TODO"""
+        self.modules[identifier] = module(identifier=identifier)
 
     def __getattr__(self, attr):
         if attr in self.modules:
@@ -373,6 +383,12 @@ class BaseTable(AbstractTable):
     def load(self, rows):
         """TODO"""
         self._rows = rows
+        return self
+
+    def setup_from_args(self, args):
+        """TODO"""
+        for module in self.modules.values():
+            module.setup_from_args(args)
         return self
 
     def get_raw(self):
