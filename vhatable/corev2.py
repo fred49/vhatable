@@ -63,16 +63,16 @@ class Module:
         """TODO"""
         self._debug = debug
 
-    def setup_from_args(self, args):
+    def setup(self, from_args):
         """TODO"""
         for attr in self.__dict__:
             if self.identifier:
                 attr_with_prefix = self.identifier + "_" + attr
-                if hasattr(args, attr_with_prefix):
-                    setattr(self, attr, getattr(args, attr_with_prefix))
+                if hasattr(from_args, attr_with_prefix):
+                    setattr(self, attr, getattr(from_args, attr_with_prefix))
             else:
-                if hasattr(args, attr):
-                    setattr(self, attr, getattr(args, attr))
+                if hasattr(from_args, attr):
+                    setattr(self, attr, getattr(from_args, attr))
         return self
 
 
@@ -87,6 +87,7 @@ class FilteringModule(Module):
 
     def add(self, *filters):
         """Add some filters."""
+        self.log.debug("filters to add: %s", filters)
         for filterr in filters:
             self._filters.append(filterr)
         return self
@@ -385,10 +386,10 @@ class BaseTable(AbstractTable):
         self._rows = rows
         return self
 
-    def setup_from_args(self, args):
+    def setup(self, from_args):
         """TODO"""
         for module in self.modules.values():
-            module.setup_from_args(args)
+            module.setup(from_args)
         return self
 
     def get_raw(self):

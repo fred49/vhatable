@@ -54,7 +54,7 @@ def test_3():
     assert module.debug == 0
 
     args = Namespace(debug=2, reverse=True, sort_by="name")
-    module.setup_from_args(args)
+    module.setup(args)
     assert module.reverse
     assert module.sort_by == "name"
     assert module.debug == 2
@@ -69,7 +69,7 @@ def test_3b():
 
     args = Namespace(prefix_debug=2, prefix_reverse=True,
                      prefix_sort_by="name")
-    module.setup_from_args(args)
+    module.setup(args)
     assert module.reverse
     assert module.sort_by == "name"
     assert module.debug == 2
@@ -373,7 +373,7 @@ def test_20():
     args = Namespace(sort_debug=2, sort_reverse=True, sort_sort_by="name",
                      format_vertical=False, format_extended=True)
     table = BaseTable(debug=3)
-    table.setup_from_args(args)
+    table.setup(args)
     assert table.sort.reverse
     assert table.sort.sort_by == "name"
     assert not table.format.vertical
