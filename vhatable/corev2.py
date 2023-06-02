@@ -366,7 +366,7 @@ class AbstractProcessor:
         return True
 
 
-class HTableProcessor(AbstractProcessor):
+class Processor(AbstractProcessor):
     """TODO"""
 
     def __init__(self, debug=0):
@@ -375,6 +375,28 @@ class HTableProcessor(AbstractProcessor):
         self.add_unit('filter', FilteringUnit)
         self.add_unit('sort', SortingUnit)
         self.add_unit('slice', SlicingUnit)
+
+    @property
+    def column_names(self):
+        """TODO"""
+        return self._column_names
+
+    @column_names.setter
+    def column_names(self, column_names):
+        """TODO"""
+        self._column_names = column_names
+        self.units['format'].required_columns = column_names
+
+    def get_string(self):
+        """TODO"""
+        return self.get_raw()
+
+
+class HTableProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
         self.add_unit('collector', CollectorUnit)
         self.showindex = True
         self.tablefmt = 'grid'
@@ -399,3 +421,24 @@ class HTableProcessor(AbstractProcessor):
                 tablefmt=self.tablefmt,
                 stralign='center',
                 headers=self._column_names)
+
+
+class VTableProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
+
+
+class JsonProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
+
+
+class CsvProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
