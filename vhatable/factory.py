@@ -116,8 +116,8 @@ class TableFactory:
         self.log.debug("processor: %s", processor)
 
         processor.filter.add(*self._filters)
-        for column, builder in self._custom_cells.items():
-            processor.format.cfa.custom_cells[column] = builder
+        for cell_name, cbuilder in self._custom_cells.items():
+            processor.format.cfa.custom_cells[cell_name] = cbuilder
 
         processor.format.cfa.vertical = vertical
         # processor.cfa.debug = self.debug

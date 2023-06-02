@@ -429,6 +429,45 @@ class VTableProcessor(Processor):
 
     def __init__(self, debug=0):
         super().__init__(debug=debug)
+        self._maxlengthkey = 0
+
+    def get_string(self):
+        """TODO"""
+        max_length_line = 0
+        records = []
+        for row in self.get_raw():
+            record = []
+            for k in self.column_names:
+                try:
+                    slength = str(self._maxlengthkey)
+                    t_format = "{key:" + slength + "s} | {value:s}"
+                    dataa = None
+                    column_data = row.get(k)
+                    if isinstance(column_data, str):
+                        dataa = {"key": k, "value": column_data}
+                    else:
+                        column_data_str = str(column_data)
+                        dataa = {"key": k, "value": column_data_str}
+                    t_record = t_format.format(**dataa)
+                    record.append(t_record)
+                    max_length_line = max(max_length_line, len(t_record))
+                except UnicodeEncodeError as ex:
+                    self.log.error("UnicodeEncodeError: %s", ex)
+                    dataa = {"key": k, "value": "UnicodeEncodeError"}
+                    t_record = str(t_format).format(**dataa)
+                    record.append(t_record)
+            records.append("\n".join(record))
+        out = []
+        cptline = 0
+        for record in records:
+            cptline += 1
+            header = "-[ RECORD " + str(cptline) + " ]-"
+            # pylint: disable=unused-variable
+            range_limit = max_length_line - len(header)
+            header += "".join(["-" for i in range(range_limit)])
+            out.append(header)
+            out.append(record)
+        return "\n".join(out)
 
 
 class JsonProcessor(Processor):
