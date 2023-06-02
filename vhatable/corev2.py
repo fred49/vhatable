@@ -442,6 +442,24 @@ class CsvProcessor(Processor):
 
     def __init__(self, debug=0):
         super().__init__(debug=debug)
+        self.csv_headers = True
+
+    def get_string(self):
+        """TODO"""
+        records = []
+        if self.csv_headers:
+            records.append(";".join(self.column_names))
+        for row in self.get_raw():
+            record = []
+            for k in self.column_names:
+                data = row.get(k)
+                if isinstance(data, str):
+                    record.append(data)
+                else:
+                    data_str = str(data)
+                    record.append(data_str)
+            records.append(";".join(record))
+        return "\n".join(records)
 
 
 class CountProcessor(Processor):

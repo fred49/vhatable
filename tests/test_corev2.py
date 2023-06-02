@@ -3,6 +3,8 @@
 """TODO"""
 
 
+import hashlib
+
 from argparse import Namespace
 import pytest
 from tabulate import tabulate
@@ -15,6 +17,7 @@ from vhatable.corev2 import SlicingUnit
 from vhatable.corev2 import HTableProcessor
 from vhatable.corev2 import VTableProcessor
 from vhatable.corev2 import CountProcessor
+from vhatable.corev2 import CsvProcessor
 from vhatable.filters import PartialOr
 
 
@@ -420,3 +423,30 @@ def test_22():
     assert processor.get_string() == "Ressources found: 5"
     processor.cli_mode = True
     assert processor.get_string() == "5"
+
+
+def test_23():
+    """TODO"""
+    rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+            {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
+             "count": 800.1, "size": 2100000000000000},
+    ]
+    processor = CsvProcessor(debug=3)
+    processor.column_names = ["name", "size", "unknown column", "count"]
+    processor.load(rows)
+    print("\n")
+    processor.run()
+    print("\n")
+
+    expected = """name;size;unknown column;count
+value1;80 MB;-;800000.0001
+value2;110 KB;-;8.00001
+value3;280 GB;-;8000.001
+value4;2.1 PB;-;800.1
+value5 asdqfsdff qsdf   sdf sdf sdf sddf s ;2.1 PB;-;800.1"""
+
+    assert str(processor.get_string()) == expected
