@@ -97,9 +97,7 @@ class TableFactory:
             self._filters.append(filterr)
         return self
 
-    def build(self, args=Namespace()):
-        self.log.debug("self.cfg: %s", self.cfg)
-
+    def _get_processor(self, args):
         builder = None
         clazz = None
         for flag in self.cfg.keys():
@@ -112,6 +110,11 @@ class TableFactory:
         self.log.debug("clazz: %s", clazz)
         processor = builder(clazz)
         self.log.debug("processor: %s", processor)
+        return processor
+
+    def build(self, args=Namespace()):
+        self.log.debug("self.cfg: %s", self.cfg)
+        processor = self._get_processor(args)
 
         raise_msg = "filter unit is not provided/added to the curent processor"
         if hasattr(processor, 'filter'):
