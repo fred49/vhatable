@@ -44,7 +44,7 @@ class Time(CTime):
         super().__init__(logger_name, label)
 
 
-class Module:
+class Unit:
     """TODO"""
     __dict__ = ["debug"]
 
@@ -76,7 +76,7 @@ class Module:
         return self
 
 
-class FilteringModule(Module):
+class FilteringUnit(Unit):
     """TODO"""
     __dict__ = ["debug"]
 
@@ -126,7 +126,7 @@ class FilteringModule(Module):
                 yield row
 
 
-class SortingModule(Module):
+class SortingUnit(Unit):
     """TODO"""
     __dict__ = ["debug", "reverse", "sort_by"]
 
@@ -147,7 +147,7 @@ class SortingModule(Module):
         return rows
 
 
-class FormattingModule(Module):
+class FormattingUnit(Unit):
     """TODO"""
     __dict__ = ["debug", "no_cell", "vertical", "extended"]
 
@@ -209,7 +209,7 @@ class FormattingModule(Module):
             yield row_full
 
 
-class SlicingModule(Module):
+class SlicingUnit(Unit):
     """TODO"""
     __dict__ = ["debug", "start", "end", "limit"]
 
@@ -253,7 +253,7 @@ class SlicingModule(Module):
             yield row
 
 
-class CollectorModule(Module):
+class CollectorUnit(Unit):
     """TODO"""
     __dict__ = ["debug"]
 
@@ -345,11 +345,11 @@ class BaseTable(AbstractTable):
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
         self.modules = OrderedDict()
-        self.add_module('format', FormattingModule)
-        self.add_module('filter', FilteringModule)
-        self.add_module('sort', SortingModule)
-        self.add_module('slice', SlicingModule)
-        self.add_module('collector', CollectorModule)
+        self.add_module('format', FormattingUnit)
+        self.add_module('filter', FilteringUnit)
+        self.add_module('sort', SortingUnit)
+        self.add_module('slice', SlicingUnit)
+        self.add_module('collector', CollectorUnit)
         self._column_names = []
         self._rows = []
         self._raw_cache = None

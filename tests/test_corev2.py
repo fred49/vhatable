@@ -8,17 +8,17 @@ import pytest
 from tabulate import tabulate
 from veryprettytable import VeryPrettyTable
 
-from vhatable.corev2 import FilteringModule
-from vhatable.corev2 import FormattingModule
-from vhatable.corev2 import SortingModule
-from vhatable.corev2 import SlicingModule
+from vhatable.corev2 import FilteringUnit
+from vhatable.corev2 import FormattingUnit
+from vhatable.corev2 import SortingUnit
+from vhatable.corev2 import SlicingUnit
 from vhatable.corev2 import BaseTable
 from vhatable.filters import PartialOr
 
 
 def test_1():
     """TODO"""
-    filters = FilteringModule()
+    filters = FilteringUnit()
     filters.add(PartialOr("name", ["value2", "value3"], True))
     rows = iter([
         {"name": "value1"},
@@ -34,7 +34,7 @@ def test_1():
 
 def test_2():
     """TODO"""
-    filters = FilteringModule()
+    filters = FilteringUnit()
     filters.add(PartialOr("name", ["value2", "value3"], True))
     rows = [
         {"name": "value1"},
@@ -48,7 +48,7 @@ def test_2():
 
 def test_3():
     """TODO"""
-    module = SortingModule()
+    module = SortingUnit()
     assert not module.reverse
     assert module.sort_by is None
     assert module.debug == 0
@@ -62,7 +62,7 @@ def test_3():
 
 def test_3b():
     """TODO"""
-    module = SortingModule(identifier="prefix")
+    module = SortingUnit(identifier="prefix")
     assert not module.reverse
     assert module.sort_by is None
     assert module.debug == 0
@@ -77,7 +77,7 @@ def test_3b():
 
 def test_4(logger):
     """TODO"""
-    module = SortingModule()
+    module = SortingUnit()
     rows = [
         {"name": "value3"},
         {"name": "value2"},
@@ -92,7 +92,7 @@ def test_4(logger):
 
 def test_5(logger):
     """TODO"""
-    module = SortingModule()
+    module = SortingUnit()
     module.sort_by = "name"
     rows = [
         {"name": "value3"},
@@ -109,7 +109,7 @@ def test_5(logger):
 
 def test_6(logger):
     """TODO"""
-    module = SortingModule()
+    module = SortingUnit()
     module.reverse = True
     module.sort_by = "name"
     rows = [
@@ -127,7 +127,7 @@ def test_6(logger):
 
 def test_7(logger):
     """TODO"""
-    module = FormattingModule(debug=3)
+    module = FormattingUnit(debug=3)
     rows = [
             {"name": "value3", "size": 80000000},
             {"name": "value2", "size": 110000},
@@ -152,7 +152,7 @@ def test_8(logger):
             {"name": "value4", "size": 280000000000},
             {"name": "value1", "size": 2100000000000000},
     ]
-    module = FormattingModule(debug=3)
+    module = FormattingUnit(debug=3)
     column_names = ["name", "unknown column", "size"]
     module.required_columns = column_names
 
@@ -175,7 +175,7 @@ def test_9(logger):
             {"name": "value4", "size": 280000000000},
             {"name": "value1", "size": 2100000000000000},
     ]
-    module = FormattingModule(debug=3)
+    module = FormattingUnit(debug=3)
     column_names = ["name", "unknown column", "size"]
     module.required_columns = column_names
     logger.info(tabulate(rows))
@@ -204,7 +204,7 @@ def test_10(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     count = print_and_count(module(iter(rows)))
     assert count == 4
 
@@ -218,7 +218,7 @@ def test_11(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     module.start = 2
     count = print_and_count(module(iter(rows)))
     assert count == 2
@@ -233,7 +233,7 @@ def test_12(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     module.limit = 1
 
     res = list(module(iter(rows)))
@@ -251,7 +251,7 @@ def test_13(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     module.start = 3
     module.limit = 1
 
@@ -270,7 +270,7 @@ def test_14(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     module.end = 3
 
     res = list(module(iter(rows)))
@@ -290,7 +290,7 @@ def test_15(print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    module = SlicingModule(debug=3)
+    module = SlicingUnit(debug=3)
     module.end = 3
     module.limit = 1
 
