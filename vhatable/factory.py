@@ -113,7 +113,12 @@ class TableFactory:
         processor = builder(clazz)
         self.log.debug("processor: %s", processor)
 
-        processor.filter.add(*self._filters)
+        raise_msg = "filter unit is not provided/added to the curent processor"
+        if hasattr(processor, 'filter'):
+            processor.filter.add(*self._filters)
+        else:
+            raise ValueError(raise_msg)
+
         raise_msg = "format unit is not provided/added to the curent processor"
         for cell_name, cbuilder in self._custom_cells.items():
             if hasattr(processor, 'format'):
