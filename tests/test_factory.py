@@ -52,6 +52,30 @@ def test_vertical_processor():
     assert len(processor.get_raw()) == 2
 
 
+def test_count_processor():
+    builder = GenericBuilder(rows=rows)
+    factory = TableFactory(builder=builder)
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
+
+    args = Namespace(debug=2, reverse=True, sort_by="name", count=True)
+    processor = factory.build(args)
+    processor.column_names = ["name", "size", "date"]
+
+    print()
+    processor.run()
+    assert len(processor.get_raw()) == 2
+    assert len(processor.get_string()) == 19
+
+    print()
+    processor.cli_mode = True
+    processor.run()
+    assert len(processor.get_raw()) == 2
+    assert len(processor.get_string()) == 1
+    assert processor.get_string() == "2"
+
+
 def test_csv_processor():
     builder = GenericBuilder(rows=rows)
     factory = TableFactory(builder=builder)
@@ -65,14 +89,12 @@ def test_csv_processor():
 
     print()
     processor.run()
-    # rendering is not implemented
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 82
 
     print()
     processor.csv_headers = False
     processor.run()
-    # rendering is not implemented
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 67
 
