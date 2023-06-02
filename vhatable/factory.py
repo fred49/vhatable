@@ -106,7 +106,7 @@ class TableFactory:
         clazz = None
         for flag in self.cfg.keys():
             if getattr(args, flag, False):
-                builder, clazz = self.cfg.get(flag).__values()
+                builder, clazz = self.cfg.get(flag).values()
                 break
         if builder is None:
             builder, clazz = self.default.values()

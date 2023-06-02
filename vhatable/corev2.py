@@ -27,6 +27,7 @@
 
 
 import time
+import json
 import logging
 
 from collections import OrderedDict
@@ -435,6 +436,20 @@ class JsonProcessor(Processor):
 
     def __init__(self, debug=0):
         super().__init__(debug=debug)
+        self.raw_json = False
+
+    def get_string(self):
+        """TODO"""
+        records = []
+        for row in self.get_raw():
+            record = {}
+            for k in self.column_names:
+                if self.raw_json:
+                    record[k] = row.get(k).value
+                else:
+                    record[k] = str(row.get(k))
+            records.append(record)
+        return json.dumps(records, sort_keys=True, indent=2)
 
 
 class CsvProcessor(Processor):
