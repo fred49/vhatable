@@ -12,7 +12,7 @@ from vhatable.corev2 import FilteringUnit
 from vhatable.corev2 import FormattingUnit
 from vhatable.corev2 import SortingUnit
 from vhatable.corev2 import SlicingUnit
-from vhatable.corev2 import BaseTable
+from vhatable.corev2 import Processor
 from vhatable.filters import PartialOr
 
 
@@ -309,7 +309,7 @@ def test_16(logger, print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    table = BaseTable(debug=3)
+    table = Processor(debug=3)
     table.load(rows)
     table.column_names = ["name", "size"]
     res = table.get_raw()
@@ -329,7 +329,7 @@ def test_17():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    table = BaseTable(debug=3)
+    table = Processor(debug=3)
     table.column_names = ["name", "size", "unknown column", "count"]
     table.load(rows)
     table.verbose = True
@@ -349,7 +349,7 @@ def test_18():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    table = BaseTable(debug=3)
+    table = Processor(debug=3)
     # table.column_names = ["name", "size", "unknown column", "count"]
     table.load(rows)
     print("\n")
@@ -360,7 +360,7 @@ def test_18():
 
 def test_19():
     """TODO"""
-    table = BaseTable(debug=3)
+    table = Processor(debug=3)
     table.column_names = ["name", "size", "unknown column", "count"]
     print("\n")
     table.render()
@@ -372,7 +372,7 @@ def test_20():
     """TODO"""
     args = Namespace(sort_debug=2, sort_reverse=True, sort_sort_by="name",
                      format_vertical=False, format_extended=True)
-    table = BaseTable(debug=3)
+    table = Processor(debug=3)
     table.setup(args)
     assert table.sort.reverse
     assert table.sort.sort_by == "name"

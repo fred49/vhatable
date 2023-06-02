@@ -338,7 +338,7 @@ class AbstractTable:
         return True
 
 
-class BaseTable(AbstractTable):
+class Processor(AbstractTable):
     """TODO"""
 
     def __init__(self, debug=0):
