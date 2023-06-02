@@ -98,8 +98,6 @@ class TableFactory:
         return self
 
     def build(self, args=Namespace()):
-        vertical = getattr(args, "vertical", False)
-        # debug = getattr(args, "debug", False)
         self.log.debug("self.cfg: %s", self.cfg)
 
         builder = None
@@ -116,11 +114,12 @@ class TableFactory:
         self.log.debug("processor: %s", processor)
 
         processor.filter.add(*self._filters)
+        raise_msg = "format unit is not provided/added to the curent processor"
         for cell_name, cbuilder in self._custom_cells.items():
-            processor.format.cfa.custom_cells[cell_name] = cbuilder
-
-        processor.format.cfa.vertical = vertical
-        # processor.cfa.debug = self.debug
+            if hasattr(processor, 'format'):
+                processor.format.cfa.custom_cells[cell_name] = cbuilder
+            else:
+                raise ValueError(raise_msg)
 
         processor.setup(args)
         return processor

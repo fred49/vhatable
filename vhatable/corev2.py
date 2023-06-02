@@ -97,6 +97,7 @@ class Unit:
             else:
                 if hasattr(from_args, attr):
                     setattr(self, attr, getattr(from_args, attr))
+            self.log.debug("setup:attr: %s : %s", attr, getattr(self, attr))
         return self
 
 
@@ -357,6 +358,7 @@ class AbstractProcessor:
     def setup(self, from_args):
         """TODO"""
         for unit in self.units.values():
+            self.log.debug("unit: %s", unit)
             unit.setup(from_args)
         return self
 
@@ -377,6 +379,14 @@ class Processor(AbstractProcessor):
         self.add_unit('sort', SortingUnit)
         self.add_unit('slice', SlicingUnit)
 
+    def setup(self, from_args):
+        """TODO"""
+        if 'format' in self.units:
+            self.units['format'].vertical = getattr(
+                    from_args, "vertical", False)
+        super().setup(from_args)
+        return self
+
     @property
     def column_names(self):
         """TODO"""
@@ -386,7 +396,8 @@ class Processor(AbstractProcessor):
     def column_names(self, column_names):
         """TODO"""
         self._column_names = column_names
-        self.units['format'].required_columns = column_names
+        if 'format' in self.units:
+            self.units['format'].required_columns = column_names
 
     def get_string(self):
         """TODO"""

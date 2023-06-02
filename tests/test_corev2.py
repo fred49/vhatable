@@ -401,7 +401,8 @@ def test_21():
     print("\n")
     processor.run()
     print("\n")
-    assert len(processor.get_string()) == 5
+    assert len(processor.get_raw()) == 5
+    assert len(processor.get_string()) == 606
 
 
 def test_22():
