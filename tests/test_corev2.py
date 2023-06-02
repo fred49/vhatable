@@ -14,6 +14,7 @@ from vhatable.corev2 import SortingUnit
 from vhatable.corev2 import SlicingUnit
 from vhatable.corev2 import HTableProcessor
 from vhatable.corev2 import VTableProcessor
+from vhatable.corev2 import CountProcessor
 from vhatable.filters import PartialOr
 
 
@@ -398,3 +399,24 @@ def test_21():
     processor.run()
     print("\n")
     assert len(processor.get_string()) == 5
+
+
+def test_22():
+    """TODO"""
+    rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+            {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
+             "count": 800.1, "size": 2100000000000000},
+    ]
+    processor = CountProcessor(debug=3)
+    processor.column_names = ["name", "size", "unknown column", "count"]
+    processor.load(rows)
+    print("\n")
+    processor.run()
+    print("\n")
+    assert processor.get_string() == "Ressources found: 5"
+    processor.cli_mode = True
+    assert processor.get_string() == "5"

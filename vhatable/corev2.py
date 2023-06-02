@@ -442,3 +442,23 @@ class CsvProcessor(Processor):
 
     def __init__(self, debug=0):
         super().__init__(debug=debug)
+
+
+class CountProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
+        self.cli_mode = False
+        self.messages = {
+            "count_elt": "Ressources found: {count}"
+        }
+
+    def get_string(self):
+        """TODO"""
+        count = len(self.get_raw())
+        if self.cli_mode:
+            return str(count)
+        msg = self.messages['count_elt'].format(count=count)
+        self.log.debug(msg)
+        return msg
