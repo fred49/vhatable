@@ -32,31 +32,50 @@ from collections import OrderedDict
 
 
 from .corev2 import HTableProcessor
+from .corev2 import VTableProcessor
+from .corev2 import CountProcessor
+from .corev2 import JsonProcessor
+from .corev2 import CsvProcessor
+
+
+class GenericBuilder:
+
+    def __init__(self, debug=0, rows=None):
+        self.debug = debug
+        self.rows = rows
+
+    def __call__(self, clazz):
+        if self.rows is not None:
+            processor = clazz(debug=self.debug)
+            processor.load(self.rows)
+            return processor
+        return clazz(debug=self.debug)
 
 
 class TableFactory:
     """TODO"""
 
-    def __init__(self):
+    def __init__(self, builder=GenericBuilder()):
         """TODO"""
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
-        self._action_classes = OrderedDict()
+
+        def cfgVal(builder, clazz):
+            return {
+                "builder": builder,
+                "clazz": clazz
+            }
+        self.cfg = OrderedDict()
+        self.cfg['count'] = cfgVal(builder, CountProcessor)
+        self.cfg['cli_mode'] = cfgVal(builder, CountProcessor)
+        self.cfg['vertical'] = cfgVal(builder, VTableProcessor)
+        self.cfg['csv'] = cfgVal(builder, CsvProcessor)
+        self.cfg['json'] = cfgVal(builder, JsonProcessor)
+        self.default = cfgVal(builder, HTableProcessor)
+
         self._custom_cells = {}
         self._filters = []
-        self._horizontal_clazz = HTableProcessor
-        self._vertical_clazz = HTableProcessor
         self._pre_render_classes = []
-
-    @property
-    def horizontal_clazz(self):
-        """TODO"""
-        return self._horizontal_clazz
-
-    @horizontal_clazz.setter
-    def horizontal_clazz(self, horizontal_clazz):
-        """TODO"""
-        self._horizontal_clazz = horizontal_clazz
 
     def set_custom_cell(self, column, builder):
         """Add specific cell class to format a column."""
@@ -78,28 +97,30 @@ class TableFactory:
             self._filters.append(filterr)
         return self
 
-    def add_pre_render_class(self, clazz):
-        """TODO"""
-        self._pre_render_classes.append(clazz)
-
     def build(self, args=Namespace()):
         vertical = getattr(args, "vertical", False)
-        debug = getattr(args, "debug", False)
-        table = None
-        if vertical:
-            table = self._vertical_clazz(debug=debug)
-        else:
-            table = self._horizontal_clazz(debug=debug)
-            # table.padding_width = 1
-        for clazz in self._pre_render_classes:
-            table.add_pre_render_class(clazz)
+        # debug = getattr(args, "debug", False)
+        self.log.debug("self.cfg: %s", self.cfg)
 
-        table.filter.add(*self._filters)
+        builder = None
+        clazz = None
+        for flag in self.cfg.keys():
+            if getattr(args, flag, False):
+                builder, clazz = self.cfg.get(flag).__values()
+                break
+        if builder is None:
+            builder, clazz = self.default.values()
+        self.log.debug("builder: %s", builder)
+        self.log.debug("clazz: %s", clazz)
+        processor = builder(clazz)
+        self.log.debug("processor: %s", processor)
+
+        processor.filter.add(*self._filters)
         for column, builder in self._custom_cells.items():
-            table.format.cfa.custom_cells[column] = builder
+            processor.format.cfa.custom_cells[column] = builder
 
-        table.format.cfa.vertical = vertical
-        # table.cfa.debug = self.debug
+        processor.format.cfa.vertical = vertical
+        # processor.cfa.debug = self.debug
 
-        table.setup(args)
-        return table
+        processor.setup(args)
+        return processor
