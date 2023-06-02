@@ -29,5 +29,5 @@ def test_1():
     ]
     table.load(rows)
     print()
-    table.render()
+    table.run()
     assert len(table.get_string()) == 328

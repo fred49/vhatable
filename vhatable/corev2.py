@@ -26,22 +26,45 @@
 #
 
 
+import time
 import logging
 
 from collections import OrderedDict
 from tabulate import tabulate
+from functools import wraps
 
 from .cellv2 import CellBuilderFactory
-from .core import Time as CTime
 
 
-class Time(CTime):
+class Time:
     """TODO"""
+    # pylint: disable=too-few-public-methods
 
     def __init__(self,
                  logger_name,
-                 label="execution time: %(time)s"):
-        super().__init__(logger_name, label)
+                 label="execution time: {time:.15f}"):
+        self.log = logging.getLogger(logger_name)
+        self.enabled = False
+        self.label = label
+
+    def __call__(self, original_func):
+        @wraps(original_func)
+        def time_wrapper(*args, **kwargs):
+            self.log.debug("args: %s", args)
+            self.log.debug("kwargs: %s", kwargs)
+            start = time.time()
+            res = original_func(*args, **kwargs)
+            end = time.time()
+            if len(args) > 0:
+                first_arg = args[0]
+                self.enabled = getattr(first_arg, "verbose", self.enabled)
+            diff = end - start
+            msg = self.label.format(time=diff)
+            self.log.debug(msg)
+            if self.enabled:
+                print(msg)
+            return res
+        return time_wrapper
 
 
 class Unit:
@@ -206,6 +229,7 @@ class FormattingUnit(Unit):
                         extended=self.extended, vertical=self.vertical,
                         raw_display=self.raw_display, hidden=False)
                 row_full[cell_name] = cell
+            self.log.debug("row_full: %s", row_full)
             yield row_full
 
 
@@ -271,101 +295,27 @@ class CollectorUnit(Unit):
                 yield newrow
 
 
-class AbstractTable:
-    """TODO"""
-
-    log = None
-    csv = False
-    json = False
-    debug = 0
-    verbose = False
-
-    vertical = False
-    extended = False
-    raw_display = False
-    cli_mode = False
-    args = None
-    cli = None
-    endpoint = None
-    _pre_render_classes = []
-
-    def add_pre_render_class(self, clazz):
-        """TODO"""
-        self._pre_render_classes.append(clazz)
-
-    def get_raw(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def get_json(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def get_csv(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def get_string(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def load(self, rows):
-        """TODO"""
-        raise NotImplementedError()
-
-    def _display_nb_elts(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def _pre_render(self):
-        """Trigger some classes before rendering filtered data."""
-        for clazz in self._pre_render_classes:
-            self.log.debug(clazz)
-            clazz(self.args, self.cli, self.endpoint, self.get_raw())
-
-    @Time('vhatable.corev2.render', label='render time: %(time)s')
-    def render(self):
-        """TODO"""
-        if self.json:
-            print(self.get_json())
-            return True
-        if self.csv:
-            print(self.get_csv())
-            return True
-        self._pre_render()
-        print(self.get_string())
-        self._display_nb_elts()
-        return True
-
-
-class Processor(AbstractTable):
+class AbstractProcessor:
     """TODO"""
 
     def __init__(self, debug=0):
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
-        self.modules = OrderedDict()
-        self.add_module('format', FormattingUnit)
-        self.add_module('filter', FilteringUnit)
-        self.add_module('sort', SortingUnit)
-        self.add_module('slice', SlicingUnit)
-        self.add_module('collector', CollectorUnit)
+        self.units = OrderedDict()
         self._column_names = []
         self._rows = []
         self._raw_cache = None
-        self.showindex = True
-        self.tablefmt = 'grid'
-        self.messages = {
-            "count_elt": "\nRessources found: {count}"
-        }
+        self.messages = {}
+        self.debug = debug
+        self.verbose = False
 
-    def add_module(self, identifier, module):
+    def add_unit(self, identifier, unit):
         """TODO"""
-        self.modules[identifier] = module(identifier=identifier)
+        self.units[identifier] = unit(identifier=identifier)
 
     def __getattr__(self, attr):
-        if attr in self.modules:
-            return self.modules[attr]
+        if attr in self.units:
+            return self.units[attr]
         classname = self.__class__.__name__
         raise AttributeError(f"'{classname}' object has no attribute '{attr}'")
 
@@ -378,8 +328,25 @@ class Processor(AbstractTable):
     def column_names(self, column_names):
         """TODO"""
         self._column_names = column_names
-        self.modules['format'].required_columns = column_names
-        self.modules['collector'].required_columns = column_names
+
+    def get_raw(self):
+        """TODO"""
+        self.log.debug("Units: %s", self.units)
+        self.log.debug("Rows: %s", self._rows)
+        if self._raw_cache is not None:
+            self.log.debug("cached rows: %s", self._raw_cache)
+            return self._raw_cache
+        pipeline = self._rows
+        for unit in self.units.values():
+            self.log.debug("unit: %s", unit)
+            pipeline = unit(pipeline)
+        self._raw_cache = list(pipeline)
+        self.log.debug("pipeline rows: %s", self._raw_cache)
+        return self._raw_cache
+
+    def get_string(self):
+        """TODO"""
+        raise NotImplementedError()
 
     def load(self, rows):
         """TODO"""
@@ -388,19 +355,41 @@ class Processor(AbstractTable):
 
     def setup(self, from_args):
         """TODO"""
-        for module in self.modules.values():
-            module.setup(from_args)
+        for unit in self.units.values():
+            unit.setup(from_args)
         return self
 
-    def get_raw(self):
+    @Time('vhatable.corev2.run')
+    def run(self):
         """TODO"""
-        if self._raw_cache is not None:
-            return self._raw_cache
-        pipeline = self._rows
-        for module in self.modules.values():
-            pipeline = module(pipeline)
-        self._raw_cache = list(pipeline)
-        return self._raw_cache
+        print(self.get_string())
+        return True
+
+
+class HTableProcessor(AbstractProcessor):
+    """TODO"""
+
+    def __init__(self, debug=0):
+        super().__init__(debug=debug)
+        self.add_unit('format', FormattingUnit)
+        self.add_unit('filter', FilteringUnit)
+        self.add_unit('sort', SortingUnit)
+        self.add_unit('slice', SlicingUnit)
+        self.add_unit('collector', CollectorUnit)
+        self.showindex = True
+        self.tablefmt = 'grid'
+
+    @property
+    def column_names(self):
+        """TODO"""
+        return self._column_names
+
+    @column_names.setter
+    def column_names(self, column_names):
+        """TODO"""
+        self._column_names = column_names
+        self.units['format'].required_columns = column_names
+        self.units['collector'].required_columns = column_names
 
     def get_string(self):
         """TODO"""
@@ -410,21 +399,3 @@ class Processor(AbstractTable):
                 tablefmt=self.tablefmt,
                 stralign='center',
                 headers=self._column_names)
-
-    def get_json(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def get_csv(self):
-        """TODO"""
-        raise NotImplementedError()
-
-    def _display_nb_elts(self):
-        """TODO"""
-        if self.verbose:
-            msg = self.messages['count_elt'].format(
-                    count=len(self.get_raw())
-            )
-            self.log.debug(msg)
-            print(msg)
-        return True

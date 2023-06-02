@@ -12,7 +12,7 @@ from vhatable.corev2 import FilteringUnit
 from vhatable.corev2 import FormattingUnit
 from vhatable.corev2 import SortingUnit
 from vhatable.corev2 import SlicingUnit
-from vhatable.corev2 import Processor
+from vhatable.corev2 import HTableProcessor
 from vhatable.filters import PartialOr
 
 
@@ -186,11 +186,12 @@ def fixture_print_and_count(logger):
     """TODO"""
     def inner_print_res(rows):
         res = list(rows)
-        logger.info("")
+        logger.info("\nbegin print_and_count")
         cpt = 0
         for row in res:
             cpt += 1
             logger.info("row: %s", row)
+        logger.info("end print_and_count")
         return cpt
     return inner_print_res
 
@@ -309,14 +310,13 @@ def test_16(logger, print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    table = Processor(debug=3)
-    table.load(rows)
-    table.column_names = ["name", "size"]
-    res = table.get_raw()
+    processor = HTableProcessor(debug=3)
+    processor.load(rows)
+    processor.column_names = ["name", "size"]
+    res = processor.get_raw()
     count = print_and_count(res)
-    logger.info(type(res))
     assert count == 4
-    assert len(table.get_string()) == 274
+    assert len(processor.get_string()) == 274
 
 
 def test_17():
@@ -329,14 +329,14 @@ def test_17():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    table = Processor(debug=3)
-    table.column_names = ["name", "size", "unknown column", "count"]
-    table.load(rows)
-    table.verbose = True
+    processor = HTableProcessor(debug=3)
+    processor.column_names = ["name", "size", "unknown column", "count"]
+    processor.load(rows)
+    processor.verbose = True
     print("\n")
-    table.render()
+    processor.run()
     print("\n")
-    assert len(table.get_string()) == 1221
+    assert len(processor.get_string()) == 1221
 
 
 def test_18():
@@ -349,22 +349,22 @@ def test_18():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    table = Processor(debug=3)
-    # table.column_names = ["name", "size", "unknown column", "count"]
-    table.load(rows)
+    processor = HTableProcessor(debug=3)
+    # processor.column_names = ["name", "size", "unknown column", "count"]
+    processor.load(rows)
     print("\n")
-    table.render()
+    processor.run()
     print("\n")
-    assert len(table.get_string()) == 0
+    assert len(processor.get_string()) == 0
 
 
 def test_19():
     """TODO"""
-    table = Processor(debug=3)
-    table.column_names = ["name", "size", "unknown column", "count"]
+    processor = HTableProcessor(debug=3)
+    processor.column_names = ["name", "size", "unknown column", "count"]
     print("\n")
-    table.render()
-    assert len(table.get_string()) == 195
+    processor.run()
+    assert len(processor.get_string()) == 195
     print("\n")
 
 
@@ -372,9 +372,9 @@ def test_20():
     """TODO"""
     args = Namespace(sort_debug=2, sort_reverse=True, sort_sort_by="name",
                      format_vertical=False, format_extended=True)
-    table = Processor(debug=3)
-    table.setup(args)
-    assert table.sort.reverse
-    assert table.sort.sort_by == "name"
-    assert not table.format.vertical
-    assert table.format.extended
+    processor = HTableProcessor(debug=3)
+    processor.setup(args)
+    assert processor.sort.reverse
+    assert processor.sort.sort_by == "name"
+    assert not processor.format.vertical
+    assert processor.format.extended

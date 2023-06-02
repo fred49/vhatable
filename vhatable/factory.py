@@ -31,7 +31,7 @@ from argparse import Namespace
 from collections import OrderedDict
 
 
-from .corev2 import Processor
+from .corev2 import HTableProcessor
 
 
 class TableFactory:
@@ -44,8 +44,8 @@ class TableFactory:
         self._action_classes = OrderedDict()
         self._custom_cells = {}
         self._filters = []
-        self._horizontal_clazz = Processor
-        self._vertical_clazz = Processor
+        self._horizontal_clazz = HTableProcessor
+        self._vertical_clazz = HTableProcessor
         self._pre_render_classes = []
 
     @property
