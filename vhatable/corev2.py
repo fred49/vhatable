@@ -456,7 +456,8 @@ class HTableProcessor(Processor):
         self.add_unit('collector', CollectorUnit)
         self.showindex = True
         self.tablefmt = 'grid'
-        self._attrs += ["showindex", "tablefmt"]
+        self.headers = {}
+        self._attrs += ["showindex", "tablefmt", "headers"]
 
     def post_init(self):
         """TODO"""
@@ -466,15 +467,22 @@ class HTableProcessor(Processor):
         if 'collector' in self.units:
             self.units['collector'].required_columns = self.column_names
 
+    def get_headers(self):
+        column_names = self.collector.required_columns
+        for column_name in column_names:
+            if column_name in self.headers:
+                yield self.headers.get(column_name)
+            else:
+                yield column_name
+
     def get_string(self):
         """TODO"""
-        column_names = self.collector.required_columns
         return tabulate(
                 self.get_raw(),
                 showindex=self.showindex,
                 tablefmt=self.tablefmt,
                 stralign='center',
-                headers=column_names)
+                headers=self.get_headers())
 
 
 class VTableProcessor(Processor):

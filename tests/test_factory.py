@@ -232,10 +232,11 @@ def test_default_processor3():
             showindex=True,
             sort_by="name")
     processor = factory.build(args)
+    processor.headers["date"] = "Some new header for date column"
     assert processor.collector.required_columns == ["name", "date"]
 
     print()
     print(processor)
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 265
+    assert len(processor.get_string()) == 363
