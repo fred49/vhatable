@@ -39,6 +39,11 @@ from .corev2 import CsvProcessor
 
 
 class GenericBuilder:
+    """This builder is design to be used by the factory to create a processor.
+    It will create the processor and passing some default arguments to the
+    constructor. It could be extended to provide some extra parameters to a
+    specific processor.
+    """
 
     def __init__(self, debug=0, rows=None, column_names=None,
                  autokeys=True):
@@ -56,6 +61,7 @@ class GenericBuilder:
         return processor
 
     def use_api(self, api):
+        """trying to get automatically data and column names from api."""
         if hasattr(api, "column_names"):
             self.column_names = api.column_names()
         if hasattr(api, "list"):
@@ -63,7 +69,7 @@ class GenericBuilder:
         return self
 
 
-class TableFactory:
+class ProcessorFactory:
     """TODO"""
 
     def __init__(self, builder=GenericBuilder()):

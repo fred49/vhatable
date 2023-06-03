@@ -34,7 +34,7 @@ import requests
 
 from argparse import Namespace
 from vhatable.factory import GenericBuilder
-from vhatable.factory import TableFactory
+from vhatable.factory import ProcessorFactory
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
@@ -65,7 +65,7 @@ def get_default_args():
 def sample1():
     """Just a sample"""
     args = get_default_args()
-    factory = TableFactory()
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     builder = DateCellBuilder("date", millisecond=True)
     factory.set_custom_cell("date", builder)
@@ -125,7 +125,7 @@ def sample2():
         column_names=api.column_names()
     )
 
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.set_custom_cell(
@@ -172,7 +172,7 @@ def sample3():
 
     api = API()
     builder = GenericBuilder().use_api(api)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.set_custom_cell(

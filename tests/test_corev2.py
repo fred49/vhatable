@@ -3,8 +3,6 @@
 """TODO"""
 
 
-import hashlib
-
 from argparse import Namespace
 import pytest
 from tabulate import tabulate

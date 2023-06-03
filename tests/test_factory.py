@@ -4,7 +4,7 @@
 
 
 from argparse import Namespace
-from vhatable.factory import TableFactory
+from vhatable.factory import ProcessorFactory
 from vhatable.factory import GenericBuilder
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
@@ -50,7 +50,7 @@ rows = [
 
 def test_default_processor():
     builder = GenericBuilder(rows=rows)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -74,7 +74,7 @@ def test_default_processor():
 
 def test_vertical_processor():
     builder = GenericBuilder(rows=rows)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -97,7 +97,7 @@ def test_vertical_processor():
 
 def test_count_processor():
     builder = GenericBuilder(rows=rows)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -121,7 +121,7 @@ def test_count_processor():
 
 def test_csv_processor():
     builder = GenericBuilder(rows=rows)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -144,7 +144,7 @@ def test_csv_processor():
 
 def test_json_processor():
     builder = GenericBuilder(rows=rows)
-    factory = TableFactory(builder=builder)
+    factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
