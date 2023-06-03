@@ -139,6 +139,7 @@ def test_7(logger):
             {"name": "value4", "size": 280000000000},
             {"name": "value1", "size": 2100000000000000},
     ]
+    unit.required_columns = ["name", "size"]
     res = list(unit(rows))
 
     for row in res:
@@ -315,9 +316,10 @@ def test_16(logger, print_and_count):
             {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
-    processor = HTableProcessor(debug=3)
-    processor.load(rows)
-    processor.column_names = ["name", "size"]
+    processor = HTableProcessor(
+            debug=3,
+            rows=rows,
+            column_names=["name", "size"])
     res = processor.get_raw()
     count = print_and_count(res)
     assert count == 4
@@ -325,7 +327,7 @@ def test_16(logger, print_and_count):
 
 
 def test_17():
-    """TODO"""
+    """testing horizontal rendering"""
     rows = [
             {"name": "value1", "count": 800000.0001, "size": 80000000},
             {"name": "value2", "count": 8.00001, "size": 110000},
@@ -334,10 +336,11 @@ def test_17():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    processor = HTableProcessor(debug=3)
-    processor.column_names = ["name", "size", "unknown column", "count"]
-    processor.load(rows)
-    processor.verbose = True
+    processor = HTableProcessor(
+        debug=3,
+        rows=rows,
+        verbose=True,
+        column_names=["name", "size", "unknown column", "count"])
     print("\n")
     processor.run()
     print("\n")
@@ -345,7 +348,7 @@ def test_17():
 
 
 def test_18():
-    """TODO"""
+    """testing with data but no autokeys and no column names provided"""
     rows = [
             {"name": "value1", "count": 800000.0001, "size": 80000000},
             {"name": "value2", "count": 8.00001, "size": 110000},
@@ -354,19 +357,19 @@ def test_18():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    processor = HTableProcessor(debug=3)
-    # processor.column_names = ["name", "size", "unknown column", "count"]
-    processor.load(rows)
-    print("\n")
-    processor.run()
-    print("\n")
-    assert len(processor.get_string()) == 0
+    processor = HTableProcessor(debug=3, rows=rows, autokeys=False)
+
+    with pytest.raises(ValueError) as exception:
+        processor.run()
+    msg = "CollectorUnit: Missing required columns to display"
+    assert msg in str(exception.value)
 
 
 def test_19():
-    """TODO"""
-    processor = HTableProcessor(debug=3)
-    processor.column_names = ["name", "size", "unknown column", "count"]
+    """testing rendering without any data (rows)"""
+    processor = HTableProcessor(
+        debug=3,
+        column_names=["name", "size", "unknown column", "count"])
     print("\n")
     processor.run()
     assert len(processor.get_string()) == 195
@@ -374,7 +377,7 @@ def test_19():
 
 
 def test_20():
-    """TODO"""
+    """testing updates of options in all units"""
     args = Namespace(sort_debug=2, sort_reverse=True, sort_sort_by="name",
                      format_vertical=False, format_extended=True)
     processor = HTableProcessor(debug=3)
@@ -395,9 +398,10 @@ def test_21():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    processor = VTableProcessor(debug=3)
-    processor.column_names = ["name", "size", "unknown column", "count"]
-    processor.load(rows)
+    processor = VTableProcessor(
+        debug=3,
+        rows=rows,
+        column_names=["name", "size", "unknown column", "count"])
     print("\n")
     processor.run()
     print("\n")
@@ -406,7 +410,7 @@ def test_21():
 
 
 def test_22():
-    """TODO"""
+    """testing CountProcessor"""
     rows = [
             {"name": "value1", "count": 800000.0001, "size": 80000000},
             {"name": "value2", "count": 8.00001, "size": 110000},
@@ -415,9 +419,10 @@ def test_22():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    processor = CountProcessor(debug=3)
-    processor.column_names = ["name", "size", "unknown column", "count"]
-    processor.load(rows)
+    processor = CountProcessor(
+        debug=3,
+        rows=rows,
+        column_names=["name", "size", "unknown column", "count"])
     print("\n")
     processor.run()
     print("\n")
@@ -427,7 +432,7 @@ def test_22():
 
 
 def test_23():
-    """TODO"""
+    """testing CsvProcessor"""
     rows = [
             {"name": "value1", "count": 800000.0001, "size": 80000000},
             {"name": "value2", "count": 8.00001, "size": 110000},
@@ -436,9 +441,10 @@ def test_23():
             {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
              "count": 800.1, "size": 2100000000000000},
     ]
-    processor = CsvProcessor(debug=3)
-    processor.column_names = ["name", "size", "unknown column", "count"]
-    processor.load(rows)
+    processor = CsvProcessor(
+        debug=3,
+        rows=rows,
+        column_names=["name", "size", "unknown column", "count"])
     print("\n")
     processor.run()
     print("\n")

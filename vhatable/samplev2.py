@@ -39,12 +39,6 @@ from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
 
-from .corev2 import HTableProcessor
-from .corev2 import VTableProcessor
-from .corev2 import CountProcessor
-from .corev2 import JsonProcessor
-from .corev2 import CsvProcessor
-
 
 def helper_print_header(extra=None):
     """Just a tiny helper to display a header between each rendering."""
@@ -77,9 +71,9 @@ def sample1():
     factory.set_custom_cell("date", builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name")
-    table = factory.build(args)
+    processor = factory.build(args)
 
-    table.column_names = ["name", "size", "date"]
+    processor.column_names = ["name", "size", "date"]
 
     rows = [
         {"name": "value1", "date": 1625647954855, "size": 80000000},
@@ -88,10 +82,11 @@ def sample1():
         {"name": "value4", "date": 1625647954905, "size": 21000000000000},
         {"name": "value5", "date": 1625647954962, "size": 2100000000000000},
     ]
-    table.load(rows)
+    processor.load(rows)
 
     helper_print_header("    >>>> Default  <<<<")
-    table.run()
+    print(processor)
+    processor.run()
 
 
 def sample2():
@@ -108,6 +103,9 @@ def sample2():
                 for episode in json[season]:
                     yield episode
 
+        def column_names(self):
+            return ["season", "number", "title", "release_date", "show"]
+
     args = Namespace(
             debug=2,
             sort_reverse=False,
@@ -118,11 +116,15 @@ def sample2():
             titles=[],
             vertical=False)
     args.titles = ["ation"]
-    args.release_dates = ["2016"],
+    args.release_dates = ["2016"]
     # args.sort_sort_by = "release_date"
 
     api = API()
-    builder = GenericBuilder(rows=api.list())
+    builder = GenericBuilder(
+        rows=api.list(),
+        column_names=api.column_names()
+    )
+
     factory = TableFactory(builder=builder)
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
@@ -134,8 +136,53 @@ def sample2():
             )
     )
     processor = factory.build(args)
-    processor.column_names = ["season", "number", "title", "release_date",
-                              "show"]
+
+    helper_print_header("    >>>> Default  <<<<")
+    print(processor)
+    processor.run()
+    print()
+
+
+def sample3():
+    """Just a sample"""
+
+    class API:
+
+        URL = "https://epguides.frecar.no/show/bigbangtheory/"
+
+        def list(self):
+            r = requests.get(self.URL)
+            json = r.json()
+            for season in json:
+                for episode in json[season]:
+                    yield episode
+
+        def column_names(self):
+            return ["season", "number", "title", "release_date", "show"]
+
+    args = Namespace(
+            debug=2,
+            sort_reverse=False,
+            sort_sort_by="season",
+            release_dates=[],
+            slice_end=40,
+            slice_limit=20,
+            titles=[],
+            vertical=False)
+
+    api = API()
+    builder = GenericBuilder().use_api(api)
+    factory = TableFactory(builder=builder)
+    factory.add_filters(PartialOr("title", args.titles, True))
+    factory.add_filters(PartialOr("release_date", args.release_dates))
+    factory.set_custom_cell(
+            "show", ComplexCellBuilder(
+                "show",
+                fmt='{title}\n{imdb_id} {epguide_name}',
+                fmtv='{title} {imdb_id} {epguide_name}'
+            )
+    )
+    processor = factory.build(args)
 
     helper_print_header("    >>>> Default  <<<<")
     print(processor)

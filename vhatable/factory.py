@@ -40,16 +40,27 @@ from .corev2 import CsvProcessor
 
 class GenericBuilder:
 
-    def __init__(self, debug=0, rows=None):
+    def __init__(self, debug=0, rows=None, column_names=None,
+                 autokeys=True):
         self.debug = debug
         self.rows = rows
+        self.autokeys = autokeys
+        self.column_names = column_names
 
     def __call__(self, clazz):
-        if self.rows is not None:
-            processor = clazz(debug=self.debug)
-            processor.load(self.rows)
-            return processor
-        return clazz(debug=self.debug)
+        processor = clazz(
+                debug=self.debug,
+                autokeys=self.autokeys,
+                column_names=self.column_names,
+                rows=self.rows)
+        return processor
+
+    def use_api(self, api):
+        if hasattr(api, "column_names"):
+            self.column_names = api.column_names()
+        if hasattr(api, "list"):
+            self.rows = api.list()
+        return self
 
 
 class TableFactory:

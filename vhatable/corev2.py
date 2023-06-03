@@ -218,6 +218,10 @@ class FormattingUnit(Unit):
         if self._columns:
             return self._columns
 
+        if not self.required_columns:
+            msg = "FormattingUnit: Missing required columns to display"
+            raise ValueError(msg)
+
         def compute(row):
             columns = []
             columns += self.required_columns
@@ -302,6 +306,10 @@ class CollectorUnit(Unit):
         self.required_columns = []
 
     def __call__(self, rows):
+        if not self.required_columns:
+            msg = "CollectorUnit: Missing required columns to display"
+            raise ValueError(msg)
+
         for row in rows:
             newrow = []
             for column_name in self.required_columns:
@@ -314,17 +322,26 @@ class CollectorUnit(Unit):
 class AbstractProcessor:
     """TODO"""
 
-    def __init__(self, debug=0):
+    def __init__(self, debug=0, verbose=False, rows=None, column_names=None,
+                 autokeys=True):
         self._attrs = ["debug", "verbose", "messages"]
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
         self.units = OrderedDict()
-        self._column_names = []
+        self.column_names = []
+        self._auto_columns = False
         self._rows = []
         self._raw_cache = None
         self.messages = {}
         self.debug = debug
-        self.verbose = False
+        self.verbose = verbose
+        if rows:
+            self._rows = rows
+        if column_names:
+            self.column_names = column_names
+        elif autokeys:
+            if rows and len(rows) >= 1:
+                self.column_names = rows[0].keys()
 
     def add_unit(self, identifier, unit):
         """TODO"""
@@ -336,17 +353,8 @@ class AbstractProcessor:
         classname = self.__class__.__name__
         raise AttributeError(f"'{classname}' object has no attribute '{attr}'")
 
-    @property
-    def column_names(self):
-        """TODO"""
-        return self._column_names
-
-    @column_names.setter
-    def column_names(self, column_names):
-        """TODO"""
-        self._column_names = column_names
-
     def __str__(self):
+        self.pre_get_raw_hook()
         rows = []
         rows.append("Processor - " + self.__class__.__name__ + ":")
         for attr in self._attrs:
@@ -357,13 +365,17 @@ class AbstractProcessor:
             rows.append(str(unit))
         return "\n".join(rows)
 
+    def pre_get_raw_hook(self):
+        pass
+
     def get_raw(self):
         """TODO"""
-        self.log.debug("Units: %s", self.units)
-        self.log.debug("Rows: %s", self._rows)
         if self._raw_cache is not None:
             self.log.debug("cached rows: %s", self._raw_cache)
             return self._raw_cache
+        self.log.debug("Units: %s", self.units)
+        self.log.debug("Rows: %s", self._rows)
+        self.pre_get_raw_hook()
         pipeline = self._rows
         for unit in self.units.values():
             self.log.debug("unit: %s", unit)
@@ -372,14 +384,14 @@ class AbstractProcessor:
         self.log.debug("pipeline rows: %s", self._raw_cache)
         return self._raw_cache
 
-    def get_string(self):
-        """TODO"""
-        raise NotImplementedError()
-
     def load(self, rows):
         """TODO"""
         self._rows = rows
         return self
+
+    def get_string(self):
+        """TODO"""
+        raise NotImplementedError()
 
     def setup(self, from_args):
         """TODO"""
@@ -398,8 +410,8 @@ class AbstractProcessor:
 class Processor(AbstractProcessor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.add_unit('format', FormattingUnit)
         self.add_unit('filter', FilteringUnit)
         self.add_unit('sort', SortingUnit)
@@ -413,17 +425,10 @@ class Processor(AbstractProcessor):
         super().setup(from_args)
         return self
 
-    @property
-    def column_names(self):
+    def pre_get_raw_hook(self):
         """TODO"""
-        return self._column_names
-
-    @column_names.setter
-    def column_names(self, column_names):
-        """TODO"""
-        self._column_names = column_names
         if 'format' in self.units:
-            self.units['format'].required_columns = column_names
+            self.units['format'].required_columns = self.column_names
 
     def get_string(self):
         """TODO"""
@@ -433,23 +438,18 @@ class Processor(AbstractProcessor):
 class HTableProcessor(Processor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.add_unit('collector', CollectorUnit)
         self.showindex = True
         self.tablefmt = 'grid'
 
-    @property
-    def column_names(self):
+    def pre_get_raw_hook(self):
         """TODO"""
-        return self._column_names
-
-    @column_names.setter
-    def column_names(self, column_names):
-        """TODO"""
-        self._column_names = column_names
-        self.units['format'].required_columns = column_names
-        self.units['collector'].required_columns = column_names
+        if 'format' in self.units:
+            self.units['format'].required_columns = self.column_names
+        if 'collector' in self.units:
+            self.units['collector'].required_columns = self.column_names
 
     def get_string(self):
         """TODO"""
@@ -458,14 +458,14 @@ class HTableProcessor(Processor):
                 showindex=self.showindex,
                 tablefmt=self.tablefmt,
                 stralign='center',
-                headers=self._column_names)
+                headers=self.column_names)
 
 
 class VTableProcessor(Processor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._maxlengthkey = 0
 
     def get_string(self):
@@ -510,8 +510,8 @@ class VTableProcessor(Processor):
 class JsonProcessor(Processor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.raw_json = False
 
     def get_string(self):
@@ -531,8 +531,8 @@ class JsonProcessor(Processor):
 class CsvProcessor(Processor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.csv_headers = True
 
     def get_string(self):
@@ -556,8 +556,8 @@ class CsvProcessor(Processor):
 class CountProcessor(Processor):
     """TODO"""
 
-    def __init__(self, debug=0):
-        super().__init__(debug=debug)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.cli_mode = False
         self.messages = {
             "count_elt": "Ressources found: {count}"
