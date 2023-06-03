@@ -49,7 +49,10 @@ rows = [
 
 
 def test_default_processor():
-    builder = GenericBuilder(rows=rows)
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
@@ -64,7 +67,6 @@ def test_default_processor():
 
     args = Namespace(debug=2, reverse=True, sort_by="name")
     processor = factory.build(args)
-    processor.column_names = ["name", "size", "date", "author"]
 
     print()
     processor.run()
@@ -73,7 +75,10 @@ def test_default_processor():
 
 
 def test_vertical_processor():
-    builder = GenericBuilder(rows=rows)
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
@@ -87,7 +92,6 @@ def test_vertical_processor():
     )
     args = Namespace(debug=2, reverse=True, sort_by="name", vertical=True)
     processor = factory.build(args)
-    processor.column_names = ["name", "size", "date", "author"]
 
     print()
     processor.run()
@@ -96,7 +100,10 @@ def test_vertical_processor():
 
 
 def test_count_processor():
-    builder = GenericBuilder(rows=rows)
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date"]
+    )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
@@ -104,7 +111,6 @@ def test_count_processor():
 
     args = Namespace(debug=2, reverse=True, sort_by="name", count=True)
     processor = factory.build(args)
-    processor.column_names = ["name", "size", "date"]
 
     print()
     processor.run()
@@ -120,7 +126,10 @@ def test_count_processor():
 
 
 def test_csv_processor():
-    builder = GenericBuilder(rows=rows)
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date"]
+    )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
@@ -128,7 +137,6 @@ def test_csv_processor():
 
     args = Namespace(debug=2, reverse=True, sort_by="name", csv=True)
     processor = factory.build(args)
-    processor.column_names = ["name", "size", "date"]
 
     print()
     processor.run()
@@ -143,7 +151,10 @@ def test_csv_processor():
 
 
 def test_json_processor():
-    builder = GenericBuilder(rows=rows)
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date"]
+    )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
@@ -151,7 +162,6 @@ def test_json_processor():
 
     args = Namespace(debug=2, reverse=True, sort_by="name", json=True)
     processor = factory.build(args)
-    processor.column_names = ["name", "size", "date"]
 
     print()
     processor.run()
