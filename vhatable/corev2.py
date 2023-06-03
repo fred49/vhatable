@@ -70,12 +70,12 @@ class Time:
 
 class Unit:
     """TODO"""
-    __dict__ = ["debug"]
 
     def __init__(self, debug=0, identifier=None):
         self.log = logging.getLogger(__name__)
         self._debug = debug
         self.identifier = identifier
+        self._attrs = ["debug"]
 
     @property
     def debug(self):
@@ -89,7 +89,7 @@ class Unit:
 
     def setup(self, from_args):
         """TODO"""
-        for attr in self.__dict__:
+        for attr in self._attrs:
             if self.identifier:
                 attr_with_prefix = self.identifier + "_" + attr
                 if hasattr(from_args, attr_with_prefix):
@@ -100,10 +100,22 @@ class Unit:
             self.log.debug("setup:attr: %s : %s", attr, getattr(self, attr))
         return self
 
+    def __str__(self):
+        rows = []
+        prefix = ""
+        if self.identifier:
+            prefix = self.identifier + "_"
+
+        rows.append("Unit: " + self.__class__.__name__ + ":")
+        for attr in self._attrs:
+            attr_val = getattr(self, attr)
+            rows.append(f" - {prefix}{attr}: {attr_val}")
+        rows.append("")
+        return "\n".join(rows)
+
 
 class FilteringUnit(Unit):
     """TODO"""
-    __dict__ = ["debug"]
 
     def __init__(self, debug=0, identifier=None):
         super().__init__(debug=debug, identifier=identifier)
@@ -153,12 +165,12 @@ class FilteringUnit(Unit):
 
 class SortingUnit(Unit):
     """TODO"""
-    __dict__ = ["debug", "reverse", "sort_by"]
 
     def __init__(self, debug=0, identifier=None):
         super().__init__(debug=debug, identifier=identifier)
         self.reverse = False
         self.sort_by = None
+        self._attrs += ["reverse", "sort_by"]
 
     def __call__(self, rows):
         if self.sort_by:
@@ -174,7 +186,6 @@ class SortingUnit(Unit):
 
 class FormattingUnit(Unit):
     """TODO"""
-    __dict__ = ["debug", "no_cell", "vertical", "extended"]
 
     def __init__(self, debug=0, identifier=None):
         super().__init__(debug=debug, identifier=identifier)
@@ -187,6 +198,10 @@ class FormattingUnit(Unit):
         self.required_columns = []
         self.compute_column_for_each_row = False
         self._columns = []
+        self._attrs += [
+            "raw_display", "no_cell", "vertical", "extended",
+            "required_columns"
+        ]
 
     @property
     def debug(self):
@@ -237,13 +252,13 @@ class FormattingUnit(Unit):
 
 class SlicingUnit(Unit):
     """TODO"""
-    __dict__ = ["debug", "start", "end", "limit"]
 
     def __init__(self, debug=0, identifier=None):
         super().__init__(debug=debug, identifier=identifier)
         self.limit = 0
         self.start = 0
         self.end = 0
+        self._attrs += ["start", "end", "limit"]
 
     def __call__(self, rows):
         self.log.debug("self.start: %s", self.start)
@@ -281,7 +296,6 @@ class SlicingUnit(Unit):
 
 class CollectorUnit(Unit):
     """TODO"""
-    __dict__ = ["debug"]
 
     def __init__(self, debug=0, identifier=None):
         super().__init__(debug=debug, identifier=identifier)
@@ -301,6 +315,7 @@ class AbstractProcessor:
     """TODO"""
 
     def __init__(self, debug=0):
+        self._attrs = ["debug", "verbose", "messages"]
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
         self.units = OrderedDict()
@@ -330,6 +345,17 @@ class AbstractProcessor:
     def column_names(self, column_names):
         """TODO"""
         self._column_names = column_names
+
+    def __str__(self):
+        rows = []
+        rows.append("Processor - " + self.__class__.__name__ + ":")
+        for attr in self._attrs:
+            attr_val = getattr(self, attr)
+            rows.append(f" - {attr}: {attr_val}")
+        rows.append("")
+        for unit in self.units.values():
+            rows.append(str(unit))
+        return "\n".join(rows)
 
     def get_raw(self):
         """TODO"""

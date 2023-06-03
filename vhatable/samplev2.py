@@ -30,11 +30,20 @@ import sys
 import inspect
 import argparse
 import logging
+import requests
 
 from argparse import Namespace
+from vhatable.factory import GenericBuilder
 from vhatable.factory import TableFactory
 from vhatable.cellv2 import DateCellBuilder
+from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
+
+from .corev2 import HTableProcessor
+from .corev2 import VTableProcessor
+from .corev2 import CountProcessor
+from .corev2 import JsonProcessor
+from .corev2 import CsvProcessor
 
 
 def helper_print_header(extra=None):
@@ -82,7 +91,65 @@ def sample1():
     table.load(rows)
 
     helper_print_header("    >>>> Default  <<<<")
-    table.render()
+    table.run()
+
+
+def sample2():
+    """Just a sample"""
+
+    class API:
+
+        URL = "https://epguides.frecar.no/show/bigbangtheory/"
+
+        def list(self):
+            r = requests.get(self.URL)
+            json = r.json()
+            for season in json:
+                for episode in json[season]:
+                    yield episode
+
+    api = API()
+    builder = GenericBuilder(rows=api.list())
+    factory = TableFactory(builder=builder)
+    # factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    # factory.set_custom_cell(
+    #         "date", DateCellBuilder("release_date", millisecond=True))
+    factory.set_custom_cell(
+            "show", ComplexCellBuilder(
+                "show",
+                fmt='{title}\n{imdb_id} {epguide_name}',
+                fmtv='{title} {imdb_id} {epguide_name}'
+            )
+    )
+    args = get_default_args()
+    args = Namespace(debug=2, reverse=True, sort_by="name", vertical=False)
+    processor = factory.build(args)
+    processor.column_names = ["season", "number", "title", "release_date",
+                              "show"]
+
+    helper_print_header("    >>>> Default  <<<<")
+    # processor.run()
+
+    args = Namespace(
+            debug=2,
+            sort_reverse=False,
+            # sort_sort_by="release_date",
+            sort_sort_by="season",
+            slice_end=40,
+            slice_limit=20,
+            vertical=True)
+    processor.setup(args)
+    helper_print_header("    >>>> Default  <<<<")
+    #  processor.run()
+    # processor.print_units_help()
+    print(processor)
+    print()
+    # print(HTableProcessor().__dict__)
+    # print(VTableProcessor().__dict__)
+    # print(CountProcessor().__dict__)
+    # print(JsonProcessor().__dict__)
+    # print(CsvProcessor().__dict__)
+    # print(help(processor))
 
 
 def main():
