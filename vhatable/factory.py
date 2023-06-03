@@ -70,7 +70,9 @@ class GenericBuilder:
 
 
 class ProcessorFactory:
-    """TODO"""
+    """class in charge of creating to proper processor according input args.
+    This class is also in charge of proviging all processor's config.
+    """
 
     def __init__(self, builder=GenericBuilder()):
         """TODO"""
@@ -115,6 +117,8 @@ class ProcessorFactory:
         return self
 
     def _get_processor(self, args):
+        """Retrieve the proper builder from the config to build the processor.
+        """
         builder = None
         clazz = None
         for flag in self.cfg.keys():
@@ -130,6 +134,7 @@ class ProcessorFactory:
         return processor
 
     def build(self, args=Namespace()):
+        """build the processor and do the setup."""
         self.log.debug("self.cfg: %s", self.cfg)
         processor = self._get_processor(args)
 
