@@ -108,12 +108,24 @@ def sample2():
                 for episode in json[season]:
                     yield episode
 
+    args = Namespace(
+            debug=2,
+            sort_reverse=False,
+            sort_sort_by="season",
+            # slice_end=40,
+            # slice_limit=20,
+            release_dates=[],
+            titles=[],
+            vertical=False)
+    args.titles = ["ation"]
+    args.release_dates = ["2016"],
+    # args.sort_sort_by = "release_date"
+
     api = API()
     builder = GenericBuilder(rows=api.list())
     factory = TableFactory(builder=builder)
-    # factory.add_filters(PartialOr("name", ["value2", "value3"], True))
-    # factory.set_custom_cell(
-    #         "date", DateCellBuilder("release_date", millisecond=True))
+    factory.add_filters(PartialOr("title", args.titles, True))
+    factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.set_custom_cell(
             "show", ComplexCellBuilder(
                 "show",
@@ -121,35 +133,14 @@ def sample2():
                 fmtv='{title} {imdb_id} {epguide_name}'
             )
     )
-    args = get_default_args()
-    args = Namespace(debug=2, reverse=True, sort_by="name", vertical=False)
     processor = factory.build(args)
     processor.column_names = ["season", "number", "title", "release_date",
                               "show"]
 
     helper_print_header("    >>>> Default  <<<<")
-    # processor.run()
-
-    args = Namespace(
-            debug=2,
-            sort_reverse=False,
-            # sort_sort_by="release_date",
-            sort_sort_by="season",
-            slice_end=40,
-            slice_limit=20,
-            vertical=True)
-    processor.setup(args)
-    helper_print_header("    >>>> Default  <<<<")
-    #  processor.run()
-    # processor.print_units_help()
     print(processor)
+    processor.run()
     print()
-    # print(HTableProcessor().__dict__)
-    # print(VTableProcessor().__dict__)
-    # print(CountProcessor().__dict__)
-    # print(JsonProcessor().__dict__)
-    # print(CsvProcessor().__dict__)
-    # print(help(processor))
 
 
 def main():
