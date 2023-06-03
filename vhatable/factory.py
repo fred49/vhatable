@@ -93,8 +93,13 @@ class ProcessorFactory:
         self.default = cfgVal(builder, HTableProcessor)
 
         self._custom_cells = {}
+        self._header_cells = {}
         self._filters = []
         self._pre_render_classes = []
+
+    def set_header_cell(self, column_name, header_value):
+        """set a header value for an existing displayed column."""
+        self._header_cells[column_name] = header_value
 
     def set_custom_cell(self, column, builder):
         """Add specific cell class to format a column."""
@@ -138,16 +143,23 @@ class ProcessorFactory:
         self.log.debug("self.cfg: %s", self.cfg)
         processor = self._get_processor(args)
 
-        msg = "warn:filter unit is not provided/added to the curent processor"
+        msg = "warn:filter unit is not provided/added to the current processor"
         if hasattr(processor, 'filter'):
             processor.filter.add(*self._filters)
         else:
             self.log.debug(msg)
 
-        msg = "format unit is not provided/added to the curent processor"
+        msg = "format unit is not provided/added to the current processor"
         if hasattr(processor, 'format'):
             for cell_name, cbuilder in self._custom_cells.items():
                 processor.format.cfa.custom_cells[cell_name] = cbuilder
+        else:
+            self.log.debug(msg)
+
+        msg = "processor.headers does not exist in the current processor"
+        if hasattr(processor, 'headers'):
+            for column_name, header_value in self._header_cells.items():
+                processor.headers[column_name] = header_value
         else:
             self.log.debug(msg)
 

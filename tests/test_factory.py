@@ -215,6 +215,7 @@ def test_default_processor3():
     )
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_header_cell("date", "Some new header for date column")
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
     factory.set_custom_cell(
@@ -232,7 +233,6 @@ def test_default_processor3():
             showindex=True,
             sort_by="name")
     processor = factory.build(args)
-    processor.headers["date"] = "Some new header for date column"
     assert processor.collector.required_columns == ["name", "date"]
 
     print()
@@ -240,3 +240,10 @@ def test_default_processor3():
     processor.run()
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 363
+
+    args.vertical = True
+    processor = factory.build(args)
+    print()
+    processor.run()
+    assert len(processor.get_raw()) == 2
+    assert len(processor.get_string()) == 403

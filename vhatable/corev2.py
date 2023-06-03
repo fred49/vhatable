@@ -491,6 +491,16 @@ class VTableProcessor(Processor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._maxlengthkey = 0
+        self.headers = {}
+        self._attrs += ["headers"]
+
+    def get_headers(self):
+        column_names = self.collector.required_columns
+        for column_name in column_names:
+            if column_name in self.headers:
+                yield self.headers.get(column_name)
+            else:
+                yield column_name
 
     def get_string(self):
         """TODO"""
@@ -498,23 +508,30 @@ class VTableProcessor(Processor):
         records = []
         for row in self.get_raw():
             record = []
-            for k in self.column_names:
+            for column_name in self.column_names:
                 try:
                     slength = str(self._maxlengthkey)
                     t_format = "{key:" + slength + "s} | {value:s}"
                     dataa = None
-                    column_data = row.get(k)
+                    column_data = row.get(column_name)
+                    column_header = self.headers.get(column_name, column_name)
                     if isinstance(column_data, str):
-                        dataa = {"key": k, "value": column_data}
+                        dataa = {"key": column_header, "value": column_data}
                     else:
                         column_data_str = str(column_data)
-                        dataa = {"key": k, "value": column_data_str}
+                        dataa = {
+                            "key": column_header,
+                            "value": column_data_str
+                        }
                     t_record = t_format.format(**dataa)
                     record.append(t_record)
                     max_length_line = max(max_length_line, len(t_record))
                 except UnicodeEncodeError as ex:
                     self.log.error("UnicodeEncodeError: %s", ex)
-                    dataa = {"key": k, "value": "UnicodeEncodeError"}
+                    dataa = {
+                        "key": column_header,
+                        "value": "UnicodeEncodeError"
+                    }
                     t_record = str(t_format).format(**dataa)
                     record.append(t_record)
             records.append("\n".join(record))
