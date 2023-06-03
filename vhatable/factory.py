@@ -138,18 +138,18 @@ class ProcessorFactory:
         self.log.debug("self.cfg: %s", self.cfg)
         processor = self._get_processor(args)
 
-        raise_msg = "filter unit is not provided/added to the curent processor"
+        msg = "warn:filter unit is not provided/added to the curent processor"
         if hasattr(processor, 'filter'):
             processor.filter.add(*self._filters)
         else:
-            raise ValueError(raise_msg)
+            self.log.debug(msg)
 
-        raise_msg = "format unit is not provided/added to the curent processor"
-        for cell_name, cbuilder in self._custom_cells.items():
-            if hasattr(processor, 'format'):
+        msg = "format unit is not provided/added to the curent processor"
+        if hasattr(processor, 'format'):
+            for cell_name, cbuilder in self._custom_cells.items():
                 processor.format.cfa.custom_cells[cell_name] = cbuilder
-            else:
-                raise ValueError(raise_msg)
+        else:
+            self.log.debug(msg)
 
         processor.setup(args)
         return processor
