@@ -318,6 +318,7 @@ def test_16(logger, print_and_count):
             debug=3,
             rows=rows,
             column_names=["name", "size"])
+    processor.post_init()
     res = processor.get_raw()
     count = print_and_count(res)
     assert count == 4
@@ -339,6 +340,7 @@ def test_17():
         rows=rows,
         verbose=True,
         column_names=["name", "size", "unknown column", "count"])
+    processor.post_init()
     print("\n")
     processor.run()
     print("\n")
@@ -356,6 +358,7 @@ def test_18():
              "count": 800.1, "size": 2100000000000000},
     ]
     processor = HTableProcessor(debug=3, rows=rows, autokeys=False)
+    processor.post_init()
 
     with pytest.raises(ValueError) as exception:
         processor.run()
@@ -368,6 +371,7 @@ def test_19():
     processor = HTableProcessor(
         debug=3,
         column_names=["name", "size", "unknown column", "count"])
+    processor.post_init()
     print("\n")
     processor.run()
     assert len(processor.get_string()) == 195
@@ -400,6 +404,7 @@ def test_21():
         debug=3,
         rows=rows,
         column_names=["name", "size", "unknown column", "count"])
+    processor.post_init()
     print("\n")
     processor.run()
     print("\n")
@@ -421,6 +426,7 @@ def test_22():
         debug=3,
         rows=rows,
         column_names=["name", "size", "unknown column", "count"])
+    processor.post_init()
     print("\n")
     processor.run()
     print("\n")
@@ -444,6 +450,7 @@ def test_23():
         rows=rows,
         column_names=["name", "size", "unknown column", "count"])
     print("\n")
+    processor.post_init()
     processor.run()
     print("\n")
 

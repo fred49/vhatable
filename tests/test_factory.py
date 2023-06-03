@@ -173,3 +173,69 @@ def test_json_processor():
     processor.run()
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 162
+
+
+def test_default_processor2():
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory = ProcessorFactory(builder=builder)
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_custom_cell(
+            "author", ComplexCellBuilder(
+                "author",
+                fmt='{firstname} {lastname} ({uuid:.8})',
+                fmtv='{firstname} {lastname} ({uuid})'
+            )
+    )
+
+    args = Namespace(
+            debug=2,
+            reverse=True,
+            collector_required_columns=["name"],
+            showindex=False,
+            sort_by="name")
+    processor = factory.build(args)
+    assert processor.collector.required_columns == ["name"]
+
+    print()
+    print(processor)
+    processor.run()
+    assert len(processor.get_raw()) == 2
+    assert len(processor.get_string()) == 76
+
+
+def test_default_processor3():
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory = ProcessorFactory(builder=builder)
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_custom_cell(
+            "author", ComplexCellBuilder(
+                "author",
+                fmt='{firstname} {lastname} ({uuid:.8})',
+                fmtv='{firstname} {lastname} ({uuid})'
+            )
+    )
+
+    args = Namespace(
+            debug=2,
+            reverse=True,
+            collector_required_columns=["name", "date"],
+            showindex=True,
+            sort_by="name")
+    processor = factory.build(args)
+    assert processor.collector.required_columns == ["name", "date"]
+
+    print()
+    print(processor)
+    processor.run()
+    assert len(processor.get_raw()) == 2
+    assert len(processor.get_string()) == 265
