@@ -76,7 +76,7 @@ setup(
     # project is installed.
     install_requires=[
         'veryprettytable==0.8.1',
-        'tabulate==0.9.0',
+        'prettytable==3.7.0',
         'humanfriendly==9.0'
     ],
     extras_require={

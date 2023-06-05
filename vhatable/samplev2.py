@@ -182,6 +182,8 @@ def sample3():
                 fmtv='{title} {imdb_id} {epguide_name}'
             )
     )
+    factory.set_align_cell("title", "l")
+    factory.set_align_cell("show", "c")
     processor = factory.build(args)
 
     helper_print_header("    >>>> Default  <<<<")

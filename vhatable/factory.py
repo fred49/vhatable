@@ -94,12 +94,17 @@ class ProcessorFactory:
 
         self._custom_cells = {}
         self._header_cells = {}
+        self._align_cells = {}
         self._filters = []
         self._pre_render_classes = []
 
     def set_header_cell(self, column_name, header_value):
         """set a header value for an existing displayed column."""
         self._header_cells[column_name] = header_value
+
+    def set_align_cell(self, column_name, align_value):
+        """set a align value for an existing displayed column."""
+        self._align_cells[column_name] = align_value
 
     def set_custom_cell(self, column, builder):
         """Add specific cell class to format a column."""
@@ -160,6 +165,13 @@ class ProcessorFactory:
         if hasattr(processor, 'headers'):
             for column_name, header_value in self._header_cells.items():
                 processor.headers[column_name] = header_value
+        else:
+            self.log.debug(msg)
+
+        msg = "processor.aligns does not exist in the current processor"
+        if hasattr(processor, 'aligns'):
+            for column_name, align_value in self._align_cells.items():
+                processor.aligns[column_name] = align_value
         else:
             self.log.debug(msg)
 

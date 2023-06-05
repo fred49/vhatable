@@ -322,7 +322,7 @@ def test_16(logger, print_and_count):
     res = processor.get_raw()
     count = print_and_count(res)
     assert count == 4
-    assert len(processor.get_string()) == 274
+    assert len(processor.get_string()) == 159
 
 
 def test_17():
@@ -344,7 +344,7 @@ def test_17():
     print("\n")
     processor.run()
     print("\n")
-    assert len(processor.get_string()) == 1221
+    assert len(processor.get_string()) == 791
 
 
 def test_18():
@@ -374,7 +374,7 @@ def test_19():
     processor.post_init()
     print("\n")
     processor.run()
-    assert len(processor.get_string()) == 195
+    assert len(processor.get_string()) == 163
     print("\n")
 
 

@@ -48,7 +48,7 @@ rows = [
 ]
 
 
-def test_default_processor():
+def test_default_processor1():
     builder = GenericBuilder(
         rows=rows,
         column_names=["name", "size", "date", "author"]
@@ -71,7 +71,7 @@ def test_default_processor():
     print()
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 503
+    assert len(processor.get_string()) == 401
 
 
 def test_vertical_processor():
@@ -205,7 +205,7 @@ def test_default_processor2():
     print(processor)
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 76
+    assert len(processor.get_string()) == 65
 
 
 def test_default_processor3():
@@ -239,7 +239,7 @@ def test_default_processor3():
     print(processor)
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 363
+    assert len(processor.get_string()) == 269
 
     args.vertical = True
     processor = factory.build(args)

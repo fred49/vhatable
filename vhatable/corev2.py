@@ -29,9 +29,9 @@
 import time
 import json
 import logging
+import prettytable
 
 from collections import OrderedDict
-from tabulate import tabulate
 from functools import wraps
 
 from .cellv2 import CellBuilderFactory
@@ -454,10 +454,11 @@ class HTableProcessor(Processor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_unit('collector', CollectorUnit)
-        self.showindex = True
-        self.tablefmt = 'grid'
+        # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
+        self.tablefmt = prettytable.SINGLE_BORDER
         self.headers = {}
-        self._attrs += ["showindex", "tablefmt", "headers"]
+        self.aligns = {}
+        self._attrs += ["tablefmt", "headers"]
 
     def post_init(self):
         """TODO"""
@@ -476,13 +477,17 @@ class HTableProcessor(Processor):
                 yield column_name
 
     def get_string(self):
-        """TODO"""
-        return tabulate(
-                self.get_raw(),
-                showindex=self.showindex,
-                tablefmt=self.tablefmt,
-                stralign='center',
-                headers=self.get_headers())
+        x = prettytable.PrettyTable()
+        x.set_style(self.tablefmt)
+        x.field_names = self.get_headers()
+        x.add_rows(self.get_raw())
+        column_names = self.collector.required_columns
+        for column_name in column_names:
+            if column_name in self.aligns:
+                x.align[column_name] = self.aligns.get(column_name)
+            else:
+                x.align[column_name] = 'c'
+        return x.get_string()
 
 
 class VTableProcessor(Processor):
