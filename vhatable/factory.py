@@ -58,6 +58,9 @@ class GenericBuilder:
                 autokeys=self.autokeys,
                 column_names=self.column_names,
                 rows=self.rows)
+        return self._post_create_hook(processor)
+
+    def _post_create_hook(self, processor):
         return processor
 
     def use_api(self, api):
@@ -74,23 +77,24 @@ class ProcessorFactory:
     This class is also in charge of proviging all processor's config.
     """
 
+    def _create_cfg(self, builder, clazz):
+        return {
+            "builder": builder,
+            "clazz": clazz
+        }
+
     def __init__(self, builder=GenericBuilder()):
         """TODO"""
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
 
-        def cfgVal(builder, clazz):
-            return {
-                "builder": builder,
-                "clazz": clazz
-            }
         self.cfg = OrderedDict()
-        self.cfg['count'] = cfgVal(builder, CountProcessor)
-        self.cfg['cli_mode'] = cfgVal(builder, CountProcessor)
-        self.cfg['vertical'] = cfgVal(builder, VTableProcessor)
-        self.cfg['csv'] = cfgVal(builder, CsvProcessor)
-        self.cfg['json'] = cfgVal(builder, JsonProcessor)
-        self.default = cfgVal(builder, HTableProcessor)
+        self.cfg['count'] = self._create_cfg(builder, CountProcessor)
+        self.cfg['cli_mode'] = self._create_cfg(builder, CountProcessor)
+        self.cfg['vertical'] = self._create_cfg(builder, VTableProcessor)
+        self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
+        self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
+        self.default = self._create_cfg(builder, HTableProcessor)
 
         self._custom_cells = {}
         self._header_cells = {}
@@ -110,9 +114,12 @@ class ProcessorFactory:
         """Add specific cell class to format a column."""
         self._custom_cells[column] = builder
 
-    def set_action(self, flag, clazz):
+    def set_action(self, flag, builder, processor_clazz):
         """Add some custom action class trigger by a flag."""
-        self._action_classes[flag] = clazz
+        if not isinstance(builder, GenericBuilder):
+            msg = "2th argument (builder) must be an GenericBuilder instance"
+            raise ValueError(msg)
+        self.cfg[flag] = self._create_cfg(builder, processor_clazz)
 
     def add_filter_cond(self, condition, *filters):
         """Add some filters only if condition is true"""
