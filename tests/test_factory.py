@@ -195,11 +195,11 @@ def test_default_processor2():
     args = Namespace(
             debug=2,
             reverse=True,
-            collector_required_columns=["name"],
+            table_required_columns=["name"],
             showindex=False,
             sort_by="name")
     processor = factory.build(args)
-    assert processor.collector.required_columns == ["name"]
+    assert processor.table.required_columns == ["name"]
 
     print()
     print(processor)
@@ -229,16 +229,17 @@ def test_default_processor3():
     args = Namespace(
             debug=2,
             reverse=True,
-            collector_required_columns=["name", "date"],
+            table_required_columns=["name", "date"],
             showindex=True,
             sort_by="name")
     processor = factory.build(args)
-    assert processor.collector.required_columns == ["name", "date"]
+    assert processor.table.required_columns == ["name", "date"]
 
     print()
     print(processor)
     processor.run()
     assert len(processor.get_raw()) == 2
+    assert "Some new header for date column" in processor.get_string()
     assert len(processor.get_string()) == 269
 
     args.vertical = True

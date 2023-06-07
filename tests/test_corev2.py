@@ -364,7 +364,7 @@ def test_18():
 
     with pytest.raises(ValueError) as exception:
         processor.run()
-    msg = "CollectorUnit: Missing required columns to display"
+    msg = "FormattingUnit: Missing required columns to display"
     assert msg in str(exception.value)
 
 

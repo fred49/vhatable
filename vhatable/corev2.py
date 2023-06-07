@@ -71,11 +71,12 @@ class Time:
 class Unit:
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
+    def __init__(self, typ="transform",  debug=0, identifier=None):
         self.log = logging.getLogger(__name__)
         self._debug = debug
         self.identifier = identifier
         self._attrs = ["debug"]
+        self.typ = typ
 
     @property
     def debug(self):
@@ -117,8 +118,8 @@ class Unit:
 class FilteringUnit(Unit):
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
-        super().__init__(debug=debug, identifier=identifier)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self._filters = []
         self._rows = []
 
@@ -166,8 +167,8 @@ class FilteringUnit(Unit):
 class SortingUnit(Unit):
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
-        super().__init__(debug=debug, identifier=identifier)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.reverse = False
         self.sort_by = None
         self._attrs += ["reverse", "sort_by"]
@@ -187,8 +188,8 @@ class SortingUnit(Unit):
 class FormattingUnit(Unit):
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
-        super().__init__(debug=debug, identifier=identifier)
+    def __init__(self, debug=0, **kwargs):
+        super().__init__(debug=debug, **kwargs)
         self.no_cell = False
         self.vertical = False
         self.extended = False
@@ -257,8 +258,8 @@ class FormattingUnit(Unit):
 class SlicingUnit(Unit):
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
-        super().__init__(debug=debug, identifier=identifier)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.limit = 0
         self.start = 0
         self.end = 0
@@ -301,8 +302,8 @@ class SlicingUnit(Unit):
 class CollectorUnit(Unit):
     """TODO"""
 
-    def __init__(self, debug=0, identifier=None):
-        super().__init__(debug=debug, identifier=identifier)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.required_columns = []
         self._attrs += ["required_columns"]
 
@@ -345,9 +346,13 @@ class AbstractProcessor:
             if rows and len(rows) >= 1:
                 self.column_names = rows[0].keys()
 
-    def add_unit(self, identifier, unit):
+    def add_transform_unit(self, identifier, unit):
         """TODO"""
-        self.units[identifier] = unit(identifier=identifier)
+        self.units[identifier] = unit(identifier=identifier, typ="transform")
+
+    def add_render_unit(self, identifier, unit):
+        """TODO"""
+        self.units[identifier] = unit(identifier=identifier, typ="render")
 
     def post_init(self):
         """TODO"""
@@ -385,8 +390,9 @@ class AbstractProcessor:
         self.pre_get_raw_hook()
         pipeline = self._rows
         for unit in self.units.values():
-            self.log.debug("unit: %s", unit)
-            pipeline = unit(pipeline)
+            if unit.typ == "transform":
+                self.log.debug("unit: %s", unit)
+                pipeline = unit(pipeline)
         self._raw_cache = list(pipeline)
         self.log.debug("pipeline rows: %s", self._raw_cache)
         return self._raw_cache
@@ -398,7 +404,13 @@ class AbstractProcessor:
 
     def get_string(self):
         """TODO"""
-        raise NotImplementedError()
+        result = []
+        for unit in self.units.values():
+            self.log.debug("unit: %s", unit)
+            if unit.typ == "render":
+                self.log.debug("unit:render: %s", unit)
+                result.append(unit(self.get_raw()))
+        return "\n".join(result)
 
     def setup(self, from_args):
         """TODO"""
@@ -424,10 +436,10 @@ class Processor(AbstractProcessor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit('format', FormattingUnit)
-        self.add_unit('filter', FilteringUnit)
-        self.add_unit('sort', SortingUnit)
-        self.add_unit('slice', SlicingUnit)
+        self.add_transform_unit('format', FormattingUnit)
+        self.add_transform_unit('filter', FilteringUnit)
+        self.add_transform_unit('sort', SortingUnit)
+        self.add_transform_unit('slice', SlicingUnit)
 
     def setup(self, from_args):
         """TODO"""
@@ -443,9 +455,51 @@ class Processor(AbstractProcessor):
         if 'format' in self.units:
             self.units['format'].required_columns = self.column_names
 
-    def get_string(self):
+
+class TableRender(Unit):
+    """TODO"""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.headers = {}
+        self.aligns = {}
+        self.required_columns = []
+        # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
+        self.tablefmt = prettytable.SINGLE_BORDER
+        self._attrs += ["tablefmt", "required_columns"]
+
+    def get_headers(self):
         """TODO"""
-        return self.get_raw()
+        for column_name in self.required_columns:
+            if column_name in self.headers:
+                yield self.headers.get(column_name)
+            else:
+                yield column_name
+
+    def build_rows(self, rows):
+        """TODO"""
+        if not self.required_columns:
+            msg = "TableRender: Missing required columns to display"
+            raise ValueError(msg)
+        for row in rows:
+            newrow = []
+            for column_name in self.required_columns:
+                newrow.append(row.get(column_name))
+            self.log.debug("newrow: %s", newrow)
+            if newrow:
+                yield newrow
+
+    def __call__(self, rows):
+        table = prettytable.PrettyTable()
+        table.set_style(self.tablefmt)
+        table.field_names = self.get_headers()
+        table.add_rows(self.build_rows(rows))
+        for column_name in self.required_columns:
+            if column_name in self.aligns:
+                table.align[column_name] = self.aligns.get(column_name)
+            else:
+                table.align[column_name] = 'c'
+        return table.get_string()
 
 
 class HTableProcessor(Processor):
@@ -453,41 +507,17 @@ class HTableProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit('collector', CollectorUnit)
-        # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
-        self.tablefmt = prettytable.SINGLE_BORDER
+        self.add_render_unit('table', TableRender)
         self.headers = {}
         self.aligns = {}
-        self._attrs += ["tablefmt", "headers"]
 
     def post_init(self):
         """TODO"""
         self._post_init = True
-        if 'format' in self.units:
-            self.units['format'].required_columns = self.column_names
-        if 'collector' in self.units:
-            self.units['collector'].required_columns = self.column_names
-
-    def get_headers(self):
-        column_names = self.collector.required_columns
-        for column_name in column_names:
-            if column_name in self.headers:
-                yield self.headers.get(column_name)
-            else:
-                yield column_name
-
-    def get_string(self):
-        x = prettytable.PrettyTable()
-        x.set_style(self.tablefmt)
-        x.field_names = self.get_headers()
-        x.add_rows(self.get_raw())
-        column_names = self.collector.required_columns
-        for column_name in column_names:
-            if column_name in self.aligns:
-                x.align[column_name] = self.aligns.get(column_name)
-            else:
-                x.align[column_name] = 'c'
-        return x.get_string()
+        self.units['format'].required_columns = self.column_names
+        self.units['table'].required_columns = self.column_names
+        self.units['table'].headers = self.headers
+        self.units['table'].aligns = self.aligns
 
 
 class VTableProcessor(Processor):
@@ -560,6 +590,14 @@ class JsonProcessor(Processor):
         super().__init__(*args, **kwargs)
         self.raw_json = False
         self._attrs += ["raw_json"]
+        self.add_render_unit('json', CellToJsonUnit)
+
+    def post_init(self):
+        """TODO"""
+        self._post_init = True
+        if 'format' in self.units:
+            self.units['format'].required_columns = self.column_names
+        self.units['json'].required_columns = self.column_names
 
     def get_string(self):
         """TODO"""
