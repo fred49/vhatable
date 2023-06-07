@@ -88,13 +88,14 @@ class ProcessorFactory:
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
 
+        self.default_proc = "horizontal"
         self.cfg = OrderedDict()
         self.cfg['count'] = self._create_cfg(builder, CountProcessor)
         self.cfg['cli_mode'] = self._create_cfg(builder, CountProcessor)
         self.cfg['vertical'] = self._create_cfg(builder, VTableProcessor)
         self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
         self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
-        self.default = self._create_cfg(builder, HTableProcessor)
+        self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
 
         self._custom_cells = {}
         self._header_cells = {}
@@ -143,7 +144,7 @@ class ProcessorFactory:
                 builder, clazz = self.cfg.get(flag).values()
                 break
         if builder is None:
-            builder, clazz = self.default.values()
+            builder, clazz = self.cfg.get(self.default_proc).values()
         self.log.debug("builder: %s", builder)
         self.log.debug("clazz: %s", clazz)
         processor = builder(clazz)
