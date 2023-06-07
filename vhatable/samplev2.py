@@ -26,13 +26,14 @@
 #
 
 
+import os
 import sys
+import json
 import inspect
 import argparse
 import logging
 import requests
 
-from argparse import Namespace
 from vhatable.factory import GenericBuilder
 from vhatable.factory import ProcessorFactory
 from vhatable.cellv2 import DateCellBuilder
@@ -70,7 +71,7 @@ def sample1():
     builder = DateCellBuilder("date", millisecond=True)
     factory.set_custom_cell("date", builder)
 
-    args = Namespace(debug=2, reverse=True, sort_by="name")
+    args = argparse.Namespace(debug=2, reverse=True, sort_by="name")
     processor = factory.build(args)
 
     processor.column_names = ["name", "size", "date"]
@@ -89,24 +90,41 @@ def sample1():
     processor.run()
 
 
+class API:
+    """TODO"""
+    URL = "https://epguides.frecar.no/show/bigbangtheory/"
+    cacheFileName = "/tmp/vhatable-cache-big-bang.json"
+
+    def load_json(self):
+        """TODO"""
+        # pylint: disable=unspecified-encoding
+        data = None
+        if os.path.isfile(self.cacheFileName):
+            with open(self.cacheFileName) as user_file:
+                file_contents = user_file.read()
+                data = json.loads(file_contents)
+        else:
+            data = requests.get(self.URL, timeout=1).json()
+            with open(self.cacheFileName, 'w') as json_file:
+                json.dump(data, json_file)
+        return data
+
+    def list(self):
+        """TODO"""
+        json_data = self.load_json()
+        for season in json_data:
+            for episode in json_data[season]:
+                yield episode
+
+    def column_names(self):
+        """TODO"""
+        return ["season", "number", "title", "release_date", "show"]
+
+
 def sample2():
     """Just a sample"""
 
-    class API:
-
-        URL = "https://epguides.frecar.no/show/bigbangtheory/"
-
-        def list(self):
-            r = requests.get(self.URL)
-            json = r.json()
-            for season in json:
-                for episode in json[season]:
-                    yield episode
-
-        def column_names(self):
-            return ["season", "number", "title", "release_date", "show"]
-
-    args = Namespace(
+    args = argparse.Namespace(
             debug=2,
             sort_reverse=False,
             sort_sort_by="season",
@@ -146,21 +164,7 @@ def sample2():
 def sample3():
     """Just a sample"""
 
-    class API:
-
-        URL = "https://epguides.frecar.no/show/bigbangtheory/"
-
-        def list(self):
-            r = requests.get(self.URL)
-            json = r.json()
-            for season in json:
-                for episode in json[season]:
-                    yield episode
-
-        def column_names(self):
-            return ["season", "number", "title", "release_date", "show"]
-
-    args = Namespace(
+    args = argparse.Namespace(
             debug=2,
             sort_reverse=False,
             sort_sort_by="season",
