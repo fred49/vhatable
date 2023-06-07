@@ -5,7 +5,7 @@
 
 from argparse import Namespace
 import pytest
-from tabulate import tabulate
+from prettytable import PrettyTable
 from veryprettytable import VeryPrettyTable
 
 from vhatable.corev2 import FilteringUnit
@@ -182,7 +182,9 @@ def test_9(logger):
     unit = FormattingUnit(debug=3)
     column_names = ["name", "unknown column", "size"]
     unit.required_columns = column_names
-    logger.info(tabulate(rows))
+    table = PrettyTable()
+    table.add_rows(rows)
+    logger.info(table)
 
 
 @pytest.fixture(name="print_and_count", scope="session")
