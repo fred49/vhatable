@@ -150,7 +150,8 @@ def test_csv_processor():
     assert len(processor.get_string()) == 67
 
 
-def test_json_processor():
+def test_json_processor_formatted():
+    """Testing json rendering"""
     builder = GenericBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
@@ -168,8 +169,23 @@ def test_json_processor():
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 176
 
+
+def test_json_processor_raw():
+    """Testing raw json rendering"""
+    builder = GenericBuilder(
+        rows=rows,
+        column_names=["name", "size", "date"]
+    )
+    factory = ProcessorFactory(builder=builder)
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
+
+    args = Namespace(debug=2, reverse=True, sort_by="name", json=True,
+                     json_raw=True)
+    processor = factory.build(args)
+
     print()
-    processor.raw_json = True
     processor.run()
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 162

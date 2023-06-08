@@ -346,13 +346,15 @@ class AbstractProcessor:
             if rows and len(rows) >= 1:
                 self.column_names = rows[0].keys()
 
-    def add_transform_unit(self, identifier, unit):
+    def add_transform_unit(self, identifier, unit, **kwargs):
         """TODO"""
-        self.units[identifier] = unit(identifier=identifier, typ="transform")
+        self.units[identifier] = unit(identifier=identifier, typ="transform",
+                                      **kwargs)
 
-    def add_render_unit(self, identifier, unit):
+    def add_render_unit(self, identifier, unit, **kwargs):
         """TODO"""
-        self.units[identifier] = unit(identifier=identifier, typ="render")
+        self.units[identifier] = unit(identifier=identifier, typ="render",
+                                      **kwargs)
 
     def post_init(self):
         """TODO"""
@@ -381,7 +383,8 @@ class AbstractProcessor:
     def get_raw(self):
         """TODO"""
         if self._raw_cache is not None:
-            self.log.debug("cached rows: %s", self._raw_cache)
+            if self.debug >= 2:
+                self.log.debug("cached rows: %s", self._raw_cache)
             return self._raw_cache
         if not self._post_init:
             raise ValueError("post_init method was not called.")
@@ -391,7 +394,7 @@ class AbstractProcessor:
         pipeline = self._rows
         for unit in self.units.values():
             if unit.typ == "transform":
-                self.log.debug("unit: %s", unit)
+                self.log.debug("unit:transform: %s", unit)
                 pipeline = unit(pipeline)
         self._raw_cache = list(pipeline)
         self.log.debug("pipeline rows: %s", self._raw_cache)
@@ -406,7 +409,6 @@ class AbstractProcessor:
         """TODO"""
         result = []
         for unit in self.units.values():
-            self.log.debug("unit: %s", unit)
             if unit.typ == "render":
                 self.log.debug("unit:render: %s", unit)
                 result.append(unit(self.get_raw()))
@@ -420,7 +422,7 @@ class AbstractProcessor:
                 setattr(self, attr, getattr(from_args, attr))
             self.log.debug("setup:attr: %s : %s", attr, getattr(self, attr))
         for unit in self.units.values():
-            self.log.debug("unit: %s", unit)
+            # self.log.debug("unit: %s", unit)
             unit.setup(from_args)
         return self
 
@@ -513,8 +515,7 @@ class HTableProcessor(Processor):
 
     def post_init(self):
         """TODO"""
-        self._post_init = True
-        self.units['format'].required_columns = self.column_names
+        super().post_init()
         self.units['table'].required_columns = self.column_names
         self.units['table'].headers = self.headers
         self.units['table'].aligns = self.aligns
@@ -583,34 +584,47 @@ class VTableProcessor(Processor):
         return "\n".join(out)
 
 
+class CellToJsonUnit(Unit):
+    """TODO"""
+
+    def __init__(self, raw=False, dump=True, **kwargs):
+        super().__init__(**kwargs)
+        self.required_columns = []
+        self.raw = raw
+        self.dump = dump
+        self._attrs += ["required_columns", "raw"]
+
+    def __call__(self, rows):
+        if not self.required_columns:
+            msg = "CellToJsonUnit: Missing required columns to display"
+            raise ValueError(msg)
+
+        records = []
+        for row in rows:
+            record = {}
+            for column_name in self.required_columns:
+                if self.raw:
+                    record[column_name] = row.get(column_name).value
+                else:
+                    record[column_name] = str(row.get(column_name))
+            self.log.info("record: %s", record)
+            records.append(record)
+        if self.dump:
+            return json.dumps(records, sort_keys=True, indent=2)
+        return records
+
+
 class JsonProcessor(Processor):
     """TODO"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.raw_json = False
-        self._attrs += ["raw_json"]
         self.add_render_unit('json', CellToJsonUnit)
 
     def post_init(self):
         """TODO"""
-        self._post_init = True
-        if 'format' in self.units:
-            self.units['format'].required_columns = self.column_names
+        super().post_init()
         self.units['json'].required_columns = self.column_names
-
-    def get_string(self):
-        """TODO"""
-        records = []
-        for row in self.get_raw():
-            record = {}
-            for k in self.column_names:
-                if self.raw_json:
-                    record[k] = row.get(k).value
-                else:
-                    record[k] = str(row.get(k))
-            records.append(record)
-        return json.dumps(records, sort_keys=True, indent=2)
 
 
 class CsvProcessor(Processor):
