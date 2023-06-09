@@ -7,7 +7,7 @@ import inspect
 import logging
 import requests
 
-from vhatable.corev2 import Processor
+from vhatable.processors import Processor
 from vhatable.corev2 import CellToJsonUnit
 from vhatable.corev2 import Time
 from vhatable.factory import ProcessorBuilder

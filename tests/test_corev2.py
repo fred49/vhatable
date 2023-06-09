@@ -12,10 +12,10 @@ from vhatable.corev2 import FilteringUnit
 from vhatable.corev2 import FormattingUnit
 from vhatable.corev2 import SortingUnit
 from vhatable.corev2 import SlicingUnit
-from vhatable.corev2 import HTableProcessor
-from vhatable.corev2 import VTableProcessor
-from vhatable.corev2 import CountProcessor
-from vhatable.corev2 import CsvProcessor
+from vhatable.processors import HTableProcessor
+from vhatable.processors import VTableProcessor
+from vhatable.processors import CountProcessor
+from vhatable.processors import CsvProcessor
 from vhatable.filters import PartialOr
 
 
@@ -323,6 +323,7 @@ def test_16(logger, print_and_count):
     processor.post_init()
     res = processor.get_raw()
     count = print_and_count(res)
+    logger.debug(count)
     assert count == 4
     assert len(processor.get_string()) == 159
 

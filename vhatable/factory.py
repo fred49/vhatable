@@ -31,11 +31,11 @@ from argparse import Namespace
 from collections import OrderedDict
 
 
-from .corev2 import HTableProcessor
-from .corev2 import VTableProcessor
-from .corev2 import CountProcessor
-from .corev2 import JsonProcessor
-from .corev2 import CsvProcessor
+from .processors import HTableProcessor
+from .processors import VTableProcessor
+from .processors import CountProcessor
+from .processors import JsonProcessor
+from .processors import CsvProcessor
 
 
 class ProcessorBuilder:
