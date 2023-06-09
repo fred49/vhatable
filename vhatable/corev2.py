@@ -116,7 +116,7 @@ class AbstractProcessor:
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, debug=0, verbose=False, rows=None, column_names=None,
-                 autokeys=True):
+                 autokeys=True, messages=None):
         # pylint: disable=too-many-arguments
         self._attrs = ["debug", "verbose", "column_names"]
         classname = str(self.__class__.__name__.lower())
@@ -137,6 +137,8 @@ class AbstractProcessor:
         elif autokeys:
             if rows and len(rows) >= 1:
                 self.column_names = rows[0].keys()
+        if messages:
+            self.messages.update(messages)
 
     def add_transform_unit(self, identifier, unit, **kwargs):
         """TODO"""

@@ -188,13 +188,13 @@ class CsvProcessor(Processor):
 class CountProcessor(Processor):
     """TODO"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, messages=None, **kwargs):
+        super().__init__(*args, messages=messages, **kwargs)
         self.cli_mode = False
-        self.messages = {
-            "count_elt": "Ressources found: {count}"
-        }
+        self.messages["count_elt"] = "Ressources found: {count}"
         self._attrs += ["cli_mode"]
+        if messages:
+            self.messages.update(messages)
 
     def get_string(self):
         """TODO"""
@@ -214,17 +214,19 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True):
+                 autokeys=True, messages=None):
         self.debug = debug
         self.rows = rows
         self.autokeys = autokeys
         self.column_names = column_names
+        self.messages = messages
 
     def __call__(self, clazz):
         processor = clazz(
                 debug=self.debug,
                 autokeys=self.autokeys,
                 column_names=self.column_names,
+                messages=self.messages,
                 rows=self.rows)
         return self._post_create_hook(processor)
 

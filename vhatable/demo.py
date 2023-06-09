@@ -3,6 +3,7 @@ import os
 import json
 import argparse
 import logging
+from datetime import datetime
 import requests
 
 from vhatable.processors import Processor
@@ -73,11 +74,19 @@ class API:
 class DeleteProcessor(Processor):
     """TODO"""
 
-    def __init__(self, *args, endpoint=None, **kwargs):
+    def __init__(self, *args, endpoint=None, messages=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.endpoint = endpoint
         self.add_transform_unit(
                 'json', CellToJsonUnit, dump=False, raw=True)
+        self.messages = {
+            "deleted": (
+                "{_position}/{_count}: "
+                "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
+            )
+        }
+        if messages:
+            self.messages.update(messages)
 
     def post_init(self):
         """TODO"""
@@ -87,15 +96,29 @@ class DeleteProcessor(Processor):
     @Time('vhatable.corev2.run')
     def run(self):
         """TODO"""
-        print("len:", len(self.endpoint.list()))
+        print(">>>>>>")
+        default_context = {
+            "name": None,
+            "uuid": None,
+            "_time": 0,
+            "_position": 0,
+            "_count": len(self.get_raw())
+        }
+        position = 0
         for row in self.get_raw():
-            print(" - ", row)
-        for row in self.get_raw():
+            position += 1
+            before = datetime.now()
             self.endpoint.delete(row)
-        print()
-        print("len:", len(self.endpoint.list()))
-        print(
-            "Only the 2 selected lines by the processor were removed :)")
+            after = datetime.now()
+            context = {
+                **default_context,
+                **row,
+                "_position": position,
+                "_time": after - before
+            }
+            msg = self.messages['deleted'].format(**context)
+            self.log.debug(msg)
+            print(msg)
         print()
         return True
 
@@ -116,13 +139,25 @@ class ApiProcessorBuilder(ProcessorBuilder):
 def newfactory():
     """TODO"""
     api = API()
+    messages = {
+        "deleted": (
+            "{_position}/{_count}: "
+            "The episode '{title}' ({ID}) was deleted. ({_time}s)"
+        ),
+        "count_elt": "Episodes found: {count}"
+    }
     factory = ProcessorFactory()
     factory.set_default_processor_builder(
-        ProcessorBuilder().use_api(api)
+        ProcessorBuilder(
+            messages=messages
+        ).use_api(api)
     )
     factory.add_processor(
             "delete",
-            ApiProcessorBuilder(endpoint=api).use_api(api),
+            ApiProcessorBuilder(
+                endpoint=api,
+                messages=messages
+            ).use_api(api),
             DeleteProcessor)
     factory.set_custom_cell(
             "show", ComplexCellBuilder(
