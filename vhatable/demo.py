@@ -11,6 +11,8 @@ from vhatable.corev2 import Time
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.filters import Equals
+# TO BE FIXED
+# from vhatable.filters import PartialMultipleAnd
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 
@@ -192,6 +194,8 @@ def add_default_options(parser):
 def command_list(args):
     """This command will list all seasons and episodes stored in the cache."""
     factory = newfactory()
+    # TO BE FIXED
+    # factory.add_filters(PartialMultipleAnd("title", args.titles))
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.add_filters(PartialOr("season", args.seasons))
@@ -215,13 +219,15 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     parser = argparse.ArgumentParser(description="Demo cli")
+    parser.add_argument(
+        'command', choices=["list", "reset"],
+        help="Choose the command you want to trigger")
     add_default_options(parser)
 
     parser.add_argument(
-            "--title",
-            action="append",
-            help="Filter by title",
-            dest="titles")
+            "titles",
+            nargs='*',
+            help="Filter by title")
 
     parser.add_argument(
             "--release-date",
@@ -253,9 +259,6 @@ def main():
             help="Delete selected rows",
             dest="delete")
 
-    parser.add_argument(
-        'command', choices=["list", "reset"],
-        help="Choose the command you want to trigger")
     args = parser.parse_args()
     command = globals()["command_" + args.command]
     print("Demo: ", args.command, ":", command.__doc__)
