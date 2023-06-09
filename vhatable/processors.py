@@ -244,6 +244,28 @@ class ProcessorFactory:
     """class in charge of creating to proper processor according input args.
     This class is also in charge of proviging all processor's config.
     """
+    # pylint: disable=too-many-instance-attributes
+
+    def __init__(self):
+        """TODO"""
+        classname = self.__class__.__name__
+        self.log = logging.getLogger('vhatable.' + classname)
+
+        self.cfg = OrderedDict()
+        builder = ProcessorBuilder()
+        self.cfg['count'] = self._create_cfg(builder, CountProcessor)
+        self.cfg['cli_mode'] = self._create_cfg(builder, CountProcessor)
+        self.cfg['vertical'] = self._create_cfg(builder, VTableProcessor)
+        self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
+        self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
+        self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
+        self.default_proc = "horizontal"
+
+        self._custom_cells = {}
+        self._header_cells = {}
+        self._align_cells = {}
+        self._filters = []
+        self._pre_render_classes = []
 
     def _create_cfg(self, builder, clazz):
         return {
@@ -251,25 +273,20 @@ class ProcessorFactory:
             "clazz": clazz
         }
 
-    def __init__(self, builder=ProcessorBuilder()):
-        """TODO"""
-        classname = self.__class__.__name__
-        self.log = logging.getLogger('vhatable.' + classname)
+    def set_default_processor_builder(self, builder):
+        """Set a default processor builder for all processors"""
+        if not isinstance(builder, ProcessorBuilder):
+            msg = "1st argument (builder) must be an ProcessorBuilder instance"
+            raise ValueError(msg)
+        for proc_cfg in self.cfg.values():
+            proc_cfg['builder'] = builder
 
-        self.default_proc = "horizontal"
-        self.cfg = OrderedDict()
-        self.cfg['count'] = self._create_cfg(builder, CountProcessor)
-        self.cfg['cli_mode'] = self._create_cfg(builder, CountProcessor)
-        self.cfg['vertical'] = self._create_cfg(builder, VTableProcessor)
-        self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
-        self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
-        self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
-
-        self._custom_cells = {}
-        self._header_cells = {}
-        self._align_cells = {}
-        self._filters = []
-        self._pre_render_classes = []
+    def add_processor(self, flag, builder, processor_clazz):
+        """Add some custom action class trigger by a flag."""
+        if not isinstance(builder, ProcessorBuilder):
+            msg = "2nd argument (builder) must be an ProcessorBuilder instance"
+            raise ValueError(msg)
+        self.cfg[flag] = self._create_cfg(builder, processor_clazz)
 
     def set_header_cell(self, column_name, header_value):
         """set a header value for an existing displayed column."""
@@ -282,13 +299,6 @@ class ProcessorFactory:
     def set_custom_cell(self, column, builder):
         """Add specific cell class to format a column."""
         self._custom_cells[column] = builder
-
-    def set_action(self, flag, builder, processor_clazz):
-        """Add some custom action class trigger by a flag."""
-        if not isinstance(builder, ProcessorBuilder):
-            msg = "2th argument (builder) must be an ProcessorBuilder instance"
-            raise ValueError(msg)
-        self.cfg[flag] = self._create_cfg(builder, processor_clazz)
 
     def add_filter_cond(self, condition, *filters):
         """Add some filters only if condition is true"""

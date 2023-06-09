@@ -49,11 +49,8 @@ rows = [
 
 
 def test_default_processor1():
-    builder = ProcessorBuilder(
-        rows=rows,
-        column_names=["name", "size", "date", "author"]
-    )
-    factory = ProcessorFactory(builder=builder)
+    """TODO"""
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -64,6 +61,11 @@ def test_default_processor1():
                 fmtv='{firstname} {lastname} ({uuid})'
             )
     )
+    builder = ProcessorBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name")
     processor = factory.build(args)
@@ -75,11 +77,8 @@ def test_default_processor1():
 
 
 def test_vertical_processor():
-    builder = ProcessorBuilder(
-        rows=rows,
-        column_names=["name", "size", "date", "author"]
-    )
-    factory = ProcessorFactory(builder=builder)
+    """TODO"""
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -90,6 +89,12 @@ def test_vertical_processor():
                 fmtv='{firstname} {lastname} ({uuid})'
             )
     )
+    builder = ProcessorBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory.set_default_processor_builder(builder)
+
     args = Namespace(debug=2, reverse=True, sort_by="name", vertical=True)
     processor = factory.build(args)
 
@@ -100,14 +105,16 @@ def test_vertical_processor():
 
 
 def test_count_processor():
+    """TODO"""
+    factory = ProcessorFactory()
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
     builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
-    factory = ProcessorFactory(builder=builder)
-    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
-    factory.set_custom_cell(
-            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", count=True)
     processor = factory.build(args)
@@ -126,14 +133,16 @@ def test_count_processor():
 
 
 def test_csv_processor():
+    """TODO"""
+    factory = ProcessorFactory()
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
     builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
-    factory = ProcessorFactory(builder=builder)
-    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
-    factory.set_custom_cell(
-            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", csv=True)
     processor = factory.build(args)
@@ -152,14 +161,15 @@ def test_csv_processor():
 
 def test_json_processor_formatted():
     """Testing json rendering"""
+    factory = ProcessorFactory()
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
     builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
-    factory = ProcessorFactory(builder=builder)
-    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
-    factory.set_custom_cell(
-            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", json=True)
     processor = factory.build(args)
@@ -172,14 +182,15 @@ def test_json_processor_formatted():
 
 def test_json_processor_raw():
     """Testing raw json rendering"""
+    factory = ProcessorFactory()
+    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
+    factory.set_custom_cell(
+            "date", DateCellBuilder("date", millisecond=True))
     builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
-    factory = ProcessorFactory(builder=builder)
-    factory.add_filters(PartialOr("name", ["value2", "value3"], True))
-    factory.set_custom_cell(
-            "date", DateCellBuilder("date", millisecond=True))
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", json=True,
                      json_raw=True)
@@ -192,11 +203,8 @@ def test_json_processor_raw():
 
 
 def test_default_processor2():
-    builder = ProcessorBuilder(
-        rows=rows,
-        column_names=["name", "size", "date", "author"]
-    )
-    factory = ProcessorFactory(builder=builder)
+    """TODO"""
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_custom_cell(
             "date", DateCellBuilder("date", millisecond=True))
@@ -207,6 +215,11 @@ def test_default_processor2():
                 fmtv='{firstname} {lastname} ({uuid})'
             )
     )
+    builder = ProcessorBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(
             debug=2,
@@ -225,11 +238,8 @@ def test_default_processor2():
 
 
 def test_default_processor3():
-    builder = ProcessorBuilder(
-        rows=rows,
-        column_names=["name", "size", "date", "author"]
-    )
-    factory = ProcessorFactory(builder=builder)
+    """TODO"""
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     factory.set_header_cell("date", "Some new header for date column")
     factory.set_custom_cell(
@@ -241,6 +251,11 @@ def test_default_processor3():
                 fmtv='{firstname} {lastname} ({uuid})'
             )
     )
+    builder = ProcessorBuilder(
+        rows=rows,
+        column_names=["name", "size", "date", "author"]
+    )
+    factory.set_default_processor_builder(builder)
 
     args = Namespace(
             debug=2,

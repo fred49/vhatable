@@ -137,13 +137,7 @@ def sample2():
     args.release_dates = ["2016"]
     # args.sort_sort_by = "release_date"
 
-    api = API()
-    builder = ProcessorBuilder(
-        rows=api.list(),
-        column_names=api.column_names()
-    )
-
-    factory = ProcessorFactory(builder=builder)
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.set_custom_cell(
@@ -153,6 +147,13 @@ def sample2():
                 fmtv='{title} {imdb_id} {epguide_name}'
             )
     )
+    api = API()
+    builder = ProcessorBuilder(
+        rows=api.list(),
+        column_names=api.column_names()
+    )
+    factory.set_default_processor_builder(builder)
+
     processor = factory.build(args)
 
     helper_print_header("    >>>> Default  <<<<")
@@ -175,8 +176,7 @@ def sample3():
             vertical=False)
 
     api = API()
-    builder = ProcessorBuilder().use_api(api)
-    factory = ProcessorFactory(builder=builder)
+    factory = ProcessorFactory()
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.set_custom_cell(
@@ -188,6 +188,9 @@ def sample3():
     )
     factory.set_align_cell("title", "l")
     factory.set_align_cell("show", "c")
+    builder = ProcessorBuilder().use_api(api)
+    factory.set_default_processor_builder(builder)
+
     processor = factory.build(args)
 
     helper_print_header("    >>>> Default  <<<<")

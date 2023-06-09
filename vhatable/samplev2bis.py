@@ -8,10 +8,10 @@ import logging
 import requests
 
 from vhatable.processors import Processor
-from vhatable.corev2 import CellToJsonUnit
+from vhatable.units import CellToJsonUnit
 from vhatable.corev2 import Time
-from vhatable.factory import ProcessorBuilder
-from vhatable.factory import ProcessorFactory
+from vhatable.processors import ProcessorBuilder
+from vhatable.processors import ProcessorFactory
 
 
 class API:
@@ -102,11 +102,16 @@ class ActionBuilder(ProcessorBuilder):
 def newfactory():
     """TODO"""
     api = API()
-    builder = ProcessorBuilder().use_api(api)
-    factory = ProcessorFactory(builder=builder)
+    factory = ProcessorFactory()
+    factory.set_default_processor_builder(
+        ProcessorBuilder().use_api(api)
+    )
 
-    builder = ActionBuilder(endpoint=api).use_api(api)
-    factory.set_action("an_action", builder, ActionProcessor)
+    factory.add_processor(
+            "an_action",
+            ActionBuilder(endpoint=api).use_api(api),
+            ActionProcessor)
+
     return factory
 
 
