@@ -254,7 +254,7 @@ def main():
             dest="delete")
 
     parser.add_argument(
-        'command', choices=["list", "delete", "update", "reset"],
+        'command', choices=["list", "reset"],
         help="Choose the command you want to trigger")
     args = parser.parse_args()
     command = globals()["command_" + args.command]
