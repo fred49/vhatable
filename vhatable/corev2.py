@@ -607,7 +607,8 @@ class CellToJsonUnit(Unit):
                     record[column_name] = row.get(column_name).value
                 else:
                     record[column_name] = str(row.get(column_name))
-            self.log.info("record: %s", record)
+            if self.debug >= 2:
+                self.log.debug("record: %s", record)
             records.append(record)
         if self.dump:
             return json.dumps(records, sort_keys=True, indent=2)

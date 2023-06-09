@@ -93,7 +93,8 @@ setup(
     entry_points={
         "console_scripts": [
             "vhatable-sample = vhatable.sample:main [SAMPLE]",
-            "vhatable-samplev2 = vhatable.samplev2:main [SAMPLEV2]"
+            "vhatable-samplev2 = vhatable.samplev2:main [SAMPLEV2]",
+            "vhatable-samplev2bis = vhatable.samplev2bis:main [SAMPLEV2]"
         ],
     },
 )
