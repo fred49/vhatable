@@ -3,12 +3,8 @@ import os
 import json
 import argparse
 import logging
-from datetime import datetime
 import requests
 
-from vhatable.processors import Processor
-from vhatable.units import CellToJsonUnit
-from vhatable.corev2 import Time
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.filters import Equals
@@ -71,71 +67,6 @@ class API:
         self._persist(self.data)
 
 
-class DeleteProcessor(Processor):
-    """TODO"""
-
-    def __init__(self, *args, endpoint=None, messages=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.endpoint = endpoint
-        self.add_transform_unit(
-                'json', CellToJsonUnit, dump=False, raw=True)
-        self.messages = {
-            "deleted": (
-                "{_position}/{_count}: "
-                "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
-            )
-        }
-        if messages:
-            self.messages.update(messages)
-
-    def post_init(self):
-        """TODO"""
-        super().post_init()
-        self.units['json'].required_columns = self.column_names
-
-    @Time('vhatable.corev2.run')
-    def run(self):
-        """TODO"""
-        print(">>>>>>")
-        default_context = {
-            "name": None,
-            "uuid": None,
-            "_time": 0,
-            "_position": 0,
-            "_count": len(self.get_raw())
-        }
-        position = 0
-        for row in self.get_raw():
-            position += 1
-            before = datetime.now()
-            self.endpoint.delete(row)
-            after = datetime.now()
-            context = {
-                **default_context,
-                **row,
-                "_position": position,
-                "_time": after - before
-            }
-            msg = self.messages['deleted'].format(**context)
-            self.log.debug(msg)
-            print(msg)
-        print()
-        return True
-
-
-class ApiProcessorBuilder(ProcessorBuilder):
-    """TODO"""
-    # pylint: disable=too-few-public-methods
-
-    def __init__(self, *args, endpoint=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.endpoint = endpoint
-
-    def _post_create_hook(self, processor):
-        processor.endpoint = self.endpoint
-        return processor
-
-
 def newfactory():
     """TODO"""
     api = API()
@@ -149,16 +80,10 @@ def newfactory():
     factory = ProcessorFactory()
     factory.set_default_processor_builder(
         ProcessorBuilder(
+            api=api,
             messages=messages
         ).use_api(api)
     )
-    factory.add_processor(
-            "delete",
-            ApiProcessorBuilder(
-                endpoint=api,
-                messages=messages
-            ).use_api(api),
-            DeleteProcessor)
     factory.set_custom_cell(
             "show", ComplexCellBuilder(
                 "show",

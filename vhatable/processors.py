@@ -29,8 +29,10 @@
 import logging
 from argparse import Namespace
 from collections import OrderedDict
+from datetime import datetime
 
 from .corev2 import AbstractProcessor
+from .corev2 import Time
 from .units import FormattingUnit
 from .units import FilteringUnit
 from .units import SortingUnit
@@ -42,8 +44,9 @@ from .units import CellToJsonUnit
 class Processor(AbstractProcessor):
     """TODO"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, api=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.api = api
         self.add_transform_unit('format', FormattingUnit)
         self.add_transform_unit('filter', FilteringUnit)
         self.add_transform_unit('sort', SortingUnit)
@@ -214,12 +217,14 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None):
+                 autokeys=True, messages=None, api=None):
+        # pylint: disable=too-many-arguments
         self.debug = debug
         self.rows = rows
         self.autokeys = autokeys
         self.column_names = column_names
         self.messages = messages
+        self.api = api
 
     def __call__(self, clazz):
         processor = clazz(
@@ -227,6 +232,7 @@ class ProcessorBuilder:
                 autokeys=self.autokeys,
                 column_names=self.column_names,
                 messages=self.messages,
+                api=self.api,
                 rows=self.rows)
         return self._post_create_hook(processor)
 
@@ -242,13 +248,64 @@ class ProcessorBuilder:
         return self
 
 
+class DeleteProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, *args,  messages=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_transform_unit(
+                'json', CellToJsonUnit, dump=False, raw=True)
+        self.messages = {
+            "deleted": (
+                "{_position}/{_count}: "
+                "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
+            )
+        }
+        if messages:
+            self.messages.update(messages)
+
+    def post_init(self):
+        """TODO"""
+        super().post_init()
+        self.units['json'].required_columns = self.column_names
+
+    @Time('vhatable.corev2.run')
+    def run(self):
+        """TODO"""
+        print(">>>>>>")
+        default_context = {
+            "name": None,
+            "uuid": None,
+            "_time": 0,
+            "_position": 0,
+            "_count": len(self.get_raw())
+        }
+        position = 0
+        for row in self.get_raw():
+            position += 1
+            before = datetime.now()
+            self.api.delete(row)
+            after = datetime.now()
+            context = {
+                **default_context,
+                **row,
+                "_position": position,
+                "_time": after - before
+            }
+            msg = self.messages['deleted'].format(**context)
+            self.log.debug(msg)
+            print(msg)
+        print()
+        return True
+
+
 class ProcessorFactory:
     """class in charge of creating to proper processor according input args.
     This class is also in charge of proviging all processor's config.
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
+    def __init__(self, with_delete_proc=True):
         """TODO"""
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
@@ -261,6 +318,8 @@ class ProcessorFactory:
         self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
         self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
         self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
+        if with_delete_proc:
+            self.cfg['delete'] = self._create_cfg(builder, DeleteProcessor)
         self.default_proc = "horizontal"
 
         self._custom_cells = {}
