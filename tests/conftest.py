@@ -8,11 +8,26 @@ import logging
 import pytest
 
 
-@pytest.fixture(scope="session")
-def logger():
+@pytest.fixture(name="logger", scope="session")
+def fixture_logger():
     """Return global logger"""
     log = logging.getLogger("tests_vhatable")
     log.setLevel(logging.DEBUG)
     stdout = logging.StreamHandler(sys.stdout)
     log.addHandler(stdout)
     return log
+
+
+@pytest.fixture(name="print_and_count", scope="session")
+def fixture_print_and_count(logger):
+    """TODO"""
+    def inner_print_res(rows):
+        res = list(rows)
+        logger.info("\nbegin print_and_count")
+        cpt = 0
+        for row in res:
+            cpt += 1
+            logger.info("row: %s", row)
+        logger.info("end print_and_count")
+        return cpt
+    return inner_print_res
