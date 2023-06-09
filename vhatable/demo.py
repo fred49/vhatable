@@ -10,6 +10,7 @@ from vhatable.units import CellToJsonUnit
 from vhatable.corev2 import Time
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
+from vhatable.filters import Equals
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 
@@ -195,6 +196,7 @@ def command_list(args):
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.add_filters(PartialOr("season", args.seasons))
     factory.add_filters(PartialOr("number", args.episodes))
+    factory.add_filters(Equals("ID", args.ids))
     processor = factory.create(args)
     print(processor)
     processor.run()
@@ -232,6 +234,12 @@ def main():
             action="append",
             help="Filter by season",
             dest="seasons")
+
+    parser.add_argument(
+            "--id",
+            action="append",
+            help="Filter by id",
+            dest="ids")
 
     parser.add_argument(
             "--episode",
