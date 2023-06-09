@@ -38,7 +38,7 @@ from .corev2 import JsonProcessor
 from .corev2 import CsvProcessor
 
 
-class GenericBuilder:
+class ProcessorBuilder:
     """This builder is design to be used by the factory to create a processor.
     It will create the processor and passing some default arguments to the
     constructor. It could be extended to provide some extra parameters to a
@@ -83,7 +83,7 @@ class ProcessorFactory:
             "clazz": clazz
         }
 
-    def __init__(self, builder=GenericBuilder()):
+    def __init__(self, builder=ProcessorBuilder()):
         """TODO"""
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
@@ -117,8 +117,8 @@ class ProcessorFactory:
 
     def set_action(self, flag, builder, processor_clazz):
         """Add some custom action class trigger by a flag."""
-        if not isinstance(builder, GenericBuilder):
-            msg = "2th argument (builder) must be an GenericBuilder instance"
+        if not isinstance(builder, ProcessorBuilder):
+            msg = "2th argument (builder) must be an ProcessorBuilder instance"
             raise ValueError(msg)
         self.cfg[flag] = self._create_cfg(builder, processor_clazz)
 

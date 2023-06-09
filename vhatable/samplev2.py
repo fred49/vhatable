@@ -34,7 +34,7 @@ import argparse
 import logging
 import requests
 
-from vhatable.factory import GenericBuilder
+from vhatable.factory import ProcessorBuilder
 from vhatable.factory import ProcessorFactory
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
@@ -138,7 +138,7 @@ def sample2():
     # args.sort_sort_by = "release_date"
 
     api = API()
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=api.list(),
         column_names=api.column_names()
     )
@@ -175,7 +175,7 @@ def sample3():
             vertical=False)
 
     api = API()
-    builder = GenericBuilder().use_api(api)
+    builder = ProcessorBuilder().use_api(api)
     factory = ProcessorFactory(builder=builder)
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))

@@ -5,7 +5,7 @@
 
 from argparse import Namespace
 from vhatable.factory import ProcessorFactory
-from vhatable.factory import GenericBuilder
+from vhatable.factory import ProcessorBuilder
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
@@ -49,7 +49,7 @@ rows = [
 
 
 def test_default_processor1():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date", "author"]
     )
@@ -75,7 +75,7 @@ def test_default_processor1():
 
 
 def test_vertical_processor():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date", "author"]
     )
@@ -100,7 +100,7 @@ def test_vertical_processor():
 
 
 def test_count_processor():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
@@ -126,7 +126,7 @@ def test_count_processor():
 
 
 def test_csv_processor():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
@@ -152,7 +152,7 @@ def test_csv_processor():
 
 def test_json_processor_formatted():
     """Testing json rendering"""
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
@@ -172,7 +172,7 @@ def test_json_processor_formatted():
 
 def test_json_processor_raw():
     """Testing raw json rendering"""
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date"]
     )
@@ -192,7 +192,7 @@ def test_json_processor_raw():
 
 
 def test_default_processor2():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date", "author"]
     )
@@ -225,7 +225,7 @@ def test_default_processor2():
 
 
 def test_default_processor3():
-    builder = GenericBuilder(
+    builder = ProcessorBuilder(
         rows=rows,
         column_names=["name", "size", "date", "author"]
     )

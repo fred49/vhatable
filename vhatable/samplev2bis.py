@@ -10,7 +10,7 @@ import requests
 from vhatable.corev2 import Processor
 from vhatable.corev2 import CellToJsonUnit
 from vhatable.corev2 import Time
-from vhatable.factory import GenericBuilder
+from vhatable.factory import ProcessorBuilder
 from vhatable.factory import ProcessorFactory
 
 
@@ -86,7 +86,7 @@ class ActionProcessor(Processor):
         return True
 
 
-class ActionBuilder(GenericBuilder):
+class ActionBuilder(ProcessorBuilder):
     """TODO"""
     # pylint: disable=too-few-public-methods
 
@@ -102,7 +102,7 @@ class ActionBuilder(GenericBuilder):
 def newfactory():
     """TODO"""
     api = API()
-    builder = GenericBuilder().use_api(api)
+    builder = ProcessorBuilder().use_api(api)
     factory = ProcessorFactory(builder=builder)
 
     builder = ActionBuilder(endpoint=api).use_api(api)
