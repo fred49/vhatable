@@ -8,6 +8,8 @@ import requests
 from vhatable.processors import Processor
 from vhatable.units import CellToJsonUnit
 from vhatable.corev2 import Time
+from vhatable.cellv2 import ComplexCellBuilder
+from vhatable.filters import PartialOr
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 
@@ -20,6 +22,15 @@ class API:
     def __init__(self):
         self.data = self._load_json()
 
+    def _persist(self, data):
+        # pylint: disable=unspecified-encoding
+        with open(self.cacheFileName, 'w') as json_file:
+            json.dump(data, json_file)
+
+    def reset(self):
+        """remove cache file to reset the current state"""
+        os.remove(self.cacheFileName)
+
     def _load_json(self):
         """TODO"""
         # pylint: disable=unspecified-encoding
@@ -28,10 +39,9 @@ class API:
             with open(self.cacheFileName) as user_file:
                 file_contents = user_file.read()
                 data = json.loads(file_contents)
-        else:
-            data = requests.get(self.URL, timeout=60).json()
-            with open(self.cacheFileName, 'w') as json_file:
-                json.dump(data, json_file)
+            return data
+
+        data = requests.get(self.URL, timeout=60).json()
         res = {}
         cpt = 0
         for season in data:
@@ -39,6 +49,7 @@ class API:
                 cpt += 1
                 episode['ID'] = cpt
                 res[cpt] = episode
+        self._persist(res)
         return res
 
     def list(self):
@@ -51,7 +62,9 @@ class API:
 
     def delete(self, row):
         """TODO"""
-        self.data.pop(row['ID'])
+        row_id = str(row['ID'])
+        self.data.pop(row_id)
+        self._persist(self.data)
 
 
 class DeleteProcessor(Processor):
@@ -108,6 +121,16 @@ def newfactory():
             "delete",
             ApiProcessorBuilder(endpoint=api).use_api(api),
             DeleteProcessor)
+    factory.set_custom_cell(
+            "show", ComplexCellBuilder(
+                "show",
+                fmt='{title} {imdb_id} {epguide_name}',
+                fmtv='{title} {imdb_id} {epguide_name}'
+            )
+    )
+    factory.set_align_cell("title", "l")
+    factory.set_align_cell("show", "c")
+    factory.set_header_cell("number", "episode")
     return factory
 
 
@@ -151,6 +174,7 @@ def add_default_options(parser):
     parser.add_argument(
             "-d",
             "--debug", type=int,
+            default=0,
             help="debug level",
             dest="debug")
     parser.add_argument(
@@ -167,10 +191,21 @@ def add_default_options(parser):
 def command_list(args):
     """This command will list all seasons and episodes stored in the cache."""
     factory = newfactory()
+    factory.add_filters(PartialOr("title", args.titles, True))
+    factory.add_filters(PartialOr("release_date", args.release_dates))
+    factory.add_filters(PartialOr("season", args.seasons))
+    factory.add_filters(PartialOr("number", args.episodes))
     processor = factory.create(args)
     print(processor)
     processor.run()
     print()
+
+
+def command_reset(args):
+    """Reset the local cache"""
+    # pylint: disable=unused-argument
+    api = API()
+    api.reset()
 
 
 def main():
@@ -181,7 +216,37 @@ def main():
     add_default_options(parser)
 
     parser.add_argument(
-        'command', choices=["list", "delete", "update"],
+            "--title",
+            action="append",
+            help="Filter by title",
+            dest="titles")
+
+    parser.add_argument(
+            "--release-date",
+            action="append",
+            help="Filter by release date",
+            dest="release_dates")
+
+    parser.add_argument(
+            "--season",
+            action="append",
+            help="Filter by season",
+            dest="seasons")
+
+    parser.add_argument(
+            "--episode",
+            action="append",
+            help="Filter by episode",
+            dest="episodes")
+
+    parser.add_argument(
+            "--delete",
+            default=False, action="store_true",
+            help="Delete selected rows",
+            dest="delete")
+
+    parser.add_argument(
+        'command', choices=["list", "delete", "update", "reset"],
         help="Choose the command you want to trigger")
     args = parser.parse_args()
     command = globals()["command_" + args.command]
