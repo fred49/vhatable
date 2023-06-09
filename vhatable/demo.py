@@ -12,14 +12,16 @@ from vhatable.filters import Equals
 # from vhatable.filters import PartialMultipleAnd
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
+from vhatable.processors import API
 
 
-class API:
+class SampleAPI(API):
     """TODO"""
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
     cacheFileName = "/tmp/vhatable-cache-big-bang.json"
 
     def __init__(self):
+        super().__init__()
         self.data = self._load_json()
 
     def _persist(self, data):
@@ -69,7 +71,7 @@ class API:
 
 def newfactory():
     """TODO"""
-    api = API()
+    api = SampleAPI()
     messages = {
         "deleted": (
             "{_position}/{_count}: "
@@ -170,7 +172,7 @@ def command_list(args):
 def command_reset(args):
     """Reset the local cache"""
     # pylint: disable=unused-argument
-    api = API()
+    api = SampleAPI()
     api.reset()
 
 

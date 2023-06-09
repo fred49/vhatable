@@ -41,6 +41,27 @@ from .units import TableRender
 from .units import CellToJsonUnit
 
 
+class API:
+    """TODO"""
+
+    def __init__(self):
+        self.data = []
+
+    def list(self):
+        """TODO"""
+        return self.data
+
+    def column_names(self):
+        """TODO"""
+        return []
+
+    def delete(self, row):
+        """TODO"""
+        # pylint: disable=unused-argument
+        classname = self.__class__.__name__
+        raise NotImplementedError(f"class {classname} has not implemented it")
+
+
 class Processor(AbstractProcessor):
     """TODO"""
 
@@ -217,7 +238,7 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None, api=None):
+                 autokeys=True, messages=None, api=API()):
         # pylint: disable=too-many-arguments
         self.debug = debug
         self.rows = rows
