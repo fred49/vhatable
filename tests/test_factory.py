@@ -4,8 +4,8 @@
 
 
 from argparse import Namespace
-from vhatable.factory import ProcessorFactory
-from vhatable.factory import ProcessorBuilder
+from vhatable.processors import ProcessorFactory
+from vhatable.processors import ProcessorBuilder
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr

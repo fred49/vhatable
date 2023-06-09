@@ -34,8 +34,8 @@ import argparse
 import logging
 import requests
 
-from vhatable.factory import ProcessorBuilder
-from vhatable.factory import ProcessorFactory
+from vhatable.processors import ProcessorBuilder
+from vhatable.processors import ProcessorFactory
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
