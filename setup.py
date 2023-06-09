@@ -82,6 +82,7 @@ setup(
     extras_require={
         "SAMPLE": [],
         "SAMPLEV2": [],
+        "DEMO": [],
         'DEV': [
             'pytest',
             'flake8',
@@ -94,7 +95,7 @@ setup(
         "console_scripts": [
             "vhatable-sample = vhatable.sample:main [SAMPLE]",
             "vhatable-samplev2 = vhatable.samplev2:main [SAMPLEV2]",
-            "vhatable-samplev2bis = vhatable.samplev2bis:main [SAMPLEV2]"
+            "vhatable-demo = vhatable.demo:main [DEMO]"
         ],
     },
 )

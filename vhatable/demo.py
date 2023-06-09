@@ -1,9 +1,7 @@
 """TODO"""
 import os
-import sys
 import json
 import argparse
-import inspect
 import logging
 import requests
 
@@ -56,7 +54,7 @@ class API:
         self.data.pop(row['ID'])
 
 
-class ActionProcessor(Processor):
+class DeleteProcessor(Processor):
     """TODO"""
 
     def __init__(self, *args, endpoint=None, **kwargs):
@@ -86,7 +84,7 @@ class ActionProcessor(Processor):
         return True
 
 
-class ActionBuilder(ProcessorBuilder):
+class ApiProcessorBuilder(ProcessorBuilder):
     """TODO"""
     # pylint: disable=too-few-public-methods
 
@@ -106,44 +104,71 @@ def newfactory():
     factory.set_default_processor_builder(
         ProcessorBuilder().use_api(api)
     )
-
     factory.add_processor(
-            "an_action",
-            ActionBuilder(endpoint=api).use_api(api),
-            ActionProcessor)
-
+            "delete",
+            ApiProcessorBuilder(endpoint=api).use_api(api),
+            DeleteProcessor)
     return factory
 
 
-def helper_print_header(extra=None):
-    """Just a tiny helper to display a header between each rendering."""
-    print("")
-    print("=========================================")
-    if extra:
-        print(extra)
-    print("")
+def add_default_options(parser):
+    """Add all default option to the current parser."""
+    parser.add_argument(
+            "--count",
+            default=False, action="store_true",
+            help="Count the number of the displayed rows",
+            dest="count")
+    parser.add_argument(
+            "--vertical",
+            default=False, action="store_true",
+            help="Use vertical display",
+            dest="vertical")
+    parser.add_argument(
+            "--json",
+            default=False, action="store_true",
+            help="Display rows as json",
+            dest="json")
+    parser.add_argument(
+            "--csv",
+            default=False, action="store_true",
+            help="Display rows as csv",
+            dest="csv")
+    parser.add_argument(
+            "--start",
+            default=0, type=int,
+            help="Only display the N first rows",
+            dest="slice_start")
+    parser.add_argument(
+            "--end",
+            default=0, type=int,
+            help="Only display the N last rows",
+            dest="slice_end")
+    parser.add_argument(
+            "--limit",
+            default=0, type=int,
+            help="limit the number of rows to display",
+            dest="slice_limit")
+    parser.add_argument(
+            "-d",
+            "--debug", type=int,
+            help="debug level",
+            dest="debug")
+    parser.add_argument(
+            "--sort-by",
+            help="sort row by column",
+            dest="sort_sort_by")
+    parser.add_argument(
+            "--sort-reversed",
+            help="sort row by column",
+            default=False, action="store_true",
+            dest="sort_reverse")
 
 
-def sample1():
-    """Just a sample"""
-
-    # simulate user input using, for example cli with argparse
-    args = argparse.Namespace(
-            debug=0,
-            sort_reverse=False,
-            sort_sort_by="season",
-            release_dates=[],
-            slice_end=2,
-            slice_limit=20,
-            # Flag that will trigger our processor.
-            an_action=True,
-            vertical=False)
-
+def command_list(args):
+    """This command will list all seasons and episodes stored in the cache."""
     factory = newfactory()
     processor = factory.create(args)
-
     print(processor)
-    helper_print_header("    >>>> Default  <<<<")
     processor.run()
     print()
 
@@ -151,17 +176,14 @@ def sample1():
 def main():
     """ Main entrypoint of this sample program."""
     logging.basicConfig(level=logging.INFO)
-    map_sample = {}
-    for name, obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isfunction(obj) and name.startswith('sample'):
-            map_sample[name] = obj
 
-    parser = argparse.ArgumentParser(description='Display some samples')
+    parser = argparse.ArgumentParser(description="Demo cli")
+    add_default_options(parser)
+
     parser.add_argument(
-        'sample', choices=map_sample.keys(),
-        help='Choose the sample to display.')
+        'command', choices=["list", "delete", "update"],
+        help="Choose the command you want to trigger")
     args = parser.parse_args()
-
-    obj = map_sample[args.sample]
-    print("Sample : ", args.sample, " :", obj.__doc__)
-    obj()
+    command = globals()["command_" + args.command]
+    print("Demo: ", args.command, ":", command.__doc__)
+    command(args)
