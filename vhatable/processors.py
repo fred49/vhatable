@@ -27,12 +27,12 @@
 
 
 from .corev2 import AbstractProcessor
-from .corev2 import FormattingUnit
-from .corev2 import FilteringUnit
-from .corev2 import SortingUnit
-from .corev2 import SlicingUnit
-from .corev2 import TableRender
-from .corev2 import CellToJsonUnit
+from .units import FormattingUnit
+from .units import FilteringUnit
+from .units import SortingUnit
+from .units import SlicingUnit
+from .units import TableRender
+from .units import CellToJsonUnit
 
 
 class Processor(AbstractProcessor):

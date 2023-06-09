@@ -8,10 +8,10 @@ import pytest
 from prettytable import PrettyTable
 from veryprettytable import VeryPrettyTable
 
-from vhatable.corev2 import FilteringUnit
-from vhatable.corev2 import FormattingUnit
-from vhatable.corev2 import SortingUnit
-from vhatable.corev2 import SlicingUnit
+from vhatable.units import FilteringUnit
+from vhatable.units import FormattingUnit
+from vhatable.units import SortingUnit
+from vhatable.units import SlicingUnit
 from vhatable.processors import HTableProcessor
 from vhatable.processors import VTableProcessor
 from vhatable.processors import CountProcessor
