@@ -329,8 +329,10 @@ class ProcessorFactory:
         self.log.debug("processor: %s", processor)
         return processor
 
-    def build(self, args=Namespace()):
-        """build the processor and do the setup."""
+    def create(self, args=Namespace(), default_builder=None):
+        """create a new processor and do the setup."""
+        if default_builder:
+            self.set_default_processor_builder(default_builder)
         self.log.debug("self.cfg: %s", self.cfg)
         processor = self._get_processor(args)
 

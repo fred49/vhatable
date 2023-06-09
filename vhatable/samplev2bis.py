@@ -140,7 +140,7 @@ def sample1():
             vertical=False)
 
     factory = newfactory()
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print(processor)
     helper_print_header("    >>>> Default  <<<<")

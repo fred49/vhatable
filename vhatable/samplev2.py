@@ -72,7 +72,7 @@ def sample1():
     factory.set_custom_cell("date", builder)
 
     args = argparse.Namespace(debug=2, reverse=True, sort_by="name")
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     processor.column_names = ["name", "size", "date"]
 
@@ -154,7 +154,7 @@ def sample2():
     )
     factory.set_default_processor_builder(builder)
 
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     helper_print_header("    >>>> Default  <<<<")
     print(processor)
@@ -188,10 +188,10 @@ def sample3():
     )
     factory.set_align_cell("title", "l")
     factory.set_align_cell("show", "c")
-    builder = ProcessorBuilder().use_api(api)
-    factory.set_default_processor_builder(builder)
 
-    processor = factory.build(args)
+    processor = factory.create(
+            args,
+            default_builder=ProcessorBuilder().use_api(api))
 
     helper_print_header("    >>>> Default  <<<<")
     print(processor)

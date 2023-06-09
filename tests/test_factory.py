@@ -68,7 +68,7 @@ def test_default_processor1():
     factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name")
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -96,7 +96,7 @@ def test_vertical_processor():
     factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", vertical=True)
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -117,7 +117,7 @@ def test_count_processor():
     factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", count=True)
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -145,7 +145,7 @@ def test_csv_processor():
     factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", csv=True)
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -172,7 +172,7 @@ def test_json_processor_formatted():
     factory.set_default_processor_builder(builder)
 
     args = Namespace(debug=2, reverse=True, sort_by="name", json=True)
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -194,7 +194,7 @@ def test_json_processor_raw():
 
     args = Namespace(debug=2, reverse=True, sort_by="name", json=True,
                      json_raw=True)
-    processor = factory.build(args)
+    processor = factory.create(args)
 
     print()
     processor.run()
@@ -227,7 +227,7 @@ def test_default_processor2():
             table_required_columns=["name"],
             showindex=False,
             sort_by="name")
-    processor = factory.build(args)
+    processor = factory.create(args)
     assert processor.table.required_columns == ["name"]
 
     print()
@@ -263,7 +263,7 @@ def test_default_processor3():
             table_required_columns=["name", "date"],
             showindex=True,
             sort_by="name")
-    processor = factory.build(args)
+    processor = factory.create(args)
     assert processor.table.required_columns == ["name", "date"]
 
     print()
@@ -274,7 +274,7 @@ def test_default_processor3():
     assert len(processor.get_string()) == 269
 
     args.vertical = True
-    processor = factory.build(args)
+    processor = factory.create(args)
     print()
     processor.run()
     assert len(processor.get_raw()) == 2
