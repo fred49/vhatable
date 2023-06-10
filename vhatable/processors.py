@@ -55,6 +55,12 @@ class API:
         """TODO"""
         return []
 
+    def get(self, row_id):
+        """TODO"""
+        # pylint: disable=unused-argument
+        classname = self.__class__.__name__
+        raise NotImplementedError(f"class {classname} has not implemented it")
+
     def delete(self, row):
         """TODO"""
         # pylint: disable=unused-argument

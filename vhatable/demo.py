@@ -68,10 +68,15 @@ class DemoAPI(API):
         self.data.pop(row_id)
         self._persist(self.data)
 
+    def get(self, row_id):
+        return self.data.get(str(row_id))
+
+
+api = DemoAPI()
+
 
 def newfactory():
     """TODO"""
-    api = DemoAPI()
     messages = {
         "deleted": (
             "{_position}/{_count}: "
@@ -203,7 +208,13 @@ def add_delete_command(main_subparsers):
     """TODO"""
 
     def command(args):
-        """This command will remove some episode from the list"""
+        """This command will remove some episode from the list.
+        This implementation is not the best since we load the entire of
+        episodes and we filter them.
+        Another solution: We can use the list of IDs to retrieve episode one by
+        one and then build a list of them. No more filtering.
+        A more performant implementation.
+        """
         factory = newfactory()
         factory.default_proc = "delete"
         factory.add_filters(EqualOr("ID", args.ids))
@@ -220,13 +231,41 @@ def add_delete_command(main_subparsers):
             help="Delete episode by id")
 
 
+def add_delete_commandv2(main_subparsers):
+    """TODO"""
+
+    def command(args):
+        """This command will remove some episode from the list.
+        We retrieve episode one by one and then build a list
+        of them. No more filtering.
+        A more performant implementation.
+        """
+        rows = []
+        for row_id in args.ids:
+            rows.append(api.get(row_id))
+
+        factory = newfactory()
+        factory.default_proc = "delete"
+        processor = factory.create(args)
+        processor.load(rows)
+        print(processor)
+        processor.run()
+        print()
+
+    parser = main_subparsers.add_parser('deletev2')
+    parser.set_defaults(func=command)
+    parser.add_argument(
+            "ids",
+            nargs='+', type=int,
+            help="Delete episode by id")
+
+
 def add_reset_command(main_subparsers):
     """TODO"""
 
     def command(args):
         """Reset the local cache"""
         # pylint: disable=unused-argument
-        api = DemoAPI()
         api.reset()
 
     parser = main_subparsers.add_parser('reset')
@@ -254,6 +293,7 @@ def main():
 
     add_list_command(main_subparsers)
     add_delete_command(main_subparsers)
+    add_delete_commandv2(main_subparsers)
     add_reset_command(main_subparsers)
 
     args = main_parser.parse_args()
