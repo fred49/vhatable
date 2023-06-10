@@ -19,7 +19,7 @@ of a Vertical or Horizotal table."""
 # You should have received a copy of the GNU General Public License
 # along with Vhatable cli.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Copyright 2014 Frédéric MARTIN
+# Copyright 2023 Frédéric MARTIN
 #
 # Contributors list :
 #
@@ -218,10 +218,3 @@ class Equals(Filter):
         if val in self.values:
             return True
         return False
-
-
-class EqualOr(Equals):
-    """
-    Get the current property into the current row, and test equality with any
-    provided values."""
-    pass
