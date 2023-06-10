@@ -212,6 +212,9 @@ class Equals(Filter):
         val = self.get_val(row)
         self.log.debug("type of value: %s", type(val))
         self.log.debug("value: %s", val)
+        for v in self.values:
+            self.log.debug("comp: %s", v)
+            self.log.debug("comp type: %s", type(v))
         if val in self.values:
             return True
         return False

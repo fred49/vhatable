@@ -1,5 +1,6 @@
 """TODO"""
 import os
+import sys
 import json
 import argparse
 import logging
@@ -7,7 +8,7 @@ import requests
 
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
-from vhatable.filters import Equals
+from vhatable.filters import EqualOr
 # TO BE FIXED
 # from vhatable.filters import PartialMultipleAnd
 from vhatable.processors import ProcessorBuilder
@@ -18,7 +19,7 @@ from vhatable.processors import API
 class DemoAPI(API):
     """TODO"""
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
-    cacheFileName = "/tmp/vhatable-cache-big-bang.json"
+    cacheFileName = "/tmp/vhatable-demo--cache-big-bang.json"
 
     def __init__(self):
         super().__init__()
@@ -99,7 +100,7 @@ def newfactory():
     return factory
 
 
-def add_default_options(parser):
+def add_list_cmd_options(parser):
     """Add all default option to the current parser."""
     parser.add_argument(
             "--count",
@@ -137,12 +138,6 @@ def add_default_options(parser):
             help="limit the number of rows to display",
             dest="slice_limit")
     parser.add_argument(
-            "-d",
-            "--debug", type=int,
-            default=0,
-            help="debug level",
-            dest="debug")
-    parser.add_argument(
             "--sort-by",
             help="sort row by column",
             dest="sort_sort_by")
@@ -162,7 +157,7 @@ def command_list(args):
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.add_filters(PartialOr("season", args.seasons))
     factory.add_filters(PartialOr("number", args.episodes))
-    factory.add_filters(Equals("ID", args.ids))
+    factory.add_filters(EqualOr("ID", args.ids))
     processor = factory.create(args)
     print(processor)
     processor.run()
@@ -173,7 +168,7 @@ def command_delete(args):
     """This command will list all seasons and episodes stored in the cache."""
     factory = newfactory()
     factory.default_proc = "delete"
-    factory.add_filters(Equals("ID", args.ids))
+    factory.add_filters(EqualOr("ID", args.ids))
     processor = factory.create(args)
     print(processor)
     processor.run()
@@ -191,8 +186,14 @@ def add_list_command(main_subparsers):
     """TODO"""
     parser = main_subparsers.add_parser('list')
     parser.set_defaults(func=command_list)
-    add_default_options(parser)
+    add_list_cmd_options(parser)
 
+    parser.add_argument(
+            "-d",
+            "--debug", type=int,
+            default=0,
+            help="debug level",
+            dest="debug")
     parser.add_argument(
             "titles",
             nargs='*',
@@ -210,7 +211,7 @@ def add_list_command(main_subparsers):
 
     parser.add_argument(
             "--id",
-            action="append",
+            action="append", type=int,
             help="Filter by id",
             dest="ids")
 
@@ -229,16 +230,27 @@ def add_delete_command(main_subparsers):
     """TODO"""
     parser = main_subparsers.add_parser('delete')
     parser.set_defaults(func=command_delete)
-
+    parser.add_argument(
+            "-d",
+            "--debug", type=int,
+            default=0,
+            help="debug level",
+            dest="debug")
     parser.add_argument(
             "ids",
-            nargs='+',
+            nargs='+', type=int,
             help="Delete episode by id")
 
 
 def main():
     """ Main entrypoint of this sample program."""
-    logging.basicConfig(level=logging.INFO)
+    log = logging.getLogger()
+    log.setLevel(logging.INFO)
+    stdout = logging.StreamHandler(sys.stdout)
+    fmt = '%(asctime)s:%(name)s:%(funcName)s:%(levelname)s:%(message)s'
+    formatter = logging.Formatter(fmt)
+    stdout.setFormatter(formatter)
+    log.addHandler(stdout)
 
     main_parser = argparse.ArgumentParser(description="Demo cli")
     main_subparsers = main_parser.add_subparsers()
@@ -247,5 +259,11 @@ def main():
     add_delete_command(main_subparsers)
 
     args = main_parser.parse_args()
-    print("Demo: ", args.func.__doc__ + "\n")
-    args.func(args)
+    if args.debug >= 1:
+        log.setLevel(logging.DEBUG)
+    if "func" in args:
+        print("Demo: ", args.func.__doc__ + "\n")
+        sys.exit(args.func(args))
+    else:
+        print("ERROR: Missing command. see -h")
+        sys.exit(2)

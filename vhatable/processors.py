@@ -421,7 +421,7 @@ class ProcessorFactory:
         """create a new processor and do the setup."""
         if default_builder:
             self.set_default_processor_builder(default_builder)
-        self.log.debug("self.cfg: %s", self.cfg)
+        self.log.debug("self.cfg: %s", self.cfg.keys())
         processor = self._get_processor(args)
 
         msg = "warn:filter unit is not provided/added to the current processor"

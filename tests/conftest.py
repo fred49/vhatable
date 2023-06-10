@@ -3,7 +3,6 @@
 """Tests configuration and global fixtures."""
 
 
-import sys
 import logging
 import pytest
 
@@ -12,9 +11,6 @@ import pytest
 def fixture_logger():
     """Return global logger"""
     log = logging.getLogger("tests_vhatable")
-    log.setLevel(logging.DEBUG)
-    stdout = logging.StreamHandler(sys.stdout)
-    log.addHandler(stdout)
     return log
 
 
