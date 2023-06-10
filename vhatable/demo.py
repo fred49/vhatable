@@ -148,44 +148,26 @@ def add_list_cmd_options(parser):
             dest="sort_reverse")
 
 
-def command_list(args):
-    """This command will list all seasons and episodes stored in the cache."""
-    factory = newfactory()
-    # TO BE FIXED
-    # factory.add_filters(PartialMultipleAnd("title", args.titles))
-    factory.add_filters(PartialOr("title", args.titles, True))
-    factory.add_filters(PartialOr("release_date", args.release_dates))
-    factory.add_filters(PartialOr("season", args.seasons))
-    factory.add_filters(PartialOr("number", args.episodes))
-    factory.add_filters(EqualOr("ID", args.ids))
-    processor = factory.create(args)
-    print(processor)
-    processor.run()
-    print()
-
-
-def command_delete(args):
-    """This command will list all seasons and episodes stored in the cache."""
-    factory = newfactory()
-    factory.default_proc = "delete"
-    factory.add_filters(EqualOr("ID", args.ids))
-    processor = factory.create(args)
-    print(processor)
-    processor.run()
-    print()
-
-
-def command_reset(args):
-    """Reset the local cache"""
-    # pylint: disable=unused-argument
-    api = DemoAPI()
-    api.reset()
-
-
 def add_list_command(main_subparsers):
     """TODO"""
+
+    def command(args):
+        """This command will remove an episode from the cache."""
+        factory = newfactory()
+        # TO BE FIXED
+        # factory.add_filters(PartialMultipleAnd("title", args.titles))
+        factory.add_filters(PartialOr("title", args.titles, True))
+        factory.add_filters(PartialOr("release_date", args.release_dates))
+        factory.add_filters(PartialOr("season", args.seasons))
+        factory.add_filters(PartialOr("number", args.episodes))
+        factory.add_filters(EqualOr("ID", args.ids))
+        processor = factory.create(args)
+        print(processor)
+        processor.run()
+        print()
+
     parser = main_subparsers.add_parser('list')
-    parser.set_defaults(func=command_list)
+    parser.set_defaults(func=command)
     add_list_cmd_options(parser)
 
     parser.add_argument(
@@ -228,8 +210,19 @@ def add_list_command(main_subparsers):
 
 def add_delete_command(main_subparsers):
     """TODO"""
+
+    def command(args):
+        """This command will remove some episode from the list"""
+        factory = newfactory()
+        factory.default_proc = "delete"
+        factory.add_filters(EqualOr("ID", args.ids))
+        processor = factory.create(args)
+        print(processor)
+        processor.run()
+        print()
+
     parser = main_subparsers.add_parser('delete')
-    parser.set_defaults(func=command_delete)
+    parser.set_defaults(func=command)
     parser.add_argument(
             "-d",
             "--debug", type=int,
@@ -244,14 +237,15 @@ def add_delete_command(main_subparsers):
 
 def add_reset_command(main_subparsers):
     """TODO"""
+
+    def command(args):
+        """Reset the local cache"""
+        # pylint: disable=unused-argument
+        api = DemoAPI()
+        api.reset()
+
     parser = main_subparsers.add_parser('reset')
-    parser.set_defaults(func=command_reset)
-    parser.add_argument(
-            "-d",
-            "--debug", type=int,
-            default=0,
-            help="debug level",
-            dest="debug")
+    parser.set_defaults(func=command)
 
 
 def main():
