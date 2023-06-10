@@ -202,13 +202,23 @@ class Equal(Filter):
 
 
 class Equals(Filter):
-    """Get the current property into the current row, and test equality.
+    """Deprecated. Use EqualOr.
+    Get the current property into the current row, and test equality.
     A list of values will be tested"""
 
     def __call__(self, row):
         if not self.is_enable():
             return True
         val = self.get_val(row)
+        self.log.debug("type of value: %s", type(val))
+        self.log.debug("value: %s", val)
         if val in self.values:
             return True
         return False
+
+
+class EqualOr(Equals):
+    """
+    Get the current property into the current row, and test equality with any
+    provided values."""
+    pass

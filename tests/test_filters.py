@@ -3,11 +3,10 @@
 """TODO"""
 
 
-import pytest
-
 from vhatable.filters import PartialOr
 from vhatable.filters import Equal
 from vhatable.filters import Equals
+from vhatable.filters import EqualOr
 from vhatable.filters import PartialMultipleAnd
 from vhatable.filters import PartialDate
 
@@ -82,10 +81,16 @@ def test_equals_true0():
     assert filterr(row)
 
 
-@pytest.mark.skip(reason="bug to fix")
+def test_equals_true2():
+    """TODO"""
+    filterr = Equals("name", None)
+    row = {"name": "value2"}
+    assert filterr(row)
+
+
 def test_equals_true1():
     """TODO"""
-    filterr = Equals("name", ["va", "2"])
+    filterr = Equals("name", ["value2", "2"])
     row = {"name": "value2"}
     assert filterr(row)
 
@@ -93,6 +98,34 @@ def test_equals_true1():
 def test_equals_false():
     """TODO"""
     filterr = Equals("name", ["va", "2"])
+    row = {"name": "value2"}
+    assert not filterr(row)
+
+
+def test_equal_or_true0():
+    """TODO"""
+    filterr = EqualOr("name", [])
+    row = {"name": "value2"}
+    assert filterr(row)
+
+
+def test_equal_or_true2():
+    """TODO"""
+    filterr = EqualOr("name", None)
+    row = {"name": "value2"}
+    assert filterr(row)
+
+
+def test_equal_or_true1():
+    """TODO"""
+    filterr = EqualOr("name", ["value2", "2"])
+    row = {"name": "value2"}
+    assert filterr(row)
+
+
+def test_equal_or_false():
+    """TODO"""
+    filterr = EqualOr("name", ["va", "2"])
     row = {"name": "value2"}
     assert not filterr(row)
 
