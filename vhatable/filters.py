@@ -171,17 +171,19 @@ class PartialDate(Filter):
     def __call__(self, row):
         if not self.is_enable():
             return True
-        vals = self.get_val(row)
-        if isinstance(vals, dict):
-            for val in list(vals.values()):
+        val = self.get_val(row)
+        if isinstance(val, dict):
+            # no idea how it is possible
+            for val in list(val.values()):
                 if self.regex.match(val):
                     return True
         else:
             formatt = "{da:%Y-%m-%d %H:%M:%S}"
-            vals = formatt.format(
-                da=datetime.datetime.fromtimestamp(vals / 1000))
-            self.log.debug("type of values: %s", vals)
-            if self.regex.match(vals):
+            val = formatt.format(
+                da=datetime.datetime.fromtimestamp(val / 1000))
+            self.log.debug("type of value: %s", type(val))
+            self.log.debug("value: %s", val)
+            if self.regex.match(val):
                 return True
         return False
 
@@ -201,7 +203,7 @@ class Equal(Filter):
 
 class Equals(Filter):
     """Get the current property into the current row, and test equality.
-    A list of values will be test"""
+    A list of values will be tested"""
 
     def __call__(self, row):
         if not self.is_enable():
