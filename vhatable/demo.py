@@ -168,12 +168,6 @@ def add_list_command(main_subparsers):
     add_list_cmd_options(parser)
 
     parser.add_argument(
-            "-d",
-            "--debug", type=int,
-            default=0,
-            help="debug level",
-            dest="debug")
-    parser.add_argument(
             "titles",
             nargs='*',
             help="Filter by title")
@@ -221,12 +215,6 @@ def add_delete_command(main_subparsers):
     parser = main_subparsers.add_parser('delete')
     parser.set_defaults(func=command)
     parser.add_argument(
-            "-d",
-            "--debug", type=int,
-            default=0,
-            help="debug level",
-            dest="debug")
-    parser.add_argument(
             "ids",
             nargs='+', type=int,
             help="Delete episode by id")
@@ -256,6 +244,12 @@ def main():
     log.addHandler(stdout)
 
     main_parser = argparse.ArgumentParser(description="Demo cli")
+    main_parser.add_argument(
+            "-d",
+            "--debug", type=int,
+            default=0,
+            help="debug level",
+            dest="debug")
     main_subparsers = main_parser.add_subparsers()
 
     add_list_command(main_subparsers)
