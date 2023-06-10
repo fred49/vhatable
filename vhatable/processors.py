@@ -277,6 +277,7 @@ class DeleteProcessor(Processor):
         self.add_transform_unit(
                 'json', CellToJsonUnit, dump=False, raw=True)
         self.messages = {
+            "nothing_to_delete": "Nothing to delete.",
             "deleted": (
                 "{_position}/{_count}: "
                 "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
@@ -294,6 +295,7 @@ class DeleteProcessor(Processor):
     def run(self):
         """TODO"""
         print(">>>>>>")
+
         default_context = {
             "name": None,
             "uuid": None,
@@ -302,6 +304,10 @@ class DeleteProcessor(Processor):
             "_count": len(self.get_raw())
         }
         position = 0
+        if default_context['_count'] == 0:
+            msg = self.messages['nothing_to_delete']
+            self.log.debug(msg)
+            print(msg)
         for row in self.get_raw():
             position += 1
             before = datetime.now()

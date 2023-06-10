@@ -15,7 +15,7 @@ from vhatable.processors import ProcessorFactory
 from vhatable.processors import API
 
 
-class SampleAPI(API):
+class DemoAPI(API):
     """TODO"""
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
     cacheFileName = "/tmp/vhatable-cache-big-bang.json"
@@ -71,7 +71,7 @@ class SampleAPI(API):
 
 def newfactory():
     """TODO"""
-    api = SampleAPI()
+    api = DemoAPI()
     messages = {
         "deleted": (
             "{_position}/{_count}: "
@@ -169,21 +169,28 @@ def command_list(args):
     print()
 
 
+def command_delete(args):
+    """This command will list all seasons and episodes stored in the cache."""
+    factory = newfactory()
+    factory.default_proc = "delete"
+    factory.add_filters(Equals("ID", args.ids))
+    processor = factory.create(args)
+    print(processor)
+    processor.run()
+    print()
+
+
 def command_reset(args):
     """Reset the local cache"""
     # pylint: disable=unused-argument
-    api = SampleAPI()
+    api = DemoAPI()
     api.reset()
 
 
-def main():
-    """ Main entrypoint of this sample program."""
-    logging.basicConfig(level=logging.INFO)
-
-    parser = argparse.ArgumentParser(description="Demo cli")
-    parser.add_argument(
-        'command', choices=["list", "reset"],
-        help="Choose the command you want to trigger")
+def add_list_command(main_subparsers):
+    """TODO"""
+    parser = main_subparsers.add_parser('list')
+    parser.set_defaults(func=command_list)
     add_default_options(parser)
 
     parser.add_argument(
@@ -192,14 +199,12 @@ def main():
             help="Filter by title")
 
     parser.add_argument(
-            "--release-date",
-            action="append",
+            "--release-date", action="append",
             help="Filter by release date",
             dest="release_dates")
 
     parser.add_argument(
-            "--season",
-            action="append",
+            "--season", action="append",
             help="Filter by season",
             dest="seasons")
 
@@ -210,18 +215,37 @@ def main():
             dest="ids")
 
     parser.add_argument(
-            "--episode",
-            action="append",
+            "--episode", action="append",
             help="Filter by episode",
             dest="episodes")
 
     parser.add_argument(
-            "--delete",
-            default=False, action="store_true",
+            "--delete", default=False, action="store_true",
             help="Delete selected rows",
             dest="delete")
 
-    args = parser.parse_args()
-    command = globals()["command_" + args.command]
-    print("Demo: ", args.command, ":", command.__doc__)
-    command(args)
+
+def add_delete_command(main_subparsers):
+    """TODO"""
+    parser = main_subparsers.add_parser('delete')
+    parser.set_defaults(func=command_delete)
+
+    parser.add_argument(
+            "ids",
+            nargs='+',
+            help="Delete episode by id")
+
+
+def main():
+    """ Main entrypoint of this sample program."""
+    logging.basicConfig(level=logging.INFO)
+
+    main_parser = argparse.ArgumentParser(description="Demo cli")
+    main_subparsers = main_parser.add_subparsers()
+
+    add_list_command(main_subparsers)
+    add_delete_command(main_subparsers)
+
+    args = main_parser.parse_args()
+    print("Demo: ", args.func.__doc__ + "\n")
+    args.func(args)
