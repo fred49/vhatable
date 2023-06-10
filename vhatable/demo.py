@@ -242,6 +242,18 @@ def add_delete_command(main_subparsers):
             help="Delete episode by id")
 
 
+def add_reset_command(main_subparsers):
+    """TODO"""
+    parser = main_subparsers.add_parser('reset')
+    parser.set_defaults(func=command_reset)
+    parser.add_argument(
+            "-d",
+            "--debug", type=int,
+            default=0,
+            help="debug level",
+            dest="debug")
+
+
 def main():
     """ Main entrypoint of this sample program."""
     log = logging.getLogger()
@@ -257,6 +269,7 @@ def main():
 
     add_list_command(main_subparsers)
     add_delete_command(main_subparsers)
+    add_reset_command(main_subparsers)
 
     args = main_parser.parse_args()
     if args.debug >= 1:
