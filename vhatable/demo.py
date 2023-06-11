@@ -97,15 +97,19 @@ api = DemoAPI()
 class UpdateUnit(Unit):
     """TODO"""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.notes = None
-        self._attrs += ["notes"]
+    def __init__(self, fields=None, identifier="update", **kwargs):
+        super().__init__(identifier=identifier, **kwargs)
+        self.fields = fields or []
+        for field in self.fields:
+            setattr(self, field, None)
+            self._attrs.append(field)
 
     def __call__(self, rows):
         for row in rows:
-            if self.notes is not None:
-                row['notes'] = self.notes
+            for field in self.fields:
+                cur_val = getattr(self, field)
+                if cur_val is not None:
+                    row['notes'] = cur_val
             yield row
 
 
@@ -115,7 +119,7 @@ class UpdateProcessor(Processor):
     def __init__(self, *args,  messages=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_unit(CellToJsonUnit(identifier='json', dump=False, raw=True))
-        self.add_unit(UpdateUnit(identifier='update'))
+        self.add_unit(UpdateUnit())
         self.messages = {
             "nothing_to_update": "Nothing to update.",
             "updated": (
@@ -189,6 +193,7 @@ def newfactory():
         "update",
         ProcessorBuilder(
             api=api,
+            units=[UpdateUnit(["notes"])],
             messages=messages
         ).use_api(api),
         UpdateProcessor)

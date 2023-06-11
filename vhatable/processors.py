@@ -254,10 +254,31 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None, api=API()):
-        # pylint: disable=too-many-arguments
+                 autokeys=True, messages=None, api=API(), units=None):
+        """A ProcessorBuilder is in charge of creating processors.
+        it is used by ProcessorFactory.
+
+          @type debug: int
+          @param debug: Debug log level
+          @type rows: list of dict values
+          @param rows: Optional; list of rows to be displayed
+          @type column_names: list of str
+          @param column_names: Optional; a list of column names
+          @type autokeys: bool
+          @param rows: Optional; Trying to guest colun names from input rows
+          @type messages: dict
+          @param messages: Optional; a dict of messages to overide default ones
+          @type api: api instance
+          @param api: Optional; Used by delete processor. See API class for
+          more details. AbstractApi is used by default
+          @type units: list of Units
+          @param units: Optional; a list of unit to add to the processor
+          @rtype: ProcessorBuilder
+          @returns builder: instance
+          """
         self.debug = debug
         self.rows = rows
+        self.units = units or []
         self.autokeys = autokeys
         self.column_names = column_names
         self.messages = messages
@@ -271,6 +292,8 @@ class ProcessorBuilder:
                 messages=self.messages,
                 api=self.api,
                 rows=self.rows)
+        for unit in self.units:
+            processor.add_unit(unit)
         return self._post_create_hook(processor)
 
     def _post_create_hook(self, processor):
