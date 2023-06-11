@@ -114,9 +114,8 @@ class UpdateProcessor(Processor):
 
     def __init__(self, *args,  messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_transform_unit(
-                'json', CellToJsonUnit, dump=False, raw=True)
-        self.add_transform_unit('update', UpdateUnit)
+        self.add_unit(CellToJsonUnit(identifier='json', dump=False, raw=True))
+        self.add_unit(UpdateUnit(identifier='update'))
         self.messages = {
             "nothing_to_update": "Nothing to update.",
             "updated": (

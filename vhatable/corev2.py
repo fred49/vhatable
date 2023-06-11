@@ -143,15 +143,9 @@ class AbstractProcessor:
         if messages:
             self.messages.update(messages)
 
-    def add_transform_unit(self, identifier, unit, **kwargs):
+    def add_unit(self, unit):
         """TODO"""
-        self.units[identifier] = unit(identifier=identifier, typ="transform",
-                                      **kwargs)
-
-    def add_render_unit(self, identifier, unit, **kwargs):
-        """TODO"""
-        self.units[identifier] = unit(identifier=identifier, typ="render",
-                                      **kwargs)
+        self.units[unit.identifier] = unit
 
     def post_init(self):
         """TODO"""

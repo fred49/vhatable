@@ -84,10 +84,10 @@ class Processor(AbstractProcessor):
     def __init__(self, *args, api=API(), **kwargs):
         super().__init__(*args, **kwargs)
         self.api = api
-        self.add_transform_unit('format', FormattingUnit)
-        self.add_transform_unit('filter', FilteringUnit)
-        self.add_transform_unit('sort', SortingUnit)
-        self.add_transform_unit('slice', SlicingUnit)
+        self.add_unit(FormattingUnit(identifier='format'))
+        self.add_unit(FilteringUnit(identifier='filter'))
+        self.add_unit(SortingUnit(identifier='sort'))
+        self.add_unit(SlicingUnit(identifier='slice'))
 
     def setup(self, from_args):
         """TODO"""
@@ -109,7 +109,7 @@ class HTableProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_render_unit('table', TableRender)
+        self.add_unit(TableRender(identifier='table', typ="render"))
         self.headers = {}
         self.aligns = {}
 
@@ -191,7 +191,7 @@ class JsonProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_render_unit('json', CellToJsonUnit)
+        self.add_unit(CellToJsonUnit(identifier='json', typ="render"))
 
     def post_init(self):
         """TODO"""
@@ -291,8 +291,10 @@ class DeleteProcessor(Processor):
 
     def __init__(self, *args,  messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_transform_unit(
-                'json', CellToJsonUnit, dump=False, raw=True)
+        self.add_unit(CellToJsonUnit(
+            identifier='json',
+            dump=False, raw=True)
+        )
         self.messages = {
             "nothing_to_delete": "Nothing to delete.",
             "deleted": (
