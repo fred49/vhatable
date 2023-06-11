@@ -242,6 +242,11 @@ def add_list_cmd_options(parser):
             help="Display rows as json",
             dest="json")
     parser.add_argument(
+            "--json-raw",
+            default=False, action="store_true",
+            help="Display raw json",
+            dest="json_raw")
+    parser.add_argument(
             "--csv",
             default=False, action="store_true",
             help="Display rows as csv",
