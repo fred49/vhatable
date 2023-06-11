@@ -202,6 +202,7 @@ class SlicingUnit(Unit):
         self._attrs += ["start", "end", "limit"]
 
     def __call__(self, rows):
+        # flake8: noqa: C901
         self.log.debug("self.start: %s", self.start)
         self.log.debug("self.end: %s", self.end)
         end = 0
@@ -306,10 +307,11 @@ class TableRender(Unit):
 class CellToJsonUnit(Unit):
     """TODO"""
 
-    def __init__(self, raw=False, dump=True, **kwargs):
+    def __init__(self, raw=False, dump=True, force_raw=False, **kwargs):
         super().__init__(**kwargs)
         self.required_columns = []
         self.raw = raw
+        self.force_raw = force_raw
         self.dump = dump
         self._attrs += ["required_columns", "raw"]
 
@@ -322,7 +324,7 @@ class CellToJsonUnit(Unit):
         for row in rows:
             record = {}
             for column_name in self.required_columns:
-                if self.raw:
+                if self.raw or self.force_raw:
                     record[column_name] = row.get(column_name).value
                 else:
                     record[column_name] = str(row.get(column_name))
