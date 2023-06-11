@@ -61,7 +61,7 @@ class API:
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
         raise NotImplementedError(
-            f"class {classname} has not implemented delete method")
+            f"class {classname} has not implemented get method")
 
     def delete(self, row):
         """TODO"""
@@ -69,6 +69,13 @@ class API:
         classname = self.__class__.__name__
         raise NotImplementedError(
             f"class {classname} has not implemented delete method")
+
+    def update(self, row):
+        """TODO"""
+        # pylint: disable=unused-argument
+        classname = self.__class__.__name__
+        raise NotImplementedError(
+            f"class {classname} has not implemented update method")
 
 
 class Processor(AbstractProcessor):
@@ -301,11 +308,9 @@ class DeleteProcessor(Processor):
         super().post_init()
         self.units['json'].required_columns = self.column_names
 
-    @Time('vhatable.corev2.run')
+    @Time('vhatable.delete.run')
     def run(self):
         """TODO"""
-        print(">>>>>>")
-
         default_context = {
             "name": None,
             "uuid": None,

@@ -27,7 +27,6 @@
 
 
 import json
-import logging
 
 from collections import OrderedDict
 
@@ -83,6 +82,21 @@ class FilteringUnit(Unit):
                 raise ValueError("every row should be a dict")
             if self.matches(row):
                 yield row
+
+
+class PassThroughUnit(Unit):
+    """TODO"""
+
+    def __call__(self, rows):
+        for row in rows:
+            yield row
+
+
+class HelloWordRender(Unit):
+    """TODO"""
+
+    def __call__(self, rows):
+        return "Hello world"
 
 
 class SortingUnit(Unit):

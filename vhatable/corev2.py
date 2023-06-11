@@ -110,6 +110,9 @@ class Unit:
         rows.append("")
         return "\n".join(rows)
 
+    def __call__(self, rows):
+        raise NotImplementedError()
+
 
 class AbstractProcessor:
     """TODO"""
