@@ -97,19 +97,32 @@ api = DemoAPI()
 class UpdateUnit(Unit):
     """TODO"""
 
-    def __init__(self, fields=None, identifier="update", **kwargs):
+    def __init__(self, updatable_columns=None, identifier="update", **kwargs):
         super().__init__(identifier=identifier, **kwargs)
-        self.fields = fields or []
-        for field in self.fields:
+        self.updatable_columns = updatable_columns
+
+    @property
+    def updatable_columns(self):
+        """TODO"""
+        return self._updatable_columns
+
+    @updatable_columns.setter
+    def updatable_columns(self, updatable_columns):
+        """TODO"""
+        self._updatable_columns = updatable_columns or []
+        for field in self._updatable_columns:
             setattr(self, field, None)
             self._attrs.append(field)
 
     def __call__(self, rows):
+        fields = [field for field in self.updatable_columns if getattr(self, field) is not None]
+        if not fields:
+            raise ValueError("Can not update. now data provided.")
         for row in rows:
-            for field in self.fields:
+            for field in fields:
                 cur_val = getattr(self, field)
                 if cur_val is not None:
-                    row['notes'] = cur_val
+                    row[field] = cur_val
             yield row
 
 
@@ -134,6 +147,7 @@ class UpdateProcessor(Processor):
         """TODO"""
         super().post_init()
         self.units['json'].required_columns = self.column_names
+        self.units['update'].updatable_columns = self.column_names
 
     @Time('vhatable.update.run')
     def run(self):
@@ -318,6 +332,10 @@ def add_list_command(main_subparsers):
             "--notes", default=None, action="store",
             help="update notes column",
             dest="update_notes")
+    parser.add_argument(
+            "--update-title", default=None, action="store",
+            help="update title column",
+            dest="update_title")
 
 
 def add_delete_command(main_subparsers):
@@ -419,6 +437,10 @@ def add_update_command(main_subparsers):
             "--notes", default=None, action="store",
             help="update notes column",
             dest="update_notes")
+    parser.add_argument(
+            "--title", default=None, action="store",
+            help="update title column",
+            dest="update_title")
 
 
 def main():
