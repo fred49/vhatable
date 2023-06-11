@@ -147,7 +147,10 @@ class UpdateProcessor(Processor):
         """TODO"""
         super().post_init()
         self.units['json'].required_columns = self.column_names
-        self.units['update'].updatable_columns = self.column_names
+        if not self.units['update'].updatable_columns:
+            # if updatable_columns was not defined in the constructor,
+            # we automatically define all columns as updatable
+            self.units['update'].updatable_columns = self.column_names
 
     @Time('vhatable.update.run')
     def run(self):
@@ -207,6 +210,8 @@ def newfactory():
         "update",
         ProcessorBuilder(
             api=api,
+            # we override default updatable columns,
+            # only notes is updatable
             units=[UpdateUnit(["notes"])],
             messages=messages
         ).use_api(api),
