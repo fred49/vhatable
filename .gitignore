@@ -44,3 +44,4 @@ build
 dist
 vhatable.egg-info
 .ropeproject
+.tox

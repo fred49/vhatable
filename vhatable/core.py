@@ -26,6 +26,10 @@
 #
 
 
+# pylint: skip-file
+# flake8: noqa
+# Deprecated module
+
 import json
 import time
 import logging
