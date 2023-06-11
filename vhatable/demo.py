@@ -84,7 +84,9 @@ class DemoAPI(API):
 
     def update(self, row):
         row_id = str(row['ID'])
-        old_row = self.data[row_id]
+        old_row = self.data.get(row_id)
+        if old_row is None:
+            raise ValueError("row id not found " + row_id)
         if old_row != row:
             self.data[row_id] = row
             self._persist(self.data)
