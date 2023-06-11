@@ -118,6 +118,7 @@ class API:
 
     def column_names(self):
         """TODO"""
+        # pylint: disable=no-self-use
         return ["season", "number", "title", "release_date", "show"]
 
 

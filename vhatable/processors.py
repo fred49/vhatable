@@ -53,25 +53,28 @@ class API:
 
     def column_names(self):
         """TODO"""
+        # pylint: disable=no-self-use
         return []
 
     def get(self, row_id):
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
-        raise NotImplementedError(f"class {classname} has not implemented it")
+        raise NotImplementedError(
+            f"class {classname} has not implemented delete method")
 
     def delete(self, row):
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
-        raise NotImplementedError(f"class {classname} has not implemented it")
+        raise NotImplementedError(
+            f"class {classname} has not implemented delete method")
 
 
 class Processor(AbstractProcessor):
     """TODO"""
 
-    def __init__(self, *args, api=None, **kwargs):
+    def __init__(self, *args, api=API(), **kwargs):
         super().__init__(*args, **kwargs)
         self.api = api
         self.add_transform_unit('format', FormattingUnit)
@@ -264,6 +267,7 @@ class ProcessorBuilder:
         return self._post_create_hook(processor)
 
     def _post_create_hook(self, processor):
+        # pylint: disable=no-self-use
         return processor
 
     def use_api(self, api):
@@ -362,6 +366,7 @@ class ProcessorFactory:
         self._pre_render_classes = []
 
     def _create_cfg(self, builder, clazz):
+        # pylint: disable=no-self-use
         return {
             "builder": builder,
             "clazz": clazz
