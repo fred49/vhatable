@@ -39,6 +39,7 @@ from .units import SortingUnit
 from .units import SlicingUnit
 from .units import TableRender
 from .units import CellToJsonUnit
+from .units import UpdateUnit
 
 
 class API:
@@ -360,6 +361,65 @@ class DeleteProcessor(Processor):
                 "_time": after - before
             }
             msg = self.messages['deleted'].format(**context)
+            self.log.debug(msg)
+            print(msg)
+        print()
+        return True
+
+
+class UpdateProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, *args,  messages=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_unit(CellToJsonUnit(identifier='json', dump=False, force_raw=True))
+        self.add_unit(UpdateUnit())
+        self.messages = {
+            "nothing_to_update": "Nothing to update.",
+            "updated": (
+                "{_position}/{_count}: "
+                "The ressource '{name}' ({uuid}) was updated. ({_time}s)"
+            )
+        }
+        if messages:
+            self.messages.update(messages)
+
+    def post_init(self):
+        """TODO"""
+        super().post_init()
+        self.units['json'].required_columns = self.column_names
+        if not self.units['update'].updatable_columns:
+            # if updatable_columns was not defined in the constructor,
+            # we automatically define all columns as updatable
+            self.units['update'].updatable_columns = self.column_names
+
+    @Time('vhatable.update.run')
+    def run(self):
+        """TODO"""
+        default_context = {
+            "name": None,
+            "uuid": None,
+            "_time": 0,
+            "_position": 0,
+            "_count": len(self.get_raw())
+        }
+        position = 0
+        if default_context['_count'] == 0:
+            msg = self.messages['nothing_to_update']
+            self.log.debug(msg)
+            print(msg)
+        for row in self.get_raw():
+            position += 1
+            before = datetime.now()
+            self.api.update(row)
+            after = datetime.now()
+            context = {
+                **default_context,
+                **row,
+                "_position": position,
+                "_time": after - before
+            }
+            msg = self.messages['updated'].format(**context)
             self.log.debug(msg)
             print(msg)
         print()

@@ -4,20 +4,17 @@ import sys
 import json
 import argparse
 import logging
-from datetime import datetime
 import requests
 
 from vhatable.cellv2 import ComplexCellBuilder
-from vhatable.corev2 import Unit
-from vhatable.corev2 import Time
 from vhatable.filters import PartialOr
 from vhatable.filtersv2 import EqualOr
 from vhatable.filtersv2 import PartialAnd
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 from vhatable.processors import API
-from vhatable.processors import Processor
-from vhatable.units import CellToJsonUnit
+from vhatable.processors import UpdateProcessor
+from vhatable.units import UpdateUnit
 
 
 class DemoAPI(API):
@@ -94,97 +91,6 @@ class DemoAPI(API):
 
 
 api = DemoAPI()
-
-
-class UpdateUnit(Unit):
-    """TODO"""
-
-    def __init__(self, updatable_columns=None, identifier="update", **kwargs):
-        super().__init__(identifier=identifier, **kwargs)
-        self.updatable_columns = updatable_columns
-
-    @property
-    def updatable_columns(self):
-        """TODO"""
-        return self._updatable_columns
-
-    @updatable_columns.setter
-    def updatable_columns(self, updatable_columns):
-        """TODO"""
-        self._updatable_columns = updatable_columns or []
-        for field in self._updatable_columns:
-            setattr(self, field, None)
-            self._attrs.append(field)
-
-    def __call__(self, rows):
-        fields = [field for field in self.updatable_columns if getattr(self, field) is not None]
-        if not fields:
-            raise ValueError("Can not update. now data provided.")
-        for row in rows:
-            for field in fields:
-                cur_val = getattr(self, field)
-                if cur_val is not None:
-                    row[field] = cur_val
-            yield row
-
-
-class UpdateProcessor(Processor):
-    """TODO"""
-
-    def __init__(self, *args,  messages=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.add_unit(CellToJsonUnit(identifier='json', dump=False, force_raw=True))
-        self.add_unit(UpdateUnit())
-        self.messages = {
-            "nothing_to_update": "Nothing to update.",
-            "updated": (
-                "{_position}/{_count}: "
-                "The ressource '{name}' ({uuid}) was updated. ({_time}s)"
-            )
-        }
-        if messages:
-            self.messages.update(messages)
-
-    def post_init(self):
-        """TODO"""
-        super().post_init()
-        self.units['json'].required_columns = self.column_names
-        if not self.units['update'].updatable_columns:
-            # if updatable_columns was not defined in the constructor,
-            # we automatically define all columns as updatable
-            self.units['update'].updatable_columns = self.column_names
-
-    @Time('vhatable.update.run')
-    def run(self):
-        """TODO"""
-        default_context = {
-            "name": None,
-            "uuid": None,
-            "_time": 0,
-            "_position": 0,
-            "_count": len(self.get_raw())
-        }
-        position = 0
-        if default_context['_count'] == 0:
-            msg = self.messages['nothing_to_update']
-            self.log.debug(msg)
-            print(msg)
-        for row in self.get_raw():
-            position += 1
-            before = datetime.now()
-            self.api.update(row)
-            after = datetime.now()
-            context = {
-                **default_context,
-                **row,
-                "_position": position,
-                "_time": after - before
-            }
-            msg = self.messages['updated'].format(**context)
-            self.log.debug(msg)
-            print(msg)
-        print()
-        return True
 
 
 def newfactory():

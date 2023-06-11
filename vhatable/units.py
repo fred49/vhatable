@@ -334,3 +334,35 @@ class CellToJsonUnit(Unit):
         if self.dump:
             return json.dumps(records, sort_keys=True, indent=2)
         return records
+
+
+class UpdateUnit(Unit):
+    """TODO"""
+
+    def __init__(self, updatable_columns=None, identifier="update", **kwargs):
+        super().__init__(identifier=identifier, **kwargs)
+        self.updatable_columns = updatable_columns
+
+    @property
+    def updatable_columns(self):
+        """TODO"""
+        return self._updatable_columns
+
+    @updatable_columns.setter
+    def updatable_columns(self, updatable_columns):
+        """TODO"""
+        self._updatable_columns = updatable_columns or []
+        for field in self._updatable_columns:
+            setattr(self, field, None)
+            self._attrs.append(field)
+
+    def __call__(self, rows):
+        fields = [field for field in self.updatable_columns if getattr(self, field) is not None]
+        if not fields:
+            raise ValueError("Can not update. now data provided.")
+        for row in rows:
+            for field in fields:
+                cur_val = getattr(self, field)
+                if cur_val is not None:
+                    row[field] = cur_val
+            yield row
