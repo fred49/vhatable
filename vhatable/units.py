@@ -342,6 +342,7 @@ class UpdateUnit(Unit):
     def __init__(self, updatable_columns=None, identifier="update", **kwargs):
         super().__init__(identifier=identifier, **kwargs)
         self.updatable_columns = updatable_columns
+        self._attrs_ro += ["updatable_columns"]
 
     @property
     def updatable_columns(self):

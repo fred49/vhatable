@@ -72,6 +72,7 @@ class Unit:
         self._debug = debug
         self.identifier = identifier
         self._attrs = ["debug"]
+        self._attrs_ro = []
         self.typ = typ
 
     @property
@@ -107,6 +108,9 @@ class Unit:
         for attr in self._attrs:
             attr_val = getattr(self, attr)
             rows.append(f" - {prefix}{attr}: {attr_val}")
+        for attr in self._attrs_ro:
+            attr_val = getattr(self, attr)
+            rows.append(f" - {prefix}{attr} (ro): {attr_val}")
         rows.append("")
         return "\n".join(rows)
 
