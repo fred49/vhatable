@@ -430,9 +430,8 @@ class ProcessorFactory:
     """class in charge of creating to proper processor according input args.
     This class is also in charge of proviging all processor's config.
     """
-    # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, with_delete_proc=True):
+    def __init__(self, with_delete_proc=True, with_update_proc=True):
         """TODO"""
         classname = self.__class__.__name__
         self.log = logging.getLogger('vhatable.' + classname)
@@ -447,6 +446,8 @@ class ProcessorFactory:
         self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
         if with_delete_proc:
             self.cfg['delete'] = self._create_cfg(builder, DeleteProcessor)
+        if with_update_proc:
+            self.cfg['update'] = self._create_cfg(builder, UpdateProcessor)
         self.default_proc = "horizontal"
 
         self._custom_cells = {}

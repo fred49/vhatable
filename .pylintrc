@@ -74,4 +74,5 @@ max-bool-expr=5
 # ignore when counting public methods (see R0903).
 exclude-too-few-public-methods=
 
-max-complexity=10
+# max-complexity=10
+

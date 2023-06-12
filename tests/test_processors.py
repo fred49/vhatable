@@ -11,6 +11,7 @@ from vhatable.processors import VTableProcessor
 from vhatable.processors import CountProcessor
 from vhatable.processors import CsvProcessor
 from vhatable.processors import DeleteProcessor
+from vhatable.processors import UpdateProcessor
 from vhatable.processors import API as AbstractAPI
 
 
@@ -265,3 +266,55 @@ def test_delete_processor2():
 
     assert api.deleted_cpt == 1
     assert api.deleted_row["name"] == "value4"
+
+
+def test_update_processor1():
+    """testing UpdateProcessor"""
+
+    class TestAPI(AbstractAPI):
+        """TODO"""
+
+        def __init__(self):
+            super().__init__()
+            self.updated_cpt = 0
+            self.updated_row = None
+
+        def list(self):
+            """TODO"""
+            rows = [
+                {"name": "value1", "count": 800000.0001, "size": 80000000},
+                {"name": "value2", "count": 8.00001, "size": 110000},
+                {"name": "value3", "count": 8000.001, "size": 280000000000},
+                {"name": "value4", "count": 800.1, "size": 2100000000000000},
+                {"name": "value5 asdqfsdff qsdf   sdf sdf sdf sddf s ",
+                 "count": 800.1, "size": 2100000000000000},
+            ]
+            return rows
+
+        def column_names(self):
+            """TODO"""
+            return ["name", "count", "unknown", "size"]
+
+        def update(self, row):
+            self.updated_cpt += 1
+            self.updated_row = row
+
+    api = TestAPI()
+    processor = UpdateProcessor(
+        debug=3,
+        api=api,
+        rows=api.list(),
+        column_names=api.column_names())
+    print("\n")
+    processor.post_init()
+    args = Namespace()
+    args.slice_end = 2
+    args.slice_limit = 1
+    args.update_count = "600"
+    processor.setup(args)
+    processor.run()
+    print("\n")
+
+    assert api.updated_cpt == 1
+    assert api.updated_row["name"] == "value4"
+    assert api.updated_row["count"] == "600"

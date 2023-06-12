@@ -360,7 +360,7 @@ class UpdateUnit(Unit):
     def __call__(self, rows):
         fields = [field for field in self.updatable_columns if getattr(self, field) is not None]
         if not fields:
-            raise ValueError("Can not update. now data provided.")
+            raise ValueError("Can not update. no data provided.")
         for row in rows:
             for field in fields:
                 cur_val = getattr(self, field)
