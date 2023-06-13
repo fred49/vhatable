@@ -69,8 +69,9 @@ class DemoAPI(API):
     def delete(self, row):
         """TODO"""
         row_id = str(row['ID'])
-        self.data.pop(row_id)
+        row = self.data.pop(row_id)
         self._persist(self.data)
+        return True, row
 
     def get(self, row_id):
         row_id = str(row_id)

@@ -203,6 +203,7 @@ def test_delete_processor1():
 
         def delete(self, row):
             self.deleted_cpt += 1
+            return True, row
 
     api = TestAPI()
     processor = DeleteProcessor(
@@ -248,6 +249,7 @@ def test_delete_processor2():
         def delete(self, row):
             self.deleted_cpt += 1
             self.deleted_row = row
+            return True, row
 
     api = TestAPI()
     processor = DeleteProcessor(

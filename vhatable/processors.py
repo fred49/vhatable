@@ -67,6 +67,7 @@ class API:
     def delete(self, row):
         """TODO"""
         # pylint: disable=unused-argument
+        # expected: return True|False, update_row
         classname = self.__class__.__name__
         raise NotImplementedError(
             f"class {classname} has not implemented delete method")
@@ -75,7 +76,7 @@ class API:
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
-        # expected: return (True|False, update_row)
+        # expected: return True|False, update_row
         raise NotImplementedError(
             f"class {classname} has not implemented update method")
 
@@ -342,6 +343,10 @@ class DeleteProcessor(Processor):
             "deleted": (
                 "{_position}/{_count}: "
                 "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
+            ),
+            "delete_failure": (
+                "{_position}/{_count}: Failure "
+                "The ressource '{name}' ({uuid}) was not deleted. ({_time}s)"
             )
         }
         if messages:
@@ -351,6 +356,11 @@ class DeleteProcessor(Processor):
         """TODO"""
         super().post_init()
         self.units['json'].required_columns = self.column_names
+
+    def _delete_row(self, row):
+        if self.dry_run:
+            return True, row
+        return self.api.delete(row)
 
     @Time('vhatable.delete.run')
     def run(self):
@@ -363,26 +373,33 @@ class DeleteProcessor(Processor):
             "_count": len(self.get_raw())
         }
         position = 0
+        final_result = True
         if default_context['_count'] == 0:
             msg = self.messages['nothing_to_delete']
             self.log.debug(msg)
             print(msg)
         for row in self.get_raw():
             position += 1
+            self.log.debug("row: %s", row)
             before = datetime.now()
-            self.api.delete(row)
+            result, deleted_row = self._delete_row(row)
             after = datetime.now()
             context = {
                 **default_context,
-                **row,
+                **deleted_row,
                 "_position": position,
                 "_time": after - before
             }
+            if result:
+                msg = self.messages['deleted'].format(**context)
+            else:
+                msg = self.messages['delete_failure'].format(**context)
+                final_result = False
             msg = self.messages['deleted'].format(**context)
             self.log.debug(msg)
             print(msg)
         print()
-        return True
+        return final_result
 
 
 class UpdateProcessor(Processor):
@@ -406,7 +423,6 @@ class UpdateProcessor(Processor):
         }
         if messages:
             self.messages.update(messages)
-        # self.dry_run = False
 
     def post_init(self):
         """TODO"""
@@ -418,6 +434,8 @@ class UpdateProcessor(Processor):
             self.units['update'].updatable_columns = self.column_names
 
     def _update_row(self, row):
+        if self.dry_run:
+            return True, row
         return self.api.update(row)
 
     @Time('vhatable.update.run')
@@ -438,6 +456,7 @@ class UpdateProcessor(Processor):
             print(msg)
         for row in self.get_raw():
             position += 1
+            self.log.debug("row: %s", row)
             before = datetime.now()
             result, updated_row = self._update_row(row)
             after = datetime.now()
@@ -451,7 +470,7 @@ class UpdateProcessor(Processor):
                 msg = self.messages['updated'].format(**context)
             else:
                 msg = self.messages['update_failure'].format(**context)
-            final_result = False
+                final_result = False
             self.log.debug(msg)
             print(msg)
         print()
