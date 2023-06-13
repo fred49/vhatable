@@ -130,7 +130,6 @@ class AbstractProcessor:
         self.log = logging.getLogger('vhatable.' + classname)
         self.units = OrderedDict()
         self.column_names = []
-        self._auto_columns = False
         self._rows = []
         self._raw_cache = None
         self._post_init = False
@@ -203,15 +202,6 @@ class AbstractProcessor:
         self._rows = rows
         return self
 
-    def get_string(self):
-        """TODO"""
-        result = []
-        for unit in self.units.values():
-            if unit.typ == "render":
-                self.log.debug("unit:render: %s", unit)
-                result.append(unit(self.get_raw()))
-        return "\n".join(result)
-
     def setup(self, from_args):
         """TODO"""
         self.post_init()
@@ -227,5 +217,6 @@ class AbstractProcessor:
     @Time('vhatable.corev2.run')
     def run(self):
         """TODO"""
-        print(self.get_string())
+        for row in self.get_raw():
+            print(row)
         return True

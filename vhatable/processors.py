@@ -105,6 +105,21 @@ class Processor(AbstractProcessor):
         if 'format' in self.units:
             self.units['format'].required_columns = self.column_names
 
+    def get_string(self):
+        """TODO"""
+        result = []
+        for unit in self.units.values():
+            if unit.typ == "render":
+                self.log.debug("unit:render: %s", unit)
+                result.append(unit(self.get_raw()))
+        return "\n".join(result)
+
+    @Time('vhatable.corev2.run')
+    def run(self):
+        """TODO"""
+        print(self.get_string())
+        return True
+
 
 class HTableProcessor(Processor):
     """TODO"""
@@ -389,6 +404,7 @@ class UpdateProcessor(Processor):
         }
         if messages:
             self.messages.update(messages)
+        # self.dry_run = False
 
     def post_init(self):
         """TODO"""
