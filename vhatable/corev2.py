@@ -194,7 +194,8 @@ class AbstractProcessor:
                 self.log.debug("unit:transform: %s", unit)
                 pipeline = unit(pipeline)
         self._raw_cache = list(pipeline)
-        self.log.debug("pipeline rows: %s", self._raw_cache)
+        if self.debug >= 2:
+            self.log.debug("pipeline rows: %s", self._raw_cache)
         return self._raw_cache
 
     def load(self, rows):
@@ -210,7 +211,6 @@ class AbstractProcessor:
                 setattr(self, attr, getattr(from_args, attr))
             self.log.debug("setup:attr: %s : %s", attr, getattr(self, attr))
         for unit in self.units.values():
-            # self.log.debug("unit: %s", unit)
             unit.setup(from_args)
         return self
 

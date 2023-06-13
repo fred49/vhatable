@@ -83,13 +83,15 @@ class API:
 class Processor(AbstractProcessor):
     """TODO"""
 
-    def __init__(self, *args, api=API(), **kwargs):
+    def __init__(self, *args, dry_run=False, api=API(), **kwargs):
         super().__init__(*args, **kwargs)
         self.api = api
+        self.dry_run = dry_run
         self.add_unit(FormattingUnit(identifier='format'))
         self.add_unit(FilteringUnit(identifier='filter'))
         self.add_unit(SortingUnit(identifier='sort'))
         self.add_unit(SlicingUnit(identifier='slice'))
+        self._attrs += ["dry_run"]
 
     def setup(self, from_args):
         """TODO"""
