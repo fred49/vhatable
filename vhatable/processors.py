@@ -31,6 +31,7 @@ from argparse import Namespace
 from collections import OrderedDict
 from datetime import datetime
 
+from .cellv2 import CellBuilder
 from .corev2 import AbstractProcessor
 from .corev2 import Time
 from .units import FormattingUnit
@@ -372,7 +373,8 @@ class UpdateProcessor(Processor):
 
     def __init__(self, *args,  messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit(CellToJsonUnit(identifier='json', dump=False, force_raw=True))
+        self.add_unit(CellToJsonUnit(
+            identifier='json', dump=False, force_raw=True))
         self.add_unit(UpdateUnit())
         self.messages = {
             "nothing_to_update": "Nothing to update.",
@@ -486,9 +488,12 @@ class ProcessorFactory:
         """set a align value for an existing displayed column."""
         self._align_cells[column_name] = align_value
 
-    def set_custom_cell(self, column, builder):
+    def add_custom_cell(self, builder):
         """Add specific cell class to format a column."""
-        self._custom_cells[column] = builder
+        if not isinstance(builder, CellBuilder):
+            msg = "1st argument (builder) must be an CellBuilder instance"
+            raise ValueError(msg)
+        self._custom_cells[builder.cell_name] = builder
 
     def add_filter_cond(self, condition, *filters):
         """Add some filters only if condition is true"""

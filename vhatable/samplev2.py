@@ -69,7 +69,7 @@ def sample1():
     factory = ProcessorFactory()
     factory.add_filters(PartialOr("name", ["value2", "value3"], True))
     builder = DateCellBuilder("date", millisecond=True)
-    factory.set_custom_cell("date", builder)
+    factory.add_custom_cell(builder)
 
     args = argparse.Namespace(debug=2, reverse=True, sort_by="name")
     processor = factory.create(args)
@@ -141,12 +141,12 @@ def sample2():
     factory = ProcessorFactory()
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
-    factory.set_custom_cell(
-            "show", ComplexCellBuilder(
-                "show",
-                fmt='{title}\n{imdb_id} {epguide_name}',
-                fmtv='{title} {imdb_id} {epguide_name}'
-            )
+    factory.add_custom_cell(
+        ComplexCellBuilder(
+            "show",
+            fmt='{title}\n{imdb_id} {epguide_name}',
+            fmtv='{title} {imdb_id} {epguide_name}'
+        )
     )
     api = API()
     builder = ProcessorBuilder(
@@ -180,12 +180,12 @@ def sample3():
     factory = ProcessorFactory()
     factory.add_filters(PartialOr("title", args.titles, True))
     factory.add_filters(PartialOr("release_date", args.release_dates))
-    factory.set_custom_cell(
-            "show", ComplexCellBuilder(
-                "show",
-                fmt='{title}\n{imdb_id} {epguide_name}',
-                fmtv='{title} {imdb_id} {epguide_name}'
-            )
+    factory.add_custom_cell(
+        ComplexCellBuilder(
+            "show",
+            fmt='{title}\n{imdb_id} {epguide_name}',
+            fmtv='{title} {imdb_id} {epguide_name}'
+        )
     )
     factory.set_align_cell("title", "l")
     factory.set_align_cell("show", "c")

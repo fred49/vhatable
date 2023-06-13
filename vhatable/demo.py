@@ -124,12 +124,12 @@ def newfactory():
             messages=messages
         ).use_api(api),
         UpdateProcessor)
-    factory.set_custom_cell(
-            "show", ComplexCellBuilder(
-                "show",
-                fmt='{title} {imdb_id} {epguide_name}',
-                fmtv='{title} {imdb_id} {epguide_name}'
-            )
+    factory.add_custom_cell(
+        ComplexCellBuilder(
+            "show",
+            fmt='{title} {imdb_id} {epguide_name}',
+            fmtv='{title} {imdb_id} {epguide_name}'
+        )
     )
     factory.set_align_cell("title", "l")
     factory.set_align_cell("show", "c")
