@@ -329,6 +329,74 @@ class ProcessorBuilder:
         return self
 
 
+class DoProcessor(Processor):
+    """TODO"""
+
+    def __init__(self, *args,  messages=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.add_unit(CellToJsonUnit(
+        #     identifier='json',
+        #     dump=False, raw=True)
+        # )
+        self.messages = {
+            "nothing_to_do": "Nothing to do.",
+            "done": (
+                "{prefix}{_position}/{_count}: "
+                "The ressource '{name}' ({uuid}) was done. ({_time}s)"
+            ),
+            "done_failure": (
+                "{prefix}{_position}/{_count}: Failure "
+                "The ressource '{name}' ({uuid}) was not done. ({_time}s)"
+            )
+        }
+        if messages:
+            self.messages.update(messages)
+
+    def _do_row(self, row):
+        if self.dry_run:
+            return True, row
+        raise NotImplementedError("_do_row is not implemented.")
+
+    @Time('vhatable.do.run')
+    def run(self):
+        """TODO"""
+        default_context = {
+            "name": None,
+            "uuid": None,
+            "prefix": "DRY-RUN: " if self.dry_run else "",
+            "_time": 0,
+            "_position": 0,
+            "_count": len(self.get_raw())
+        }
+        position = 0
+        final_result = True
+        if default_context['_count'] == 0:
+            msg = self.messages['nothing_to_do']
+            self.log.debug(msg)
+            print(msg)
+        for row in self.get_raw():
+            position += 1
+            self.log.debug("row: %s", row)
+            before = datetime.now()
+            result, do_row = self._do_row(row)
+            after = datetime.now()
+            context = {
+                **default_context,
+                **do_row,
+                "_position": position,
+                "_time": after - before
+            }
+            if result:
+                msg = self.messages['done'].format(**context)
+            else:
+                msg = self.messages['done_failure'].format(**context)
+                final_result = False
+            self.log.debug(msg)
+            print(msg)
+        print()
+        return final_result
+
+
 class DeleteProcessor(Processor):
     """TODO"""
 
@@ -395,7 +463,6 @@ class DeleteProcessor(Processor):
             else:
                 msg = self.messages['delete_failure'].format(**context)
                 final_result = False
-            msg = self.messages['deleted'].format(**context)
             self.log.debug(msg)
             print(msg)
         print()
