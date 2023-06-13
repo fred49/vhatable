@@ -55,7 +55,6 @@ class API:
 
     def column_names(self):
         """TODO"""
-        # pylint: disable=no-self-use
         return []
 
     def get(self, row_id):
@@ -76,6 +75,7 @@ class API:
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
+        # expected: return (True|False, update_row)
         raise NotImplementedError(
             f"class {classname} has not implemented update method")
 
@@ -381,6 +381,10 @@ class UpdateProcessor(Processor):
             "updated": (
                 "{_position}/{_count}: "
                 "The ressource '{name}' ({uuid}) was updated. ({_time}s)"
+            ),
+            "update_failure": (
+                "{_position}/{_count}: Failure "
+                "The ressource '{name}' ({uuid}) was not updated. ({_time}s)"
             )
         }
         if messages:
@@ -395,6 +399,9 @@ class UpdateProcessor(Processor):
             # we automatically define all columns as updatable
             self.units['update'].updatable_columns = self.column_names
 
+    def _update_row(self, row):
+        return self.api.update(row)
+
     @Time('vhatable.update.run')
     def run(self):
         """TODO"""
@@ -406,6 +413,7 @@ class UpdateProcessor(Processor):
             "_count": len(self.get_raw())
         }
         position = 0
+        final_result = True
         if default_context['_count'] == 0:
             msg = self.messages['nothing_to_update']
             self.log.debug(msg)
@@ -413,19 +421,23 @@ class UpdateProcessor(Processor):
         for row in self.get_raw():
             position += 1
             before = datetime.now()
-            self.api.update(row)
+            result, updated_row = self._update_row(row)
             after = datetime.now()
             context = {
                 **default_context,
-                **row,
+                **updated_row,
                 "_position": position,
                 "_time": after - before
             }
-            msg = self.messages['updated'].format(**context)
+            if result:
+                msg = self.messages['updated'].format(**context)
+            else:
+                msg = self.messages['update_failure'].format(**context)
+            final_result = False
             self.log.debug(msg)
             print(msg)
         print()
-        return True
+        return final_result
 
 
 class ProcessorFactory:

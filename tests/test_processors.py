@@ -298,6 +298,7 @@ def test_update_processor1():
         def update(self, row):
             self.updated_cpt += 1
             self.updated_row = row
+            return True, row
 
     api = TestAPI()
     processor = UpdateProcessor(

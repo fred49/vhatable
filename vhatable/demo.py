@@ -87,7 +87,7 @@ class DemoAPI(API):
         if old_row != row:
             self.data[row_id] = row
             self._persist(self.data)
-        return row
+        return True, row
 
 
 api = DemoAPI()
