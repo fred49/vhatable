@@ -40,7 +40,7 @@ from .units import SortingUnit
 from .units import SlicingUnit
 from .units import TableRender
 from .units import CellToJsonUnit
-from .units import UpdateUnit
+from .units import UpdateRowsUnit
 
 
 class API:
@@ -392,7 +392,7 @@ class UpdateProcessor(Processor):
         super().__init__(*args, **kwargs)
         self.add_unit(CellToJsonUnit(
             identifier='json', dump=False, force_raw=True))
-        self.add_unit(UpdateUnit())
+        self.add_unit(UpdateRowsUnit())
         self.messages = {
             "nothing_to_update": "Nothing to update.",
             "updated": (

@@ -336,8 +336,14 @@ class CellToJsonUnit(Unit):
         return records
 
 
-class UpdateUnit(Unit):
-    """TODO"""
+class UpdateRowsUnit(Unit):
+    """Generic unit that will update cells.
+
+    Updatable columns will be added as attribute of this class and they will be
+    added to the _attrs list, in order to be updated, from args, by the setup method.
+
+    Then, every rows will be updated with these values, in batch.
+    """
 
     def __init__(self, updatable_columns=None, identifier="update", **kwargs):
         super().__init__(identifier=identifier, **kwargs)
@@ -360,7 +366,7 @@ class UpdateUnit(Unit):
     def __call__(self, rows):
         fields = [field for field in self.updatable_columns if getattr(self, field) is not None]
         if not fields:
-            raise ValueError("Can not update. no data provided.")
+            raise ValueError("Can not update. no columns were defined as updatable.")
         for row in rows:
             for field in fields:
                 cur_val = getattr(self, field)

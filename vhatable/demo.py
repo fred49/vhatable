@@ -14,7 +14,7 @@ from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 from vhatable.processors import API
 from vhatable.processors import UpdateProcessor
-from vhatable.units import UpdateUnit
+from vhatable.units import UpdateRowsUnit
 
 
 class DemoAPI(API):
@@ -120,7 +120,7 @@ def newfactory():
             api=api,
             # we override default updatable columns,
             # only notes is updatable
-            units=[UpdateUnit(["notes"])],
+            units=[UpdateRowsUnit(["notes"])],
             messages=messages
         ).use_api(api),
         UpdateProcessor)
