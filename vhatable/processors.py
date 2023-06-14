@@ -252,17 +252,16 @@ class CountProcessor(Processor):
     def __init__(self, *args, messages=None, **kwargs):
         super().__init__(*args, messages=messages, **kwargs)
         self.cli_mode = False
-        self.messages["count_elt"] = "Ressources found: {count}"
+        self.messages[self.identifier]["count_elt"] = "Ressources found: {count}"
         self._attrs += ["cli_mode"]
-        if messages:
-            self.messages.update(messages)
+        self._update_messages(messages)
 
     def get_string(self):
         """TODO"""
         count = len(self.get_raw())
         if self.cli_mode:
             return str(count)
-        msg = self.messages['count_elt'].format(count=count)
+        msg = self.messages[self.identifier]["count_elt"].format(count=count)
         self.log.debug(msg)
         return msg
 
@@ -339,11 +338,7 @@ class DoProcessor(Processor):
 
     def __init__(self, *args,  messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.add_unit(CellToJsonUnit(
-        #     identifier='json',
-        #     dump=False, raw=True)
-        # )
-        self.messages = {
+        self.messages[self.identifier] = {
             "nothing_to_do": "Nothing to do.",
             "done": (
                 "{prefix}{_position}/{_count}: "
@@ -354,8 +349,7 @@ class DoProcessor(Processor):
                 "The ressource '{name}' ({uuid}) was not done. ({_time}s)"
             )
         }
-        if messages:
-            self.messages.update(messages)
+        self._update_messages(messages)
 
     def _do_row(self, row):
         if self.dry_run:
@@ -376,7 +370,7 @@ class DoProcessor(Processor):
         position = 0
         final_result = True
         if default_context['_count'] == 0:
-            msg = self.messages['nothing_to_do']
+            msg = self._format_messages('nothing_to_do', {})
             self.log.debug(msg)
             print(msg)
         for row in self.get_raw():
@@ -392,9 +386,9 @@ class DoProcessor(Processor):
                 "_time": after - before
             }
             if result:
-                msg = self.messages['done'].format(**context)
+                msg = self._format_messages('done', context)
             else:
-                msg = self.messages['done_failure'].format(**context)
+                msg = self._format_messages('done_failure', context)
                 final_result = False
             self.log.debug(msg)
             print(msg)
@@ -402,7 +396,7 @@ class DoProcessor(Processor):
         return final_result
 
 
-class DeleteProcessor(Processor):
+class DeleteProcessor(DoProcessor):
     """TODO"""
 
     def __init__(self, *args,  messages=None, **kwargs):
@@ -411,70 +405,31 @@ class DeleteProcessor(Processor):
             identifier='json',
             dump=False, raw=True)
         )
-        self.messages = {
-            "nothing_to_delete": "Nothing to delete.",
-            "deleted": (
-                "{_position}/{_count}: "
+        self.messages[self.identifier] = {
+            "nothing_to_do": "Nothing to delete.",
+            "done": (
+                "{prefix}{_position}/{_count}: "
                 "The ressource '{name}' ({uuid}) was deleted. ({_time}s)"
             ),
-            "delete_failure": (
-                "{_position}/{_count}: Failure "
+            "done_failure": (
+                "{prefix}{_position}/{_count}: Failure "
                 "The ressource '{name}' ({uuid}) was not deleted. ({_time}s)"
             )
         }
-        if messages:
-            self.messages.update(messages)
+        self._update_messages(messages)
 
     def post_init(self):
         """TODO"""
         super().post_init()
         self.units['json'].required_columns = self.column_names
 
-    def _delete_row(self, row):
+    def _do_row(self, row):
         if self.dry_run:
             return True, row
         return self.api.delete(row)
 
-    @Time('vhatable.delete.run')
-    def run(self):
-        """TODO"""
-        default_context = {
-            "name": None,
-            "uuid": None,
-            "_time": 0,
-            "_position": 0,
-            "_count": len(self.get_raw())
-        }
-        position = 0
-        final_result = True
-        if default_context['_count'] == 0:
-            msg = self.messages['nothing_to_delete']
-            self.log.debug(msg)
-            print(msg)
-        for row in self.get_raw():
-            position += 1
-            self.log.debug("row: %s", row)
-            before = datetime.now()
-            result, deleted_row = self._delete_row(row)
-            after = datetime.now()
-            context = {
-                **default_context,
-                **deleted_row,
-                "_position": position,
-                "_time": after - before
-            }
-            if result:
-                msg = self.messages['deleted'].format(**context)
-            else:
-                msg = self.messages['delete_failure'].format(**context)
-                final_result = False
-            self.log.debug(msg)
-            print(msg)
-        print()
-        return final_result
 
-
-class UpdateProcessor(Processor):
+class UpdateProcessor(DoProcessor):
     """TODO"""
 
     def __init__(self, *args,  messages=None, **kwargs):
@@ -482,19 +437,18 @@ class UpdateProcessor(Processor):
         self.add_unit(CellToJsonUnit(
             identifier='json', dump=False, force_raw=True))
         self.add_unit(UpdateRowsUnit())
-        self.messages = {
-            "nothing_to_update": "Nothing to update.",
-            "updated": (
-                "{_position}/{_count}: "
+        self.messages[self.identifier] = {
+            "nothing_to_do": "Nothing to update.",
+            "done": (
+                "{prefix}{_position}/{_count}: "
                 "The ressource '{name}' ({uuid}) was updated. ({_time}s)"
             ),
-            "update_failure": (
-                "{_position}/{_count}: Failure "
+            "done_failure": (
+                "{prefix}{_position}/{_count}: Failure "
                 "The ressource '{name}' ({uuid}) was not updated. ({_time}s)"
             )
         }
-        if messages:
-            self.messages.update(messages)
+        self._update_messages(messages)
 
     def post_init(self):
         """TODO"""
@@ -505,48 +459,10 @@ class UpdateProcessor(Processor):
             # we automatically define all columns as updatable
             self.units['update'].updatable_columns = self.column_names
 
-    def _update_row(self, row):
+    def _do_row(self, row):
         if self.dry_run:
             return True, row
         return self.api.update(row)
-
-    @Time('vhatable.update.run')
-    def run(self):
-        """TODO"""
-        default_context = {
-            "name": None,
-            "uuid": None,
-            "_time": 0,
-            "_position": 0,
-            "_count": len(self.get_raw())
-        }
-        position = 0
-        final_result = True
-        if default_context['_count'] == 0:
-            msg = self.messages['nothing_to_update']
-            self.log.debug(msg)
-            print(msg)
-        for row in self.get_raw():
-            position += 1
-            self.log.debug("row: %s", row)
-            before = datetime.now()
-            result, updated_row = self._update_row(row)
-            after = datetime.now()
-            context = {
-                **default_context,
-                **updated_row,
-                "_position": position,
-                "_time": after - before
-            }
-            if result:
-                msg = self.messages['updated'].format(**context)
-            else:
-                msg = self.messages['update_failure'].format(**context)
-                final_result = False
-            self.log.debug(msg)
-            print(msg)
-        print()
-        return final_result
 
 
 class ProcessorFactory:

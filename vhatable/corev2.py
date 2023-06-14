@@ -110,7 +110,7 @@ class Unit:
             rows.append(f" - {prefix}{attr}: {attr_val}")
         for attr in self._attrs_ro:
             attr_val = getattr(self, attr)
-            rows.append(f" - {prefix}{attr} (ro): {attr_val}")
+            rows.append(f" - readonly: {prefix}{attr}: {attr_val}")
         rows.append("")
         return "\n".join(rows)
 
@@ -126,18 +126,19 @@ class AbstractProcessor:
                  autokeys=True, messages=None, identifier=None):
         # pylint: disable=too-many-arguments
         self._attrs = ["debug", "verbose", "column_names"]
-        self._attrs_ro = ["identifier"]
+        self._attrs_ro = ["identifier", "messages"]
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
+        self.identifier = identifier
         self.units = OrderedDict()
         self.column_names = []
         self._rows = []
         self._raw_cache = None
         self._post_init = False
         self.messages = {}
+        self.messages[self.identifier] = {}
         self.debug = debug
         self.verbose = verbose
-        self.identifier = identifier
         if rows:
             self._rows = rows
         if column_names:
@@ -145,8 +146,16 @@ class AbstractProcessor:
         elif autokeys:
             if rows and len(rows) >= 1:
                 self.column_names = rows[0].keys()
+        self._update_messages(messages)
+
+    def _update_messages(self, messages):
         if messages:
-            self.messages.update(messages)
+            if self.identifier in messages:
+                messages = messages[self.identifier]
+                self.messages[self.identifier].update(messages)
+
+    def _format_messages(self, key, data):
+        return self.messages[self.identifier][key].format(**data)
 
     def add_unit(self, unit):
         """TODO"""
@@ -170,7 +179,7 @@ class AbstractProcessor:
             rows.append(f" - {attr}: {attr_val}")
         for attr in self._attrs_ro:
             attr_val = getattr(self, attr)
-            rows.append(f" - {attr} (ro): {attr_val}")
+            rows.append(f" - readonly: {attr}: {attr_val}")
         rows.append("")
         for unit in self.units.values():
             rows.append(str(unit))

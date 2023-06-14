@@ -187,7 +187,8 @@ class FormattingUnit(Unit):
                         extended=self.extended, vertical=self.vertical,
                         raw_display=self.raw_display, hidden=False)
                 row_full[cell_name] = cell
-            self.log.debug("row_full: %s", row_full)
+            if self.debug >= 2:
+                self.log.debug("row_full: %s", row_full)
             yield row_full
 
 

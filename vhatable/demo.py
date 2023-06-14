@@ -96,17 +96,31 @@ api = DemoAPI()
 
 def newfactory():
     """TODO"""
-    messages = {
-        "deleted": (
-            "{_position}/{_count}: "
+    messages = {}
+    messages['delete'] = {
+        "nothing_to_do": "Nothing to delete.",
+        "done": (
+            "{prefix}{_position}/{_count}: "
             "The episode '{title}' ({ID}) was deleted. ({_time}s)"
         ),
-        "count_elt": "Episodes found: {count}",
-        "nothing_to_update": "Nothing to update.",
-        "updated": (
-            "{_position}/{_count}: "
-            "The episode '{title}' ({ID}) was updated. ({_time}s)"
+        "done_failure": (
+            "{prefix}{_position}/{_count}: Failure "
+            "The episode '{title}' ({ID}) was not deleted. ({_time}s)"
         )
+    }
+    messages['update'] = {
+        "nothing_to_do": "Nothing to update.",
+        "done": (
+            "{prefix}{_position}/{_count}: "
+            "The episode '{title}' ({ID}) was updated. ({_time}s)"
+        ),
+        "done_failure": (
+            "{prefix}{_position}/{_count}: Failure "
+            "The episode '{title}' ({ID}) was not updated. ({_time}s)"
+        )
+    }
+    messages['count'] = {
+        "count_elt": "Episodes found: {count}"
     }
     factory = ProcessorFactory()
     factory.set_default_processor_builder(
