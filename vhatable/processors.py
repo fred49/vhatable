@@ -26,6 +26,7 @@
 #
 
 
+import copy
 import logging
 from argparse import Namespace
 from collections import OrderedDict
@@ -274,7 +275,8 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None, api=API(), units=None):
+                 autokeys=True, messages=None, api=API(), units=None,
+                 identifier=None):
         """A ProcessorBuilder is in charge of creating processors.
         it is used by ProcessorFactory.
 
@@ -293,6 +295,8 @@ class ProcessorBuilder:
           more details. AbstractApi is used by default
           @type units: list of Units
           @param units: Optional; a list of unit to add to the processor
+          @type identifier: string
+          @param identifier: Optional; provide an identifier to this processor
           @rtype: ProcessorBuilder
           @returns builder: instance
           """
@@ -303,6 +307,7 @@ class ProcessorBuilder:
         self.column_names = column_names
         self.messages = messages
         self.api = api
+        self.identifier = identifier
 
     def __call__(self, clazz):
         processor = clazz(
@@ -311,13 +316,13 @@ class ProcessorBuilder:
                 column_names=self.column_names,
                 messages=self.messages,
                 api=self.api,
+                identifier=self.identifier,
                 rows=self.rows)
         for unit in self.units:
             processor.add_unit(unit)
         return self._post_create_hook(processor)
 
     def _post_create_hook(self, processor):
-        # pylint: disable=no-self-use
         return processor
 
     def use_api(self, api):
@@ -555,17 +560,25 @@ class ProcessorFactory:
         self.log = logging.getLogger('vhatable.' + classname)
 
         self.cfg = OrderedDict()
-        builder = ProcessorBuilder()
-        self.cfg['count'] = self._create_cfg(builder, CountProcessor)
-        self.cfg['cli_mode'] = self._create_cfg(builder, CountProcessor)
-        self.cfg['vertical'] = self._create_cfg(builder, VTableProcessor)
-        self.cfg['csv'] = self._create_cfg(builder, CsvProcessor)
-        self.cfg['json'] = self._create_cfg(builder, JsonProcessor)
-        self.cfg['horizontal'] = self._create_cfg(builder, HTableProcessor)
+
+        self.add_processor(
+            ProcessorBuilder(identifier="count"), CountProcessor)
+        self.add_processor(
+            ProcessorBuilder(identifier="cli_mode"), CountProcessor)
+        self.add_processor(
+            ProcessorBuilder(identifier="vertical"), VTableProcessor)
+        self.add_processor(
+            ProcessorBuilder(identifier="csv"), CsvProcessor)
+        self.add_processor(
+            ProcessorBuilder(identifier="json"), JsonProcessor)
+        self.add_processor(
+            ProcessorBuilder(identifier="horizontal"), HTableProcessor)
         if with_delete_proc:
-            self.cfg['delete'] = self._create_cfg(builder, DeleteProcessor)
+            self.add_processor(
+                ProcessorBuilder(identifier="delete"), DeleteProcessor)
         if with_update_proc:
-            self.cfg['update'] = self._create_cfg(builder, UpdateProcessor)
+            self.add_processor(
+                ProcessorBuilder(identifier="update"), UpdateProcessor)
         self.default_proc = "horizontal"
 
         self._custom_cells = {}
@@ -575,7 +588,6 @@ class ProcessorFactory:
         self._pre_render_classes = []
 
     def _create_cfg(self, builder, clazz):
-        # pylint: disable=no-self-use
         return {
             "builder": builder,
             "clazz": clazz
@@ -586,15 +598,18 @@ class ProcessorFactory:
         if not isinstance(builder, ProcessorBuilder):
             msg = "1st argument (builder) must be an ProcessorBuilder instance"
             raise ValueError(msg)
-        for proc_cfg in self.cfg.values():
-            proc_cfg['builder'] = builder
+        for identifier, proc_cfg in self.cfg.items():
+            builder_copy = copy.copy(builder)
+            builder_copy.identifier = identifier
+            proc_cfg['builder'] = builder_copy
 
-    def add_processor(self, flag, builder, processor_clazz):
-        """Add some custom action class trigger by a flag."""
+    def add_processor(self, builder, processor_clazz):
+        """Add some custom action class trigger by a its identifier."""
         if not isinstance(builder, ProcessorBuilder):
             msg = "2nd argument (builder) must be an ProcessorBuilder instance"
             raise ValueError(msg)
-        self.cfg[flag] = self._create_cfg(builder, processor_clazz)
+        self.cfg[builder.identifier] = self._create_cfg(
+            builder, processor_clazz)
 
     def set_header_cell(self, column_name, header_value):
         """set a header value for an existing displayed column."""

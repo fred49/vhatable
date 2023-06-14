@@ -123,9 +123,10 @@ class AbstractProcessor:
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, debug=0, verbose=False, rows=None, column_names=None,
-                 autokeys=True, messages=None):
+                 autokeys=True, messages=None, identifier=None):
         # pylint: disable=too-many-arguments
         self._attrs = ["debug", "verbose", "column_names"]
+        self._attrs_ro = ["identifier"]
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger('vhatable.' + classname)
         self.units = OrderedDict()
@@ -136,6 +137,7 @@ class AbstractProcessor:
         self.messages = {}
         self.debug = debug
         self.verbose = verbose
+        self.identifier = identifier
         if rows:
             self._rows = rows
         if column_names:
@@ -166,6 +168,9 @@ class AbstractProcessor:
         for attr in self._attrs:
             attr_val = getattr(self, attr)
             rows.append(f" - {attr}: {attr_val}")
+        for attr in self._attrs_ro:
+            attr_val = getattr(self, attr)
+            rows.append(f" - {attr} (ro): {attr_val}")
         rows.append("")
         for unit in self.units.values():
             rows.append(str(unit))

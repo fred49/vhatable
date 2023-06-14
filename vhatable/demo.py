@@ -116,8 +116,8 @@ def newfactory():
         ).use_api(api)
     )
     factory.add_processor(
-        "update",
         ProcessorBuilder(
+            identifier="update",
             api=api,
             # we override default updatable columns,
             # only notes is updatable
