@@ -351,7 +351,7 @@ class DoProcessor(Processor):
         }
         self._update_messages(messages)
 
-    def _do_row(self, row):
+    def _do_row(self, row, context):
         if self.dry_run:
             return True, row
         raise NotImplementedError("_do_row is not implemented.")
@@ -375,16 +375,16 @@ class DoProcessor(Processor):
             print(msg)
         for row in self.get_raw():
             position += 1
-            self.log.debug("row: %s", row)
-            before = datetime.now()
-            result, do_row = self._do_row(row)
-            after = datetime.now()
             context = {
                 **default_context,
-                **do_row,
                 "_position": position,
-                "_time": after - before
             }
+            self.log.debug("row keys: %s", row.keys())
+            before = datetime.now()
+            result, do_row = self._do_row(row, context)
+            after = datetime.now()
+            context['_time'] = after - before
+            context.update(do_row)
             if result:
                 msg = self._format_messages('done', context)
             else:
@@ -423,7 +423,7 @@ class DeleteProcessor(DoProcessor):
         super().post_init()
         self.units['json'].required_columns = self.column_names
 
-    def _do_row(self, row):
+    def _do_row(self, row, context):
         if self.dry_run:
             return True, row
         return self.api.delete(row)
@@ -459,7 +459,7 @@ class UpdateProcessor(DoProcessor):
             # we automatically define all columns as updatable
             self.units['update'].updatable_columns = self.column_names
 
-    def _do_row(self, row):
+    def _do_row(self, row, context):
         if self.dry_run:
             return True, row
         return self.api.update(row)
