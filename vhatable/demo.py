@@ -200,7 +200,7 @@ def add_list_cmd_options(parser):
             dest="sort_sort_by")
     parser.add_argument(
             "--sort-reversed",
-            help="sort row by column",
+            help="Reverse order while sorting",
             default=False, action="store_true",
             dest="sort_reverse")
 
