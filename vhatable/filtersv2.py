@@ -26,6 +26,8 @@ of a Vertical or Horizotal table."""
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
+from datetime import datetime
+from datetime import timedelta
 
 from .filters import Equals
 from .filters import Filter
@@ -66,3 +68,57 @@ class PartialAnd(Filter):
                 if val not in comp:
                     return False
         return True
+
+
+class OlderThanFilter(Filter):
+    """Get the  property into the row and return only row older than N days.
+    This filter can only be used with DateCells, inner value should be a Long.
+    """
+
+    def __init__(self, prop, nb_days):
+        super().__init__(prop, nb_days)
+        if self.is_enable():
+            date = self._get_today() - timedelta(days=nb_days)
+            self.timestamp_to_compare = date.timestamp()
+
+    def _get_today(self):
+        return datetime.today()
+
+    def __call__(self, row):
+        if not self.is_enable():
+            return True
+        cell = self.get_val(row)
+        value = cell.value
+        if cell.millisecond:
+            value = value / 1000
+        self.log.error("cell: %s, %s", cell, value)
+        if self.timestamp_to_compare > value:
+            return True
+        return False
+
+
+class NewerThanFilter(Filter):
+    """Get the property into the row and return only row newer than N days.
+    This filter can only be used with DateCells, inner value should be a Long.
+    """
+
+    def __init__(self, prop, nb_days):
+        super().__init__(prop, nb_days)
+        if self.is_enable():
+            date = self._get_today() - timedelta(days=nb_days)
+            self.timestamp_to_compare = date.timestamp()
+
+    def _get_today(self):
+        return datetime.today()
+
+    def __call__(self, row):
+        if not self.is_enable():
+            return True
+        cell = self.get_val(row)
+        value = cell.value
+        if cell.millisecond:
+            value = value / 1000
+        self.log.error("cell: %s, %s", cell, value)
+        if self.timestamp_to_compare < value:
+            return True
+        return False

@@ -3,6 +3,11 @@
 """TODO"""
 
 
+from datetime import datetime
+from unittest.mock import patch
+
+from vhatable import filtersv2
+from vhatable.cell import DateCell
 from vhatable.filters import PartialOr
 from vhatable.filters import Equal
 from vhatable.filters import Equals
@@ -10,6 +15,17 @@ from vhatable.filters import PartialMultipleAnd
 from vhatable.filters import PartialDate
 from vhatable.filtersv2 import EqualOr
 from vhatable.filtersv2 import PartialAnd
+from vhatable.filtersv2 import OlderThanFilter
+from vhatable.filtersv2 import NewerThanFilter
+
+
+def test_nb_filters():
+    """TODO"""
+    list_filters = [i for i in dir(filtersv2) if not i.startswith("__")]
+    list_filters.remove('datetime')
+    list_filters.remove('timedelta')
+    print(list_filters)
+    assert len(list_filters) == 6
 
 
 def test_partial_or_false():
@@ -373,3 +389,83 @@ def test_partial_and_true3():
     filterr = PartialAnd("name", ["kal", "iuu3"])
     row = {"name": "value2"}
     assert not filterr(row)
+
+
+def test_date_older_than_in_second():
+    """TODO"""
+    patcher = patch('vhatable.filtersv2.OlderThanFilter._get_today')
+    mock_read = patcher.start()
+    mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
+
+    filterr = OlderThanFilter("date", 3)
+
+    cell = DateCell(datetime(2022, 6, 15, 0, 0, 0, 0).timestamp())
+    # input is in seconds
+    cell.millisecond = False
+    assert filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 16, 0, 0, 0, 0).timestamp())
+    cell.millisecond = False
+    assert filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 17, 0, 0, 0, 0).timestamp())
+    cell.millisecond = False
+    assert not filterr({"date": cell})
+
+
+def test_date_older_than_in_millisecond():
+    """TODO"""
+    patcher = patch('vhatable.filtersv2.OlderThanFilter._get_today')
+    mock_read = patcher.start()
+    mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
+
+    filterr = OlderThanFilter("date", 3)
+
+    cell = DateCell(datetime(2022, 6, 15, 0, 0, 0, 0).timestamp() * 1000)
+    assert filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 16, 0, 0, 0, 0).timestamp() * 1000)
+    assert filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 17, 0, 0, 0, 0).timestamp() * 1000)
+    assert not filterr({"date": cell})
+
+
+def test_date_newer_than_in_second():
+    """TODO"""
+    patcher = patch('vhatable.filtersv2.NewerThanFilter._get_today')
+    mock_read = patcher.start()
+    mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
+
+    filterr = NewerThanFilter("date", 3)
+
+    cell = DateCell(datetime(2022, 6, 15, 0, 0, 0, 0).timestamp())
+    # input is in seconds
+    cell.millisecond = False
+    assert not filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 16, 0, 0, 0, 0).timestamp())
+    cell.millisecond = False
+    assert not filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 17, 0, 0, 0, 0).timestamp())
+    cell.millisecond = False
+    assert filterr({"date": cell})
+
+
+def test_date_newer_than_in_millisecond():
+    """TODO"""
+    patcher = patch('vhatable.filtersv2.NewerThanFilter._get_today')
+    mock_read = patcher.start()
+    mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
+
+    filterr = NewerThanFilter("date", 3)
+
+    cell = DateCell(datetime(2022, 6, 15, 0, 0, 0, 0).timestamp() * 1000)
+    assert not filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 16, 0, 0, 0, 0).timestamp() * 1000)
+    assert not filterr({"date": cell})
+
+    cell = DateCell(datetime(2022, 6, 17, 0, 0, 0, 0).timestamp() * 1000)
+    assert filterr({"date": cell})
