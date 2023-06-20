@@ -8,8 +8,8 @@ import requests
 
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
-from vhatable.filtersv2 import EqualOr
-from vhatable.filtersv2 import PartialAnd
+from vhatable.filtersv2 import EqualMultipleOr
+from vhatable.filtersv2 import PartialMultipleAnd
 from vhatable.processors import ProcessorBuilder
 from vhatable.processors import ProcessorFactory
 from vhatable.processors import API
@@ -211,11 +211,11 @@ def add_list_command(main_subparsers):
     def command(args):
         """This command will remove an episode from the cache."""
         factory = newfactory()
-        factory.add_filters(PartialAnd("title", args.titles))
+        factory.add_filters(PartialMultipleAnd("title", args.titles))
         factory.add_filters(PartialOr("release_date", args.release_dates))
         factory.add_filters(PartialOr("season", args.seasons))
         factory.add_filters(PartialOr("number", args.episodes))
-        factory.add_filters(EqualOr("ID", args.ids))
+        factory.add_filters(EqualMultipleOr("ID", args.ids))
         processor = factory.create(args)
         print(processor)
         processor.run()
@@ -284,7 +284,7 @@ def add_delete_command(main_subparsers):
         """
         factory = newfactory()
         factory.default_proc = "delete"
-        factory.add_filters(EqualOr("ID", args.ids))
+        factory.add_filters(EqualMultipleOr("ID", args.ids))
         processor = factory.create(args)
         print(processor)
         processor.run()

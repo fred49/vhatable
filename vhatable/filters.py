@@ -202,7 +202,7 @@ class Equal(Filter):
 
 
 class Equals(Filter):
-    """Deprecated. Use EqualOr.
+    """Deprecated. Use EqualMultipleOr.
     Get the current property into the current row, and test equality.
     A list of values will be tested"""
 

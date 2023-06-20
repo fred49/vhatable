@@ -33,13 +33,18 @@ from .filters import Equals
 from .filters import Filter
 
 
-class EqualOr(Equals):
+# Equal | Partial | Greater | Older | Newer
+# Single value | Multiple Value
+# And | Or
+
+
+class EqualMultipleOr(Equals):
     """
     Get the current property into the current row, and test equality with any
     provided values."""
 
 
-class PartialAnd(Filter):
+class PartialMultipleAnd(Filter):
     """Get the current property into the current row, and match the result with
      ALL values of the list"""
 
@@ -51,7 +56,7 @@ class PartialAnd(Filter):
             self.log.debug("values: %s", self.values)
 
     def __str__(self):
-        return "PartialAnd: " + str(self.values)
+        return "PartialMultipleAnd: " + str(self.values)
 
     def __call__(self, row):
         if not self.is_enable():

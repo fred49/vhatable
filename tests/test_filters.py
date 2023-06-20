@@ -13,8 +13,8 @@ from vhatable.filters import Equal
 from vhatable.filters import Equals
 from vhatable.filters import PartialMultipleAnd
 from vhatable.filters import PartialDate
-from vhatable.filtersv2 import EqualOr
-from vhatable.filtersv2 import PartialAnd
+from vhatable.filtersv2 import EqualMultipleOr
+from vhatable.filtersv2 import PartialMultipleAnd
 from vhatable.filtersv2 import OlderThanFilter
 from vhatable.filtersv2 import NewerThanFilter
 
@@ -121,28 +121,28 @@ def test_equals_false():
 
 def test_equal_or_true0():
     """TODO"""
-    filterr = EqualOr("name", [])
+    filterr = EqualMultipleOr("name", [])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_equal_or_true2():
     """TODO"""
-    filterr = EqualOr("name", None)
+    filterr = EqualMultipleOr("name", None)
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_equal_or_true1():
     """TODO"""
-    filterr = EqualOr("name", ["value2", "2"])
+    filterr = EqualMultipleOr("name", ["value2", "2"])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_equal_or_false():
     """TODO"""
-    filterr = EqualOr("name", ["va", "2"])
+    filterr = EqualMultipleOr("name", ["va", "2"])
     row = {"name": "value2"}
     assert not filterr(row)
 
@@ -358,35 +358,35 @@ def test_partial_date_dict_false():
 
 def test_partial_and_false():
     """TODO"""
-    filterr = PartialAnd("name", ["value2", "value3"])
+    filterr = PartialMultipleAnd("name", ["value2", "value3"])
     row = {"name": "value1"}
     assert not filterr(row)
 
 
 def test_partial_and_true0():
     """TODO"""
-    filterr = PartialAnd("name", [])
+    filterr = PartialMultipleAnd("name", [])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true1():
     """TODO"""
-    filterr = PartialAnd("name", ["val"])
+    filterr = PartialMultipleAnd("name", ["val"])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true2():
     """TODO"""
-    filterr = PartialAnd("name", ["val", "ue2"])
+    filterr = PartialMultipleAnd("name", ["val", "ue2"])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true3():
     """TODO"""
-    filterr = PartialAnd("name", ["kal", "iuu3"])
+    filterr = PartialMultipleAnd("name", ["kal", "iuu3"])
     row = {"name": "value2"}
     assert not filterr(row)
 
