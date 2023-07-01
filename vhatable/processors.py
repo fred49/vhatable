@@ -147,9 +147,10 @@ class VTableProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._maxlengthkey = 0
+        self._maxlengthkey = 20
         self.headers = {}
-        self._attrs += ["headers"]
+        self.columns_to_show = []
+        self._attrs += ["headers", "columns_to_show"]
 
     def get_headers(self):
         """for each column, use column name or a custom name as table header"""
@@ -163,11 +164,13 @@ class VTableProcessor(Processor):
     def get_string(self):
         """TODO"""
         # pylint: disable=too-many-locals
+        if not self.columns_to_show:
+            self.columns_to_show = list(self.column_names)
         max_length_line = 0
         records = []
         for row in self.get_raw():
             record = []
-            for column_name in self.column_names:
+            for column_name in self.columns_to_show:
                 try:
                     slength = str(self._maxlengthkey)
                     t_format = "{key:" + slength + "s} | {value:s}"
@@ -226,16 +229,19 @@ class CsvProcessor(Processor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.csv_headers = True
-        self._attrs += ["csv_headers"]
+        self.columns_to_show = []
+        self._attrs += ["csv_headers", "columns_to_show"]
 
     def get_string(self):
         """TODO"""
         records = []
+        if not self.columns_to_show:
+            self.columns_to_show = list(self.column_names)
         if self.csv_headers:
-            records.append(";".join(self.column_names))
+            records.append(";".join(self.columns_to_show))
         for row in self.get_raw():
             record = []
-            for k in self.column_names:
+            for k in self.columns_to_show:
                 data = row.get(k)
                 if isinstance(data, str):
                     record.append(data)
@@ -352,6 +358,7 @@ class DoProcessor(Processor):
         self._update_messages(messages)
 
     def _do_row(self, row, context):
+        # pylint: disable=unused-argument
         if self.dry_run:
             return True, row
         raise NotImplementedError("_do_row is not implemented.")

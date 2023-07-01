@@ -224,11 +224,11 @@ def test_default_processor2():
     args = Namespace(
             debug=2,
             reverse=True,
-            table_required_columns=["name"],
+            columns_to_show=["name"],
             showindex=False,
             sort_by="name")
     processor = factory.create(args)
-    assert processor.table.required_columns == ["name"]
+    assert processor.table.columns_to_show == ["name"]
 
     print()
     print(processor)
@@ -260,11 +260,11 @@ def test_default_processor3():
     args = Namespace(
             debug=2,
             reverse=True,
-            table_required_columns=["name", "date"],
+            columns_to_show=["name", "date"],
             showindex=True,
             sort_by="name")
     processor = factory.create(args)
-    assert processor.table.required_columns == ["name", "date"]
+    assert processor.table.columns_to_show == ["name", "date"]
 
     print()
     print(processor)

@@ -136,9 +136,9 @@ class FormattingUnit(Unit):
         self.compute_column_for_each_row = False
         self._columns = []
         self._attrs += [
-            "raw_display", "no_cell", "vertical", "extended",
-            "required_columns"
+            "raw_display", "no_cell", "vertical", "extended"
         ]
+        self._attrs_ro += ["required_columns"]
 
     @property
     def debug(self):
@@ -267,13 +267,16 @@ class TableRender(Unit):
         self.headers = {}
         self.aligns = {}
         self.required_columns = []
+        self.columns_to_show = []
         # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
         self.tablefmt = prettytable.SINGLE_BORDER
-        self._attrs += ["tablefmt", "required_columns"]
+        self._attrs += ["tablefmt"]
+        self._gattrs += ["columns_to_show"]
+        self._attrs_ro += ["required_columns"]
 
     def get_headers(self):
         """TODO"""
-        for column_name in self.required_columns:
+        for column_name in self.columns_to_show:
             if column_name in self.headers:
                 yield self.headers.get(column_name)
             else:
@@ -281,23 +284,25 @@ class TableRender(Unit):
 
     def build_rows(self, rows):
         """TODO"""
-        if not self.required_columns:
+        if not self.columns_to_show:
             msg = "TableRender: Missing required columns to display"
             raise ValueError(msg)
         for row in rows:
             newrow = []
-            for column_name in self.required_columns:
+            for column_name in self.columns_to_show:
                 newrow.append(row.get(column_name))
             self.log.debug("newrow: %s", newrow)
             if newrow:
                 yield newrow
 
     def __call__(self, rows):
+        if not self.columns_to_show:
+            self.columns_to_show = list(self.required_columns)
         table = prettytable.PrettyTable()
         table.set_style(self.tablefmt)
         table.field_names = self.get_headers()
         table.add_rows(self.build_rows(rows))
-        for column_name in self.required_columns:
+        for column_name in self.columns_to_show:
             if column_name in self.aligns:
                 table.align[column_name] = self.aligns.get(column_name)
             else:
@@ -311,20 +316,24 @@ class CellToJsonUnit(Unit):
     def __init__(self, raw=False, dump=True, force_raw=False, **kwargs):
         super().__init__(**kwargs)
         self.required_columns = []
+        self.columns_to_show = []
         self.raw = raw
         self.force_raw = force_raw
         self.dump = dump
+        self._gattrs += ["columns_to_show"]
         self._attrs += ["required_columns", "raw"]
 
     def __call__(self, rows):
-        if not self.required_columns:
-            msg = "CellToJsonUnit: Missing required columns to display"
+        if not self.columns_to_show:
+            self.columns_to_show = list(self.required_columns)
+        if not self.columns_to_show:
+            msg = "CellToJsonUnit: Missing required columns to show"
             raise ValueError(msg)
 
         records = []
         for row in rows:
             record = {}
-            for column_name in self.required_columns:
+            for column_name in self.columns_to_show:
                 if self.raw or self.force_raw:
                     record[column_name] = row.get(column_name).value
                 else:

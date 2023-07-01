@@ -70,8 +70,10 @@ class Unit:
     def __init__(self, typ="transform",  debug=0, identifier=None):
         self.log = logging.getLogger(__name__)
         self._debug = debug
+        self._verbose = False
         self.identifier = identifier
-        self._attrs = ["debug"]
+        self._attrs = []
+        self._gattrs = ["debug", "verbose"]
         self._attrs_ro = []
         self.typ = typ
 
@@ -85,8 +87,22 @@ class Unit:
         """TODO"""
         self._debug = debug
 
+    @property
+    def verbose(self):
+        """TODO"""
+        return self._verbose
+
+    @verbose.setter
+    def verbose(self, verbose):
+        """TODO"""
+        self._verbose = verbose
+
     def setup(self, from_args):
         """TODO"""
+        for attr in self._gattrs:
+            if hasattr(from_args, attr):
+                setattr(self, attr, getattr(from_args, attr))
+            self.log.debug("setup:gattr: %s : %s", attr, getattr(self, attr))
         for attr in self._attrs:
             if self.identifier:
                 attr_with_prefix = self.identifier + "_" + attr
@@ -105,6 +121,9 @@ class Unit:
             prefix = self.identifier + "_"
 
         rows.append("Unit: " + self.__class__.__name__ + ":")
+        for attr in self._gattrs:
+            attr_val = getattr(self, attr)
+            rows.append(f" - global: {attr}: {attr_val}")
         for attr in self._attrs:
             attr_val = getattr(self, attr)
             rows.append(f" - {prefix}{attr}: {attr_val}")
