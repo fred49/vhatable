@@ -14,7 +14,7 @@ from vhatable.filters import Equals
 from vhatable.filters import PartialMultipleAnd
 from vhatable.filters import PartialDate
 from vhatable.filtersv2 import EqualMultipleOr
-from vhatable.filtersv2 import PartialMultipleAnd
+from vhatable.filtersv2 import PartialMultipleAnd as PartialMultipleAndV2
 from vhatable.filtersv2 import OlderThanFilter
 from vhatable.filtersv2 import NewerThanFilter
 
@@ -358,35 +358,35 @@ def test_partial_date_dict_false():
 
 def test_partial_and_false():
     """TODO"""
-    filterr = PartialMultipleAnd("name", ["value2", "value3"])
+    filterr = PartialMultipleAndV2("name", ["value2", "value3"])
     row = {"name": "value1"}
     assert not filterr(row)
 
 
 def test_partial_and_true0():
     """TODO"""
-    filterr = PartialMultipleAnd("name", [])
+    filterr = PartialMultipleAndV2("name", [])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true1():
     """TODO"""
-    filterr = PartialMultipleAnd("name", ["val"])
+    filterr = PartialMultipleAndV2("name", ["val"])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true2():
     """TODO"""
-    filterr = PartialMultipleAnd("name", ["val", "ue2"])
+    filterr = PartialMultipleAndV2("name", ["val", "ue2"])
     row = {"name": "value2"}
     assert filterr(row)
 
 
 def test_partial_and_true3():
     """TODO"""
-    filterr = PartialMultipleAnd("name", ["kal", "iuu3"])
+    filterr = PartialMultipleAndV2("name", ["kal", "iuu3"])
     row = {"name": "value2"}
     assert not filterr(row)
 
