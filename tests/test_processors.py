@@ -101,6 +101,24 @@ def test_htable_5():
     assert processor.format.extended
 
 
+def test_htable_6():
+    """testing with data with autokeys and column to show provided"""
+    rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+    ]
+    processor = HTableProcessor(debug=3, rows=rows, autokeys=True)
+    processor.post_init()
+    args = Namespace(columns_to_show=["name"])
+    processor.setup(args)
+    print("\n")
+    processor.run()
+    print("\n")
+    assert len(processor.get_string()) == 87
+
+
 def test_vertical_table():
     """TODO"""
     rows = [

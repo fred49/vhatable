@@ -66,7 +66,7 @@ def test_3b():
     assert unit.sort_by is None
     assert unit.debug == 0
 
-    args = Namespace(prefix_debug=2, prefix_reverse=True,
+    args = Namespace(debug=2, prefix_reverse=True,
                      prefix_sort_by="name")
     unit.setup(args)
     assert unit.reverse
