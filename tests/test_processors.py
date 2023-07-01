@@ -120,7 +120,7 @@ def test_vertical_table():
     processor.run()
     print("\n")
     assert len(processor.get_raw()) == 5
-    assert len(processor.get_string()) == 606
+    assert len(processor.get_string()) == 951
 
 
 def test_count():

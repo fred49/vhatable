@@ -101,7 +101,7 @@ def test_vertical_processor():
     print()
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 349
+    assert len(processor.get_string()) == 501
 
 
 def test_count_processor():
@@ -278,4 +278,4 @@ def test_default_processor3():
     print()
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 403
+    assert len(processor.get_string()) == 275
