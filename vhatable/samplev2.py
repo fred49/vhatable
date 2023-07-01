@@ -75,6 +75,7 @@ def sample1():
     processor = factory.create(args)
 
     processor.column_names = ["name", "size", "date"]
+    processor.post_init()
 
     rows = [
         {"name": "value1", "date": 1625647954855, "size": 80000000},
@@ -118,7 +119,6 @@ class API:
 
     def column_names(self):
         """TODO"""
-        # pylint: disable=no-self-use
         return ["season", "number", "title", "release_date", "show"]
 
 
