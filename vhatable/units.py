@@ -62,13 +62,15 @@ class FilteringUnit(Unit):
         matches = 0
         enabled_filters = 0
         for func in self._filters:
-            self.log.debug("filter: %s (enabled=%s)", func, func.is_enable())
+            if self.debug >= 2:
+                self.log.debug("filter: %s (enabled=%s)", func, func.is_enable())
             if func.is_enable():
                 enabled_filters += 1
                 if func(row):
                     matches += 1
-        self.log.debug("matches: %s", matches)
-        self.log.debug("enabled_filters: %s", enabled_filters)
+        if self.debug >= 2:
+            self.log.debug("matches: %s", matches)
+            self.log.debug("enabled_filters: %s", enabled_filters)
         if enabled_filters == 0:
             return True
         if matches == enabled_filters:

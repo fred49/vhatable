@@ -72,8 +72,8 @@ class Filter:
         val = row.get(prop)
         if val is None:
             raise ValueError("missing key : " + self.prop)
-        self.log.debug("type: %s", type(val))
-        self.log.debug("value: '%s'", val)
+        # self.log.debug("type: %s", type(val))
+        # self.log.debug("value: '%s'", val)
         return val
 
 

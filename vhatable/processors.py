@@ -114,7 +114,8 @@ class Processor(AbstractProcessor):
         result = []
         for unit in self.units.values():
             if unit.typ == "render":
-                self.log.debug("unit:render: %s", unit)
+                if self.debug >= 2:
+                    self.log.debug("unit:render: %s", unit)
                 result.append(unit(self.get_raw()))
         return "\n".join(result)
 
@@ -575,7 +576,6 @@ class ProcessorFactory:
         self.log.debug("builder: %s", builder)
         self.log.debug("clazz: %s", clazz)
         processor = builder(clazz)
-        self.log.debug("processor: %s", processor)
         return processor
 
     def create(self, args=Namespace(), default_builder=None):
