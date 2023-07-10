@@ -487,7 +487,6 @@ class ProcessorFactory:
         self.default_processor_identifier = "horizontal"
 
         self.add_processor("count", CountProcessor)
-        self.add_processor("cli_mode", CountProcessor)
         self.add_processor("vertical", VTableProcessor)
         self.add_processor("csv", CsvProcessor)
         self.add_processor("json", JsonProcessor)

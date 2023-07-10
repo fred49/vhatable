@@ -119,6 +119,60 @@ def test_htable_6():
     assert len(processor.get_string()) == 87
 
 
+def test_htable_7():
+    """testing cli mode"""
+    rows = [
+            {"id": "6E46010E-9C66-4B99-8412-501000E4F006", "count": 800000.0001, "size": 80000000},
+            {"id": "6E46010E-9C66-4B99-8412-501000E4F007", "count": 8.00001, "size": 110000},
+            {"id": "6E46010E-9C66-4B99-8412-501000E4F010", "count": 8000.001, "size": 2800000000},
+            {"id": "6E46010E-9C66-4B99-8412-501000E4F013", "count": 800.1, "size": 21000000000},
+    ]
+    processor = HTableProcessor(debug=3, rows=rows, autokeys=True)
+    processor.post_init()
+    args = Namespace(cli_mode=True)
+    processor.setup(args)
+    print("\n")
+    processor.run()
+    print("\n")
+    assert len(processor.get_string()) == 147
+
+
+def test_htable_8():
+    """testing cli mode"""
+    rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+    ]
+    processor = HTableProcessor(debug=3, rows=rows, autokeys=True)
+    processor.post_init()
+    args = Namespace(cli_mode=True, columns_to_show=["name"])
+    processor.setup(args)
+    print("\n")
+    processor.run()
+    print("\n")
+    assert len(processor.get_string()) == 27
+
+
+def test_htable_9():
+    """testing cli mode"""
+    rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+    ]
+    processor = HTableProcessor(debug=3, rows=rows, autokeys=True)
+    processor.post_init()
+    args = Namespace(cli_mode=True)
+    processor.setup(args)
+    with pytest.raises(ValueError) as exception:
+        processor.run()
+    msg = "Can not find an identifier in the row. Please provide a column name"
+    assert msg in str(exception.value)
+
+
 def test_vertical_table():
     """TODO"""
     rows = [

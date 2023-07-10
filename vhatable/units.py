@@ -268,12 +268,14 @@ class TableRender(Unit):
         super().__init__(**kwargs)
         self.headers = {}
         self.aligns = {}
+        self.cli_mode = False
+        self.cli_column_name = None
         self.required_columns = []
         self.columns_to_show = []
         # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
         self.tablefmt = prettytable.SINGLE_BORDER
         self._attrs += ["tablefmt"]
-        self._gattrs += ["columns_to_show"]
+        self._gattrs += ["columns_to_show", "cli_mode"]
         self._attrs_ro += ["required_columns"]
 
     def get_headers(self):
@@ -297,7 +299,24 @@ class TableRender(Unit):
             if newrow:
                 yield newrow
 
+    def _get_cli_output(self, rows):
+        """TODO"""
+        if len(rows) == 0:
+            return ""
+        if self.cli_column_name is None and self.columns_to_show:
+            self.cli_column_name = self.columns_to_show[0]
+        if self.cli_column_name is None:
+            for key in ["uuid", "UUID", "id", "Id", "ID"]:
+                if key in rows[0]:
+                    self.cli_column_name = key
+        if self.cli_column_name is None:
+            raise ValueError("Can not find an identifier in the row. Please provide a column name")
+        return "\n".join([str(x.get(self.cli_column_name)) for x in rows])
+
+
     def __call__(self, rows):
+        if self.cli_mode:
+            return self._get_cli_output(rows)
         if not self.columns_to_show:
             self.columns_to_show = list(self.required_columns)
         table = prettytable.PrettyTable()
