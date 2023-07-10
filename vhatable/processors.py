@@ -484,26 +484,19 @@ class ProcessorFactory:
         self.log = logging.getLogger('vhatable.' + classname)
 
         self.cfg = OrderedDict()
+        self.default_processor_builder_instance = ProcessorBuilder()
+        self.default_processor_identifier = "horizontal"
 
-        self.add_processor(
-            ProcessorBuilder(identifier="count"), CountProcessor)
-        self.add_processor(
-            ProcessorBuilder(identifier="cli_mode"), CountProcessor)
-        self.add_processor(
-            ProcessorBuilder(identifier="vertical"), VTableProcessor)
-        self.add_processor(
-            ProcessorBuilder(identifier="csv"), CsvProcessor)
-        self.add_processor(
-            ProcessorBuilder(identifier="json"), JsonProcessor)
-        self.add_processor(
-            ProcessorBuilder(identifier="horizontal"), HTableProcessor)
+        self.add_processor("count", CountProcessor)
+        self.add_processor("cli_mode", CountProcessor)
+        self.add_processor("vertical", VTableProcessor)
+        self.add_processor("csv", CsvProcessor)
+        self.add_processor("json", JsonProcessor)
+        self.add_processor("horizontal", HTableProcessor)
         if with_delete_proc:
-            self.add_processor(
-                ProcessorBuilder(identifier="delete"), DeleteProcessor)
+            self.add_processor("delete", DeleteProcessor)
         if with_update_proc:
-            self.add_processor(
-                ProcessorBuilder(identifier="update"), UpdateProcessor)
-        self.default_proc = "horizontal"
+            self.add_processor("update", UpdateProcessor)
 
         self._custom_cells = {}
         self._header_cells = {}
@@ -511,13 +504,14 @@ class ProcessorFactory:
         self._filters = []
         self._pre_render_classes = []
 
-    def _create_cfg(self, builder, clazz):
-        return {
-            "builder": builder,
-            "clazz": clazz
-        }
-
     def set_default_processor_builder(self, builder):
+        """Set a default processor builder"""
+        if not isinstance(builder, ProcessorBuilder):
+            msg = "1st argument (builder) must be an ProcessorBuilder instance"
+            raise ValueError(msg)
+        self.default_processor_builder_instance = builder
+
+    def set_default_processor_builder2(self, builder):
         """Set a default processor builder for all processors"""
         if not isinstance(builder, ProcessorBuilder):
             msg = "1st argument (builder) must be an ProcessorBuilder instance"
@@ -527,13 +521,15 @@ class ProcessorFactory:
             builder_copy.identifier = identifier
             proc_cfg['builder'] = builder_copy
 
-    def add_processor(self, builder, processor_clazz):
+    def add_processor(self, identifier, processor_clazz, builder=None):
         """Add some custom action class trigger by a its identifier."""
-        if not isinstance(builder, ProcessorBuilder):
-            msg = "2nd argument (builder) must be an ProcessorBuilder instance"
+        if builder and not isinstance(builder, ProcessorBuilder):
+            msg = "Third argument (builder) must be an ProcessorBuilder instance"
             raise ValueError(msg)
-        self.cfg[builder.identifier] = self._create_cfg(
-            builder, processor_clazz)
+        self.cfg[identifier] = {
+            "builder": builder,
+            "clazz": processor_clazz
+        }
 
     def set_header_cell(self, column_name, header_value):
         """set a header value for an existing displayed column."""
@@ -570,9 +566,15 @@ class ProcessorFactory:
         for flag in self.cfg.keys():
             if getattr(args, flag, False):
                 builder, clazz = self.cfg.get(flag).values()
+                if builder is None:
+                    builder = copy.copy(self.default_processor_builder_instance)
+                    builder.identifier = flag
                 break
         if builder is None:
-            builder, clazz = self.cfg.get(self.default_proc).values()
+            builder, clazz = self.cfg.get(self.default_processor_identifier).values()
+            if builder is None:
+                builder = copy.copy(self.default_processor_builder_instance)
+                builder.identifier = self.default_processor_identifier
         self.log.debug("builder: %s", builder)
         self.log.debug("clazz: %s", clazz)
         processor = builder(clazz)

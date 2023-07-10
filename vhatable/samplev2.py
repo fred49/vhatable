@@ -149,11 +149,12 @@ def sample2():
         )
     )
     api = API()
-    builder = ProcessorBuilder(
-        rows=api.list(),
-        column_names=api.column_names()
+    factory.set_default_processor_builder(
+        ProcessorBuilder(
+            rows=api.list(),
+            column_names=api.column_names()
+        )
     )
-    factory.set_default_processor_builder(builder)
 
     processor = factory.create(args)
 
