@@ -282,7 +282,7 @@ class ProcessorBuilder:
 
     def __init__(self, debug=0, rows=None, column_names=None,
                  autokeys=True, messages=None, api=API(), units=None,
-                 identifier=None):
+                 autoload=False, identifier=None):
         """A ProcessorBuilder is in charge of creating processors.
         it is used by ProcessorFactory.
 
@@ -301,6 +301,8 @@ class ProcessorBuilder:
           more details. AbstractApi is used by default
           @type units: list of Units
           @param units: Optional; a list of unit to add to the processor
+          @type autoload: bool
+          @param autoload: Optional; load rows and column names from api. Default: False
           @type identifier: string
           @param identifier: Optional; provide an identifier to this processor
           @rtype: ProcessorBuilder
@@ -314,6 +316,11 @@ class ProcessorBuilder:
         self.messages = messages
         self.api = api
         self.identifier = identifier
+        if autoload:
+            if hasattr(api, "column_names"):
+                self.column_names = api.column_names()
+            if hasattr(api, "list"):
+                self.rows = api.list()
 
     def __call__(self, clazz):
         processor = clazz(
@@ -330,14 +337,6 @@ class ProcessorBuilder:
 
     def _post_create_hook(self, processor):
         return processor
-
-    def use_api(self, api):
-        """trying to get automatically data and column names from api."""
-        if hasattr(api, "column_names"):
-            self.column_names = api.column_names()
-        if hasattr(api, "list"):
-            self.rows = api.list()
-        return self
 
 
 class DoProcessor(Processor):

@@ -151,6 +151,7 @@ def sample2():
     api = API()
     factory.set_default_processor_builder(
         ProcessorBuilder(
+            autoload=False,
             rows=api.list(),
             column_names=api.column_names()
         )
@@ -193,7 +194,7 @@ def sample3():
 
     processor = factory.create(
             args,
-            default_builder=ProcessorBuilder().use_api(api))
+            default_builder=ProcessorBuilder(api=api, autoload=True))
 
     helper_print_header("    >>>> Default  <<<<")
     print(processor)

@@ -126,8 +126,9 @@ def newfactory():
     factory.set_default_processor_builder(
         ProcessorBuilder(
             api=api,
+            autoload=True,
             messages=messages
-        ).use_api(api)
+        )
     )
     factory.add_processor(
         "update",
@@ -135,11 +136,12 @@ def newfactory():
         builder=ProcessorBuilder(
             identifier="update",
             api=api,
+            autoload=True,
             # we override default updatable columns,
             # only notes is updatable
             units=[UpdateRowsUnit(["notes"])],
             messages=messages
-        ).use_api(api))
+        ))
     factory.add_custom_cell(
         ComplexCellBuilder(
             "show",
