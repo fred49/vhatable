@@ -282,7 +282,7 @@ class ProcessorBuilder:
 
     def __init__(self, debug=0, rows=None, column_names=None,
                  autokeys=True, messages=None, api=API(), units=None,
-                 autoload=False, identifier=None):
+                 autoload=False, extra_args=None):
         """A ProcessorBuilder is in charge of creating processors.
         it is used by ProcessorFactory.
 
@@ -303,8 +303,6 @@ class ProcessorBuilder:
           @param units: Optional; a list of unit to add to the processor
           @type autoload: bool
           @param autoload: Optional; load rows and column names from api. Default: False
-          @type identifier: string
-          @param identifier: Optional; provide an identifier to this processor
           @rtype: ProcessorBuilder
           @returns builder: instance
           """
@@ -315,22 +313,24 @@ class ProcessorBuilder:
         self.column_names = column_names
         self.messages = messages
         self.api = api
-        self.identifier = identifier
+        self.extra_args = {}
+        if extra_args:
+            self.extra_args = extra_args
         if autoload:
-            if hasattr(api, "column_names"):
-                self.column_names = api.column_names()
-            if hasattr(api, "list"):
-                self.rows = api.list()
+            self.column_names = api.column_names()
+            self.rows = api.list()
 
-    def __call__(self, clazz):
+    def __call__(self, identifier, clazz):
         processor = clazz(
                 debug=self.debug,
                 autokeys=self.autokeys,
                 column_names=self.column_names,
                 messages=self.messages,
                 api=self.api,
-                identifier=self.identifier,
-                rows=self.rows)
+                identifier=identifier,
+                rows=self.rows,
+                **self.extra_args,
+        )
         for unit in self.units:
             processor.add_unit(unit)
         return self._post_create_hook(processor)
@@ -561,21 +561,20 @@ class ProcessorFactory:
         """
         builder = None
         clazz = None
+        identifier = None
         for flag in self.cfg.keys():
             if getattr(args, flag, False):
+                identifier = flag
                 builder, clazz = self.cfg.get(flag).values()
-                if builder is None:
-                    builder = copy.copy(self.default_processor_builder_instance)
-                    builder.identifier = flag
                 break
+        if identifier is None:
+            identifier = self.default_processor_identifier
+            builder, clazz = self.cfg.get(identifier).values()
         if builder is None:
-            builder, clazz = self.cfg.get(self.default_processor_identifier).values()
-            if builder is None:
-                builder = copy.copy(self.default_processor_builder_instance)
-                builder.identifier = self.default_processor_identifier
+            builder = self.default_processor_builder_instance
         self.log.debug("builder: %s", builder)
         self.log.debug("clazz: %s", clazz)
-        processor = builder(clazz)
+        processor = builder(identifier, clazz)
         return processor
 
     def create(self, args=Namespace(), default_builder=None):

@@ -134,7 +134,6 @@ def newfactory():
         "update",
         UpdateProcessor,
         builder=ProcessorBuilder(
-            identifier="update",
             api=api,
             autoload=True,
             # we override default updatable columns,
