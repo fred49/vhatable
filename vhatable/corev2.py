@@ -225,7 +225,9 @@ class AbstractProcessor:
         for unit in self.units.values():
             if unit.typ == "transform":
                 self.log.debug("unit:transform: %s", unit)
+                self.log.debug("unit:transform:begin: %s", unit.__class__.__name__)
                 pipeline = unit(pipeline)
+                self.log.debug("unit:transform:end  : %s", unit.__class__.__name__)
         self._raw_cache = list(pipeline)
         if self.debug >= 2:
             self.log.debug("pipeline rows: %s", self._raw_cache)

@@ -293,11 +293,11 @@ class TableRender(Unit):
         if not self.columns_to_show:
             msg = "TableRender: Missing required columns to display"
             raise ValueError(msg)
+        self.log.debug("columns_to_show: %s", self.columns_to_show)
         for row in rows:
             newrow = []
             for column_name in self.columns_to_show:
                 newrow.append(row.get(column_name))
-            self.log.debug("newrow: %s", newrow)
             if newrow:
                 yield newrow
 
