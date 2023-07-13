@@ -176,6 +176,7 @@ class FormattingUnit(Unit):
 
     # pylint: disable=inconsistent-return-statements
     def __call__(self, rows):
+        self.log.debug("FormattingUnit:starting converting data to cells")
         if self.no_cell:
             return rows
         for row in rows:
@@ -192,6 +193,7 @@ class FormattingUnit(Unit):
             if self.debug >= 2:
                 self.log.debug("row_full: %s", row_full)
             yield row_full
+        self.log.debug("FormattingUnit:converting data to cells completed.")
 
 
 class SlicingUnit(Unit):
