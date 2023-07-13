@@ -288,9 +288,9 @@ class ProcessorBuilder:
 
           @type debug: int
           @param debug: Debug log level
-          @type rows: list of dict values
+          @type rows: list of dict values OR a callable (lazyness)
           @param rows: Optional; list of rows to be displayed
-          @type column_names: list of str
+          @type column_names: list of str OR a callable (lazyness)
           @param column_names: Optional; a list of column names
           @type autokeys: bool
           @param rows: Optional; Trying to guest colun names from input rows
@@ -316,19 +316,27 @@ class ProcessorBuilder:
         self.extra_args = {}
         if extra_args:
             self.extra_args = extra_args
-        if autoload:
-            self.column_names = api.column_names()
-            self.rows = api.list()
+        self.autoload = autoload
 
     def __call__(self, identifier, clazz):
+        rows = self.rows
+        column_names = self.column_names
+        if self.autoload:
+            self.rows = self.api.list()
+            self.column_names = self.api.column_names()
+        else:
+            if callable(rows):
+                rows = rows()
+            if callable(column_names):
+                column_names = column_names()
         processor = clazz(
+                rows=rows,
+                column_names=column_names,
                 debug=self.debug,
                 autokeys=self.autokeys,
-                column_names=self.column_names,
                 messages=self.messages,
                 api=self.api,
                 identifier=identifier,
-                rows=self.rows,
                 **self.extra_args,
         )
         for unit in self.units:
