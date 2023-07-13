@@ -9,6 +9,7 @@ from vhatable.processors import ProcessorBuilder
 from vhatable.cellv2 import DateCellBuilder
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
+from vhatable.processors import API as AbstractAPI
 
 rows = [
     {"name": "value1", "date": 1625647954855, "size": 80000000,
@@ -279,3 +280,91 @@ def test_default_processor3():
     processor.run()
     assert len(processor.get_raw()) == 2
     assert len(processor.get_string()) == 275
+
+
+class API(AbstractAPI):
+    """TODO"""
+
+    def list(self):
+        """TODO"""
+        some_rows = [
+            {"name": "value1", "count": 800000.0001, "size": 80000000},
+            {"name": "value3", "count": 8000.001, "size": 280000000000},
+            {"name": "value2", "count": 8.00001, "size": 110000},
+            {"name": "value4", "count": 800.1, "size": 2100000000000000},
+        ]
+        return some_rows
+
+    def column_names(self):
+        """TODO"""
+        return ["name", "count", "unknown", "size"]
+
+
+def test_default_processor4():
+    """TODO"""
+
+    factory = ProcessorFactory()
+    factory.set_default_processor_builder(
+        ProcessorBuilder(
+            api=API(),
+            autoload=True
+        )
+    )
+
+    args = Namespace(
+            debug=2,
+            sort_by="name")
+    processor = factory.create(args)
+    assert processor.table.required_columns
+
+    print()
+    processor.run()
+    assert len(processor.get_raw()) == 4
+
+
+def test_default_processor5():
+    """TODO"""
+
+    api = API()
+    factory = ProcessorFactory()
+    factory.set_default_processor_builder(
+        ProcessorBuilder(
+            api=api,
+            rows=api.list(),
+            column_names=api.column_names()
+        )
+    )
+
+    args = Namespace(debug=2, sort_by="name")
+    processor = factory.create(args)
+    assert processor.table.required_columns
+
+    print()
+    processor.run()
+    assert len(processor.get_raw()) == 4
+    assert len(processor.get_string()) == 351
+
+
+def test_default_processor6():
+    """TODO"""
+
+    api = API()
+    factory = ProcessorFactory()
+    factory.set_default_processor_builder(
+        ProcessorBuilder(
+            api=api,
+            rows=api.list,
+            column_names=api.column_names
+        )
+    )
+
+    args = Namespace(debug=2, sort_by="name")
+    processor = factory.create(args)
+    assert processor.table.required_columns
+
+    print()
+    processor.run()
+    assert len(processor.get_raw()) == 4
+    assert len(processor.get_string()) == 351
+    assert len(processor.get_string()) == 351
+    assert len(processor.get_string()) == 351

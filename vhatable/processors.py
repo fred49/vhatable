@@ -322,8 +322,8 @@ class ProcessorBuilder:
         rows = self.rows
         column_names = self.column_names
         if self.autoload:
-            self.rows = self.api.list()
-            self.column_names = self.api.column_names()
+            rows = self.api.list()
+            column_names = self.api.column_names()
         else:
             if callable(rows):
                 rows = rows()
