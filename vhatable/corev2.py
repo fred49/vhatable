@@ -64,6 +64,37 @@ class Time:
         return time_wrapper
 
 
+class AutoTime:
+    """TODO"""
+    # pylint: disable=too-few-public-methods
+
+    def __init__(self, label="execution time: {time:.15f}"):
+        self.enabled = False
+        self.label = label
+
+    def __call__(self, original_func):
+        @wraps(original_func)
+        def time_wrapper(*args, **kwargs):
+            logger_name = args[0].__class__.__name__
+            logger_name += "." + original_func.__name__
+            log = logging.getLogger(logger_name)
+            log.debug("args: %s", args)
+            log.debug("kwargs: %s", kwargs)
+            start = time.time()
+            res = original_func(*args, **kwargs)
+            end = time.time()
+            if len(args) > 0:
+                first_arg = args[0]
+                self.enabled = getattr(first_arg, "verbose", self.enabled)
+            diff = end - start
+            msg = self.label.format(time=diff)
+            log.debug(msg)
+            if self.enabled:
+                print(msg)
+            return res
+        return time_wrapper
+
+
 class Unit:
     """TODO"""
 
