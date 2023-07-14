@@ -274,6 +274,7 @@ class TableRender(Unit):
         self.cli_column_name = None
         self.required_columns = []
         self.columns_to_show = []
+        self.table = prettytable.PrettyTable()
         # DEFAULT, PLAIN_COLUMNS, MARKDOWN, ORGMODE, DOUBLE_BORDER
         self.tablefmt = prettytable.SINGLE_BORDER
         self._attrs += ["tablefmt"]
@@ -321,16 +322,15 @@ class TableRender(Unit):
             return self._get_cli_output(rows)
         if not self.columns_to_show:
             self.columns_to_show = list(self.required_columns)
-        table = prettytable.PrettyTable()
-        table.set_style(self.tablefmt)
-        table.field_names = self.get_headers()
-        table.add_rows(self.build_rows(rows))
+        self.table.set_style(self.tablefmt)
+        self.table.field_names = self.get_headers()
+        self.table.add_rows(self.build_rows(rows))
         for column_name in self.columns_to_show:
             if column_name in self.aligns:
-                table.align[column_name] = self.aligns.get(column_name)
+                self.table.align[column_name] = self.aligns.get(column_name)
             else:
-                table.align[column_name] = 'c'
-        return table.get_string()
+                self.table.align[column_name] = 'c'
+        return self.table.get_string()
 
 
 class CellToJsonUnit(Unit):
