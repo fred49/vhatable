@@ -322,6 +322,7 @@ class TableRender(Unit):
             return self._get_cli_output(rows)
         if not self.columns_to_show:
             self.columns_to_show = list(self.required_columns)
+        self.table = prettytable.PrettyTable()
         self.table.set_style(self.tablefmt)
         self.table.field_names = self.get_headers()
         self.table.add_rows(self.build_rows(rows))
