@@ -235,16 +235,16 @@ class CsvProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.csv_headers = True
+        self.csv_header = True
         self.columns_to_show = []
-        self._attrs += ["csv_headers", "columns_to_show"]
+        self._attrs += ["csv_header", "columns_to_show"]
 
     def get_string(self):
         """TODO"""
         records = []
         if not self.columns_to_show:
             self.columns_to_show = list(self.column_names)
-        if self.csv_headers:
+        if self.csv_header:
             records.append(";".join(self.columns_to_show))
         for row in self.get_raw():
             record = []
