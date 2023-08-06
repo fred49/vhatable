@@ -285,7 +285,7 @@ def add_delete_command(main_subparsers):
         A more performant implementation.
         """
         factory = newfactory()
-        factory.default_proc = "delete"
+        factory.default_processor_identifier = "delete"
         factory.add_filters(EqualMultipleOr("ID", args.ids))
         processor = factory.create(args)
         print(processor)
@@ -314,7 +314,7 @@ def add_delete_commandv2(main_subparsers):
             rows.append(api.get(row_id))
 
         factory = newfactory()
-        factory.default_proc = "delete"
+        factory.default_processor_identifier = "delete"
         processor = factory.create(args)
         processor.load(rows)
         print(processor)
@@ -355,7 +355,7 @@ def add_update_command(main_subparsers):
             rows.append(api.get(row_id))
 
         factory = newfactory()
-        factory.default_proc = "update"
+        factory.default_processor_identifier = "update"
         processor = factory.create(args)
         processor.load(rows)
         print(processor)

@@ -366,5 +366,29 @@ def test_default_processor6():
     processor.run()
     assert len(processor.get_raw()) == 4
     assert len(processor.get_string()) == 351
+
+
+def test_default_processor7():
+    """TODO"""
+
+    api = API()
+    factory = ProcessorFactory()
+    factory.set_default_processor_builder(
+        ProcessorBuilder(
+            api=api,
+            rows=api.list,
+            column_names=api.column_names
+        )
+    )
+
+    args = Namespace(debug=2, sort_by="name")
+    processor = factory.create(args)
+    processor.run()
+    assert len(processor.get_raw()) == 4
     assert len(processor.get_string()) == 351
-    assert len(processor.get_string()) == 351
+
+    factory.default_processor_identifier = "vertical"
+    processor = factory.create(args)
+    processor.run()
+    assert len(processor.get_raw()) == 4
+    assert len(processor.get_string()) == 605
