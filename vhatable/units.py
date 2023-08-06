@@ -94,13 +94,6 @@ class PassThroughUnit(Unit):
             yield row
 
 
-class HelloWordRender(Unit):
-    """TODO"""
-
-    def __call__(self, rows):
-        return "Hello world"
-
-
 class SortingUnit(Unit):
     """TODO"""
 
@@ -261,6 +254,40 @@ class CollectorUnit(Unit):
             self.log.debug("newrow: %s", newrow)
             if newrow:
                 yield newrow
+
+
+class HelloWordRender(Unit):
+    """TODO"""
+
+    def __call__(self, rows):
+        return "Hello world"
+
+
+class HeaderRender(Unit):
+    """TODO"""
+
+    def __init__(self, identifier="header", typ="render"):
+        super().__init__(identifier=identifier, typ=typ)
+        self.cli_mode = False
+        self._gattrs += ["cli_mode"]
+        self.rows = None
+
+    def get_string(self):
+        """TODO"""
+        return None
+
+    def __call__(self, rows):
+        self.rows = rows
+        if self.cli_mode:
+            return None
+        return self.get_string()
+
+
+class FooterRender(HeaderRender):
+    """TODO"""
+
+    def __init__(self, identifier="footer", typ="render"):
+        super().__init__(identifier=identifier, typ=typ)
 
 
 class TableRender(Unit):

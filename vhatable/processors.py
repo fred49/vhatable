@@ -40,6 +40,8 @@ from .units import FilteringUnit
 from .units import SortingUnit
 from .units import SlicingUnit
 from .units import TableRender
+from .units import HeaderRender
+from .units import FooterRender
 from .units import CellToJsonUnit
 from .units import UpdateRowsUnit
 
@@ -116,7 +118,9 @@ class Processor(AbstractProcessor):
             if unit.typ == "render":
                 if self.debug >= 2:
                     self.log.debug("unit:render: %s", unit)
-                result.append(unit(self.get_raw()))
+                string = unit(self.get_raw())
+                if string:
+                    result.append(string)
         return "\n".join(result)
 
     @Time('vhatable.corev2.run')
@@ -131,7 +135,9 @@ class HTableProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.add_unit(HeaderRender())
         self.add_unit(TableRender(identifier='table', typ="render"))
+        self.add_unit(FooterRender())
         self.headers = {}
         self.aligns = {}
 
@@ -506,6 +512,7 @@ class ProcessorFactory:
 
         self._custom_cells = {}
         self._header_cells = {}
+        self._units = {}
         self._align_cells = {}
         self._filters = []
         self._pre_render_classes = []
@@ -526,6 +533,10 @@ class ProcessorFactory:
             builder_copy = copy.copy(builder)
             builder_copy.identifier = identifier
             proc_cfg['builder'] = builder_copy
+
+    def add_unit(self, unit):
+        """TODO"""
+        self._units[unit.identifier] = unit
 
     def add_processor(self, identifier, processor_clazz, builder=None):
         """Add some custom action class trigger by a its identifier."""
@@ -585,6 +596,11 @@ class ProcessorFactory:
         processor = builder(identifier, clazz)
         return processor
 
+    def _load_custom_units(self, processor):
+        for identifier, unit in self._units.items():
+            if identifier in processor.units:
+                processor.units[identifier] = unit
+
     def create(self, args=Namespace(), default_builder=None):
         """create a new processor and do the setup."""
         if default_builder:
@@ -619,5 +635,6 @@ class ProcessorFactory:
         else:
             self.log.debug(msg)
 
+        self._load_custom_units(processor)
         processor.setup(args)
         return processor
