@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -27,10 +26,10 @@
 
 
 import json
-
 from collections import OrderedDict
 
 import prettytable
+
 from .cellv2 import CellBuilderFactory
 from .corev2 import Unit
 

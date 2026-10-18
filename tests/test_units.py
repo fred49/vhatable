@@ -1,18 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
 from argparse import Namespace
-import pytest
+
 from prettytable import PrettyTable
 from veryprettytable import VeryPrettyTable
 
-from vhatable.units import FilteringUnit
-from vhatable.units import FormattingUnit
-from vhatable.units import SortingUnit
-from vhatable.units import SlicingUnit
 from vhatable.filters import PartialOr
+from vhatable.units import FilteringUnit, FormattingUnit, SlicingUnit, SortingUnit
 
 
 def test_1():

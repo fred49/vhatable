@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -26,6 +25,4 @@
 #
 
 # from .core import *
-from . import core
-from . import cell
-from . import filters
+from . import cell, core, filters

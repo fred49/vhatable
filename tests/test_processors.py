@@ -1,18 +1,20 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
 from argparse import Namespace
+
 import pytest
 
-from vhatable.processors import HTableProcessor
-from vhatable.processors import VTableProcessor
-from vhatable.processors import CountProcessor
-from vhatable.processors import CsvProcessor
-from vhatable.processors import DeleteProcessor
-from vhatable.processors import UpdateProcessor
 from vhatable.processors import API as AbstractAPI
+from vhatable.processors import (
+    CountProcessor,
+    CsvProcessor,
+    DeleteProcessor,
+    HTableProcessor,
+    UpdateProcessor,
+    VTableProcessor,
+)
 
 
 def test_htable_1(logger, print_and_count):

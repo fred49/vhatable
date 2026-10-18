@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -33,17 +32,18 @@ from collections import OrderedDict
 from datetime import datetime
 
 from .cellv2 import CellBuilder
-from .corev2 import AbstractProcessor
-from .corev2 import Time
-from .units import FormattingUnit
-from .units import FilteringUnit
-from .units import SortingUnit
-from .units import SlicingUnit
-from .units import TableRender
-from .units import HeaderRender
-from .units import FooterRender
-from .units import CellToJsonUnit
-from .units import UpdateRowsUnit
+from .corev2 import AbstractProcessor, Time
+from .units import (
+    CellToJsonUnit,
+    FilteringUnit,
+    FooterRender,
+    FormattingUnit,
+    HeaderRender,
+    SlicingUnit,
+    SortingUnit,
+    TableRender,
+    UpdateRowsUnit,
+)
 
 
 class API:

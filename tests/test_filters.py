@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -8,15 +7,9 @@ from unittest.mock import patch
 
 from vhatable import filtersv2
 from vhatable.cell import DateCell
-from vhatable.filters import PartialOr
-from vhatable.filters import Equal
-from vhatable.filters import Equals
-from vhatable.filters import PartialMultipleAnd
-from vhatable.filters import PartialDate
-from vhatable.filtersv2 import EqualMultipleOr
+from vhatable.filters import Equal, Equals, PartialDate, PartialMultipleAnd, PartialOr
+from vhatable.filtersv2 import EqualMultipleOr, NewerThanFilter, OlderThanFilter
 from vhatable.filtersv2 import PartialMultipleAnd as PartialMultipleAndV2
-from vhatable.filtersv2 import OlderThanFilter
-from vhatable.filtersv2 import NewerThanFilter
 
 
 def test_nb_filters():

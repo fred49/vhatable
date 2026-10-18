@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """Contains cell builders and factory to handle rendering in a table."""
 
 
@@ -28,11 +27,7 @@
 
 import logging
 
-from .cell import SCell, BCell, ICell
-from .cell import SizeCell
-from .cell import DateCell
-from .cell import TypeCell
-from .cell import ComplexCell
+from .cell import BCell, ComplexCell, DateCell, ICell, SCell, SizeCell, TypeCell
 
 
 class CellBuilder:
@@ -176,9 +171,7 @@ class CellBuilderFactory:
             builder_clazz = BoolCellBuilder
         elif isinstance(cell_value, int):
             builder_clazz = IntCellBuilder
-        elif isinstance(cell_value, list):
-            builder_clazz = ComplexCellBuilder
-        elif isinstance(cell_value, dict):
+        elif isinstance(cell_value, list) or isinstance(cell_value, dict):
             builder_clazz = ComplexCellBuilder
         else:
             builder_clazz = StringCellBuilder

@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """This module contains only filters, they are design to be apply to a row
 of a Vertical or Horizotal table."""
 
@@ -28,8 +27,8 @@ of a Vertical or Horizotal table."""
 
 
 import datetime
-import re
 import logging
+import re
 
 from .cell import BaseCell
 

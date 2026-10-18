@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -26,19 +25,18 @@
 #
 
 
+import argparse
+import inspect
+import json
+import logging
 import os
 import sys
-import json
-import inspect
-import argparse
-import logging
+
 import requests
 
-from vhatable.processors import ProcessorBuilder
-from vhatable.processors import ProcessorFactory
-from vhatable.cellv2 import DateCellBuilder
-from vhatable.cellv2 import ComplexCellBuilder
+from vhatable.cellv2 import ComplexCellBuilder, DateCellBuilder
 from vhatable.filters import PartialOr
+from vhatable.processors import ProcessorBuilder, ProcessorFactory
 
 
 def helper_print_header(extra=None):

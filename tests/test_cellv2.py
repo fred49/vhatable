@@ -1,16 +1,17 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Testing actions like rsync, hard links, ..."""
 
 
-from vhatable.cellv2 import BoolCellBuilder
-from vhatable.cellv2 import IntCellBuilder
-from vhatable.cellv2 import DateCellBuilder
-from vhatable.cellv2 import StringCellBuilder
-from vhatable.cellv2 import SizeCellBuilder
-from vhatable.cellv2 import ComplexCellBuilder
-from vhatable.cellv2 import TypeCellBuilder
-from vhatable.cellv2 import CellBuilderFactory
+from vhatable.cellv2 import (
+    BoolCellBuilder,
+    CellBuilderFactory,
+    ComplexCellBuilder,
+    DateCellBuilder,
+    IntCellBuilder,
+    SizeCellBuilder,
+    StringCellBuilder,
+    TypeCellBuilder,
+)
 
 
 def test_bool_true(logger):

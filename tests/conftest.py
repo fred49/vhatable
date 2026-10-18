@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Tests configuration and global fixtures."""
 
 
 import logging
+
 import pytest
 
 

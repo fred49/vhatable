@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -63,9 +62,7 @@ class CellFactory:
             clazz = BCell
         elif isinstance(value, int):
             clazz = ICell
-        elif isinstance(value, list):
-            clazz = ComplexCell
-        elif isinstance(value, dict):
+        elif isinstance(value, list) or isinstance(value, dict):
             clazz = ComplexCell
         else:
             clazz = SCell

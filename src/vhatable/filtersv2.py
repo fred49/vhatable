@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """This module contains only filters, they are design to be apply to a row
 of a Vertical or Horizotal table."""
 
@@ -26,12 +25,9 @@ of a Vertical or Horizotal table."""
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from .filters import Equals
-from .filters import Filter
-
+from .filters import Equals, Filter
 
 # Equal | Partial | Greater | Older | Newer
 # Single value | Multiple Value

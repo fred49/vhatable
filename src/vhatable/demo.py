@@ -1,19 +1,16 @@
 """TODO"""
+import argparse
+import json
+import logging
 import os
 import sys
-import json
-import argparse
-import logging
+
 import requests
 
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
-from vhatable.filtersv2 import EqualMultipleOr
-from vhatable.filtersv2 import PartialMultipleAnd
-from vhatable.processors import ProcessorBuilder
-from vhatable.processors import ProcessorFactory
-from vhatable.processors import API
-from vhatable.processors import UpdateProcessor
+from vhatable.filtersv2 import EqualMultipleOr, PartialMultipleAnd
+from vhatable.processors import API, ProcessorBuilder, ProcessorFactory, UpdateProcessor
 from vhatable.units import UpdateRowsUnit
 
 

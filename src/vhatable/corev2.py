@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
@@ -26,9 +25,8 @@
 #
 
 
-import time
 import logging
-
+import time
 from collections import OrderedDict
 from functools import wraps
 

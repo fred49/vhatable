@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """TODO"""
 
 
 from argparse import Namespace
-from vhatable.processors import ProcessorFactory
-from vhatable.processors import ProcessorBuilder
-from vhatable.cellv2 import DateCellBuilder
-from vhatable.cellv2 import ComplexCellBuilder
+
+from vhatable.cellv2 import ComplexCellBuilder, DateCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.processors import API as AbstractAPI
+from vhatable.processors import ProcessorBuilder, ProcessorFactory
 
 rows = [
     {"name": "value1", "date": 1625647954855, "size": 80000000,
