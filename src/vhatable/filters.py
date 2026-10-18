@@ -51,10 +51,7 @@ class Filter:
             # pylint: disable=len-as-condition
             if len(self.values) == 0:
                 return False
-            for i in self.values:
-                if i is not None:
-                    return True
-            return False
+            return any(i is not None for i in self.values)
         return True
 
     def get_val(self, row):
@@ -149,9 +146,8 @@ class PartialMultipleAnd(Filter):
             return True
         vals = self.get_val(row)
         for key, val in list(vals.items()):
-            if self.regex[key]:
-                if not self.regex[key].match(val):
-                    return False
+            if self.regex[key] and not self.regex[key].match(val):
+                return False
         return True
 
 
@@ -195,9 +191,7 @@ class Equal(Filter):
         if not self.is_enable():
             return True
         val = self.get_val(row)
-        if val == self.values:
-            return True
-        return False
+        return val == self.values
 
 
 class Equals(Filter):
@@ -214,6 +208,4 @@ class Equals(Filter):
         for v in self.values:
             self.log.debug("comp: %s", v)
             self.log.debug("comp type: %s", type(v))
-        if val in self.values:
-            return True
-        return False
+        return val in self.values

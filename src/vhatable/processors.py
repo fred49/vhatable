@@ -581,7 +581,7 @@ class ProcessorFactory:
         builder = None
         clazz = None
         identifier = None
-        for flag in self.cfg.keys():
+        for flag in self.cfg:
             if getattr(args, flag, False):
                 identifier = flag
                 builder, clazz = self.cfg.get(flag).values()

@@ -157,7 +157,7 @@ def test_8(logger):
     table.align = 'l'
     for row in unit(rows):
         data = []
-        for colum in row.keys():
+        for colum in row:
             data.append(row.get(colum))
         table.add_row(data)
     logger.info(table.get_string())

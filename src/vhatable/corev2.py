@@ -191,16 +191,14 @@ class AbstractProcessor:
             self._rows = rows
         if column_names:
             self.column_names = column_names
-        elif autokeys:
-            if rows and len(rows) >= 1:
-                self.column_names = rows[0].keys()
+        elif autokeys and rows and len(rows) >= 1:
+            self.column_names = rows[0].keys()
         self._update_messages(messages)
 
     def _update_messages(self, messages):
-        if messages:
-            if self.identifier in messages:
-                messages = messages[self.identifier]
-                self.messages[self.identifier].update(messages)
+        if messages and self.identifier in messages:
+            messages = messages[self.identifier]
+            self.messages[self.identifier].update(messages)
 
     def _format_messages(self, key, data):
         return self.messages[self.identifier][key].format(**data)

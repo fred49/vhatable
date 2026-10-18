@@ -112,8 +112,7 @@ class API:
         """TODO"""
         json_data = self.load_json()
         for season in json_data:
-            for episode in json_data[season]:
-                yield episode
+            yield from json_data[season]
 
     def column_names(self):
         """TODO"""

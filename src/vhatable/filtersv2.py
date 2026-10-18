@@ -93,9 +93,7 @@ class OlderThanFilter(Filter):
         if cell.millisecond:
             value = value / 1000
         # self.log.debug("cell: %s, %s", cell, value)
-        if self.timestamp_to_compare > value:
-            return True
-        return False
+        return self.timestamp_to_compare > value
 
 
 class NewerThanFilter(Filter):
@@ -120,6 +118,4 @@ class NewerThanFilter(Filter):
         if cell.millisecond:
             value = value / 1000
         # self.log.debug("cell: %s, %s", cell, value)
-        if self.timestamp_to_compare < value:
-            return True
-        return False
+        return self.timestamp_to_compare < value

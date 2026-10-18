@@ -171,7 +171,7 @@ class CellBuilderFactory:
             builder_clazz = BoolCellBuilder
         elif isinstance(cell_value, int):
             builder_clazz = IntCellBuilder
-        elif isinstance(cell_value, list) or isinstance(cell_value, dict):
+        elif isinstance(cell_value, (list, dict)):
             builder_clazz = ComplexCellBuilder
         else:
             builder_clazz = StringCellBuilder

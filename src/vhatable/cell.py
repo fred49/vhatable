@@ -62,7 +62,7 @@ class CellFactory:
             clazz = BCell
         elif isinstance(value, int):
             clazz = ICell
-        elif isinstance(value, list) or isinstance(value, dict):
+        elif isinstance(value, (list, dict)):
             clazz = ComplexCell
         else:
             clazz = SCell
@@ -137,12 +137,9 @@ class BaseCell:
 
     def match(self, regex):
         """Apply the input regext to the current object"""
-        if self._format_filter:
-            if regex.match(self._format_filter.format(**self.value)):
-                return True
-        if regex.match(str(self)):
+        if self._format_filter and regex.match(self._format_filter.format(**self.value)):
             return True
-        return False
+        return bool(regex.match(str(self)))
 
     def __unicode__(self):
         """TODO"""
@@ -201,9 +198,8 @@ class SCell(BaseCell):
             return str(self.value)
         if self.value is None:
             return self.none
-        if self.vertical:
-            if self._format_vertical:
-                return self._format_vertical.format(value=self.value)
+        if self.vertical and self._format_vertical:
+            return self._format_vertical.format(value=self.value)
         if self._format:
             return self._format.format(value=self.value)
         return str(self.value)
@@ -303,9 +299,8 @@ class ComplexCell(BaseCell):
             return str(self.value)
         if self.value is None:
             return self.none
-        if self.vertical:
-            if self._format_vertical:
-                return self._format_vertical.format(**self.value)
+        if self.vertical and self._format_vertical:
+            return self._format_vertical.format(**self.value)
         if self._format:
             return self._format.format(**self.value)
         return str(self.value)

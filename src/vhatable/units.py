@@ -72,9 +72,7 @@ class FilteringUnit(Unit):
             self.log.debug("enabled_filters: %s", enabled_filters)
         if enabled_filters == 0:
             return True
-        if matches == enabled_filters:
-            return True
-        return False
+        return matches == enabled_filters
 
     def __call__(self, rows):
         self._rows = rows
@@ -89,8 +87,7 @@ class PassThroughUnit(Unit):
     """TODO"""
 
     def __call__(self, rows):
-        for row in rows:
-            yield row
+        yield from rows
 
 
 class SortingUnit(Unit):
@@ -156,7 +153,7 @@ class FormattingUnit(Unit):
         def compute(row):
             columns = []
             columns += self.required_columns
-            for key in row.keys():
+            for key in row:
                 if key not in columns:
                     columns.append(key)
             return columns
@@ -175,7 +172,7 @@ class FormattingUnit(Unit):
             row_full = OrderedDict()
             for cell_name in self._get_columns(row):
                 cell_value = None
-                if cell_name in row.keys():
+                if cell_name in row:
                     cell_value = row[cell_name]
                 cell = self.cfa(
                         cell_name, cell_value, context=row_full,
@@ -227,9 +224,8 @@ class SlicingUnit(Unit):
             cpt += 1
             if cpt < start:
                 continue
-            if end > 0:
-                if cpt >= end:
-                    break
+            if end > 0 and cpt >= end:
+                break
             yield row
 
 
