@@ -165,7 +165,7 @@ class DemoAPI(API):
 
     def column_names(self):
         """TODO"""
-        return ["ID", "season", "number", "title", "release_date", "show", "notes"]
+        return ["ID", "season", "number", "title", "airdate", "tvmaze link", "notes"]
 
     def delete(self, row):
         """TODO"""
