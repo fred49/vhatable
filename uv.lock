@@ -1800,16 +1800,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.4.0" },
-    { name = "humanfriendly", specifier = "==9.0" },
+    { name = "humanfriendly", specifier = ">=9.0,<10.0" },
     { name = "linshareapi", marker = "extra == 'dev'" },
-    { name = "prettytable", specifier = "==3.7.0" },
+    { name = "prettytable", specifier = ">=3.7.0,<4.0.0" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "requests", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.7.0" },
     { name = "tox", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "tox-uv", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "twine", marker = "extra == 'dev'" },
-    { name = "veryprettytable", specifier = "==0.8.1" },
+    { name = "veryprettytable", specifier = ">=0.8.1,<1.0.0" },
 ]
 provides-extras = ["dev"]
 

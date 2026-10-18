@@ -25,9 +25,9 @@ classifiers = [
 ]
 
 dependencies = [
-    'veryprettytable==0.8.1',
-    'prettytable==3.7.0',
-    'humanfriendly==9.0'
+    'veryprettytable>=0.8.1,<1.0.0',
+    'prettytable>=3.7.0,<4.0.0',
+    'humanfriendly>=9.0,<10.0'
 ]
 
 [project.optional-dependencies]
