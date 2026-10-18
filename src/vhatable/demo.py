@@ -1,4 +1,5 @@
 """TODO"""
+
 import argparse
 import json
 import logging
@@ -16,6 +17,7 @@ from vhatable.units import UpdateRowsUnit
 
 class DemoAPI(API):
     """TODO"""
+
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
     CACHEFILENAME = "/tmp/vhatable-demo--cache-big-bang.json"
 
@@ -25,7 +27,7 @@ class DemoAPI(API):
 
     def _persist(self, data):
         # pylint: disable=unspecified-encoding
-        with open(self.CACHEFILENAME, 'w') as json_file:
+        with open(self.CACHEFILENAME, "w") as json_file:
             json.dump(data, json_file)
 
     def reset(self):
@@ -48,8 +50,8 @@ class DemoAPI(API):
         for season in data:
             for episode in data[season]:
                 cpt += 1
-                episode['ID'] = cpt
-                episode['notes'] = "TODO"
+                episode["ID"] = cpt
+                episode["notes"] = "TODO"
                 res[cpt] = episode
         self._persist(res)
         return res
@@ -60,12 +62,11 @@ class DemoAPI(API):
 
     def column_names(self):
         """TODO"""
-        return ["ID", "season", "number", "title", "release_date", "show",
-                "notes"]
+        return ["ID", "season", "number", "title", "release_date", "show", "notes"]
 
     def delete(self, row):
         """TODO"""
-        row_id = str(row['ID'])
+        row_id = str(row["ID"])
         row = self.data.pop(row_id)
         self._persist(self.data)
         return True, row
@@ -78,7 +79,7 @@ class DemoAPI(API):
         return row
 
     def update(self, row):
-        row_id = str(row['ID'])
+        row_id = str(row["ID"])
         old_row = self.data.get(row_id)
         if old_row is None:
             raise ValueError("row id not found " + row_id)
@@ -94,38 +95,30 @@ api = DemoAPI()
 def newfactory():
     """TODO"""
     messages = {}
-    messages['delete'] = {
+    messages["delete"] = {
         "nothing_to_do": "Nothing to delete.",
         "done": (
-            "{prefix}{_position}/{_count}: "
-            "The episode '{title}' ({ID}) was deleted. ({_time}s)"
+            "{prefix}{_position}/{_count}: The episode '{title}' ({ID}) was deleted. ({_time}s)"
         ),
         "done_failure": (
             "{prefix}{_position}/{_count}: Failure "
             "The episode '{title}' ({ID}) was not deleted. ({_time}s)"
-        )
+        ),
     }
-    messages['update'] = {
+    messages["update"] = {
         "nothing_to_do": "Nothing to update.",
         "done": (
-            "{prefix}{_position}/{_count}: "
-            "The episode '{title}' ({ID}) was updated. ({_time}s)"
+            "{prefix}{_position}/{_count}: The episode '{title}' ({ID}) was updated. ({_time}s)"
         ),
         "done_failure": (
             "{prefix}{_position}/{_count}: Failure "
             "The episode '{title}' ({ID}) was not updated. ({_time}s)"
-        )
+        ),
     }
-    messages['count'] = {
-        "count_elt": "Episodes found: {count}"
-    }
+    messages["count"] = {"count_elt": "Episodes found: {count}"}
     factory = ProcessorFactory()
     factory.set_default_processor_builder(
-        ProcessorBuilder(
-            api=api,
-            autoload=True,
-            messages=messages
-        )
+        ProcessorBuilder(api=api, autoload=True, messages=messages)
     )
     factory.add_processor(
         "update",
@@ -136,13 +129,12 @@ def newfactory():
             # we override default updatable columns,
             # only notes is updatable
             units=[UpdateRowsUnit(["notes"])],
-            messages=messages
-        ))
+            messages=messages,
+        ),
+    )
     factory.add_custom_cell(
         ComplexCellBuilder(
-            "show",
-            fmt='{title} {imdb_id} {epguide_name}',
-            fmtv='{title} {imdb_id} {epguide_name}'
+            "show", fmt="{title} {imdb_id} {epguide_name}", fmtv="{title} {imdb_id} {epguide_name}"
         )
     )
     factory.set_align_cell("title", "l")
@@ -154,54 +146,49 @@ def newfactory():
 def add_list_cmd_options(parser):
     """Add all default option to the current parser."""
     parser.add_argument(
-            "--count",
-            default=False, action="store_true",
-            help="Count the number of the displayed rows",
-            dest="count")
+        "--count",
+        default=False,
+        action="store_true",
+        help="Count the number of the displayed rows",
+        dest="count",
+    )
     parser.add_argument(
-            "--vertical",
-            default=False, action="store_true",
-            help="Use vertical display",
-            dest="vertical")
+        "--vertical",
+        default=False,
+        action="store_true",
+        help="Use vertical display",
+        dest="vertical",
+    )
     parser.add_argument(
-            "--json",
-            default=False, action="store_true",
-            help="Display rows as json",
-            dest="json")
+        "--json", default=False, action="store_true", help="Display rows as json", dest="json"
+    )
     parser.add_argument(
-            "--json-raw",
-            default=False, action="store_true",
-            help="Display raw json",
-            dest="json_raw")
+        "--json-raw", default=False, action="store_true", help="Display raw json", dest="json_raw"
+    )
     parser.add_argument(
-            "--csv",
-            default=False, action="store_true",
-            help="Display rows as csv",
-            dest="csv")
+        "--csv", default=False, action="store_true", help="Display rows as csv", dest="csv"
+    )
     parser.add_argument(
-            "--start",
-            default=0, type=int,
-            help="Only display the N first rows",
-            dest="slice_start")
+        "--start", default=0, type=int, help="Only display the N first rows", dest="slice_start"
+    )
     parser.add_argument(
-            "--end",
-            default=0, type=int,
-            help="Only display the N last rows",
-            dest="slice_end")
+        "--end", default=0, type=int, help="Only display the N last rows", dest="slice_end"
+    )
     parser.add_argument(
-            "--limit",
-            default=0, type=int,
-            help="limit the number of rows to display",
-            dest="slice_limit")
+        "--limit",
+        default=0,
+        type=int,
+        help="limit the number of rows to display",
+        dest="slice_limit",
+    )
+    parser.add_argument("--sort-by", help="sort row by column", dest="sort_sort_by")
     parser.add_argument(
-            "--sort-by",
-            help="sort row by column",
-            dest="sort_sort_by")
-    parser.add_argument(
-            "--sort-reversed",
-            help="Reverse order while sorting",
-            default=False, action="store_true",
-            dest="sort_reverse")
+        "--sort-reversed",
+        help="Reverse order while sorting",
+        default=False,
+        action="store_true",
+        dest="sort_reverse",
+    )
 
 
 def add_list_command(main_subparsers):
@@ -220,54 +207,40 @@ def add_list_command(main_subparsers):
         processor.run()
         print()
 
-    parser = main_subparsers.add_parser('list')
+    parser = main_subparsers.add_parser("list")
     parser.set_defaults(func=command)
     add_list_cmd_options(parser)
 
-    parser.add_argument(
-            "titles",
-            nargs='*',
-            help="Filter by title")
+    parser.add_argument("titles", nargs="*", help="Filter by title")
 
     parser.add_argument(
-            "--release-date", action="append",
-            help="Filter by release date",
-            dest="release_dates")
+        "--release-date", action="append", help="Filter by release date", dest="release_dates"
+    )
+
+    parser.add_argument("--season", action="append", help="Filter by season", dest="seasons")
+
+    parser.add_argument("--id", action="append", type=int, help="Filter by id", dest="ids")
+
+    parser.add_argument("--episode", action="append", help="Filter by episode", dest="episodes")
 
     parser.add_argument(
-            "--season", action="append",
-            help="Filter by season",
-            dest="seasons")
+        "--delete", default=False, action="store_true", help="Delete selected rows", dest="delete"
+    )
 
     parser.add_argument(
-            "--id",
-            action="append", type=int,
-            help="Filter by id",
-            dest="ids")
+        "--update", default=False, action="store_true", help="update selected rows", dest="update"
+    )
 
     parser.add_argument(
-            "--episode", action="append",
-            help="Filter by episode",
-            dest="episodes")
-
+        "--notes", default=None, action="store", help="update notes column", dest="update_notes"
+    )
     parser.add_argument(
-            "--delete", default=False, action="store_true",
-            help="Delete selected rows",
-            dest="delete")
-
-    parser.add_argument(
-            "--update", default=False, action="store_true",
-            help="update selected rows",
-            dest="update")
-
-    parser.add_argument(
-            "--notes", default=None, action="store",
-            help="update notes column",
-            dest="update_notes")
-    parser.add_argument(
-            "--update-title", default=None, action="store",
-            help="update title column",
-            dest="update_title")
+        "--update-title",
+        default=None,
+        action="store",
+        help="update title column",
+        dest="update_title",
+    )
 
 
 def add_delete_command(main_subparsers):
@@ -289,12 +262,9 @@ def add_delete_command(main_subparsers):
         processor.run()
         print()
 
-    parser = main_subparsers.add_parser('delete')
+    parser = main_subparsers.add_parser("delete")
     parser.set_defaults(func=command)
-    parser.add_argument(
-            "ids",
-            nargs='+', type=int,
-            help="Delete episode by id")
+    parser.add_argument("ids", nargs="+", type=int, help="Delete episode by id")
 
 
 def add_delete_commandv2(main_subparsers):
@@ -318,12 +288,9 @@ def add_delete_commandv2(main_subparsers):
         processor.run()
         print()
 
-    parser = main_subparsers.add_parser('deletev2')
+    parser = main_subparsers.add_parser("deletev2")
     parser.set_defaults(func=command)
-    parser.add_argument(
-            "ids",
-            nargs='+', type=int,
-            help="Delete episode by id")
+    parser.add_argument("ids", nargs="+", type=int, help="Delete episode by id")
 
 
 def add_reset_command(main_subparsers):
@@ -334,7 +301,7 @@ def add_reset_command(main_subparsers):
         # pylint: disable=unused-argument
         api.reset()
 
-    parser = main_subparsers.add_parser('reset')
+    parser = main_subparsers.add_parser("reset")
     parser.set_defaults(func=command)
 
 
@@ -359,39 +326,29 @@ def add_update_command(main_subparsers):
         processor.run()
         print()
 
-    parser = main_subparsers.add_parser('update')
+    parser = main_subparsers.add_parser("update")
     parser.set_defaults(func=command)
+    parser.add_argument("ids", nargs="+", type=int, help="Update episode by id")
     parser.add_argument(
-            "ids",
-            nargs='+', type=int,
-            help="Update episode by id")
+        "--notes", default=None, action="store", help="update notes column", dest="update_notes"
+    )
     parser.add_argument(
-            "--notes", default=None, action="store",
-            help="update notes column",
-            dest="update_notes")
-    parser.add_argument(
-            "--title", default=None, action="store",
-            help="update title column",
-            dest="update_title")
+        "--title", default=None, action="store", help="update title column", dest="update_title"
+    )
 
 
 def main():
-    """ Main entrypoint of this sample program."""
+    """Main entrypoint of this sample program."""
     log = logging.getLogger()
     log.setLevel(logging.INFO)
     stdout = logging.StreamHandler(sys.stdout)
-    fmt = '%(asctime)s:%(name)s:%(funcName)s:%(levelname)s:%(message)s'
+    fmt = "%(asctime)s:%(name)s:%(funcName)s:%(levelname)s:%(message)s"
     formatter = logging.Formatter(fmt)
     stdout.setFormatter(formatter)
     log.addHandler(stdout)
 
     main_parser = argparse.ArgumentParser(description="Demo cli")
-    main_parser.add_argument(
-            "-d",
-            "--debug", type=int,
-            default=0,
-            help="debug level",
-            dest="debug")
+    main_parser.add_argument("-d", "--debug", type=int, default=0, help="debug level", dest="debug")
     main_subparsers = main_parser.add_subparsers()
 
     add_list_command(main_subparsers)

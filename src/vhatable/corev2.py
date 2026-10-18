@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import logging
 import time
 from collections import OrderedDict
@@ -33,11 +32,10 @@ from functools import wraps
 
 class Time:
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
-    def __init__(self,
-                 logger_name,
-                 label="execution time: {time:.15f}"):
+    def __init__(self, logger_name, label="execution time: {time:.15f}"):
         self.log = logging.getLogger(logger_name)
         self.enabled = False
         self.label = label
@@ -59,11 +57,13 @@ class Time:
             if self.enabled:
                 print(msg)
             return res
+
         return time_wrapper
 
 
 class AutoTime:
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, label="execution time: {time:.15f}"):
@@ -90,13 +90,14 @@ class AutoTime:
             if self.enabled:
                 print(msg)
             return res
+
         return time_wrapper
 
 
 class Unit:
     """TODO"""
 
-    def __init__(self, typ="transform",  debug=0, identifier=None):
+    def __init__(self, typ="transform", debug=0, identifier=None):
         self.log = logging.getLogger(__name__)
         self._debug = debug
         self._verbose = False
@@ -168,15 +169,24 @@ class Unit:
 
 class AbstractProcessor:
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, debug=0, verbose=False, rows=None, column_names=None,
-                 autokeys=True, messages=None, identifier=None):
+    def __init__(
+        self,
+        debug=0,
+        verbose=False,
+        rows=None,
+        column_names=None,
+        autokeys=True,
+        messages=None,
+        identifier=None,
+    ):
         # pylint: disable=too-many-arguments
         self._attrs = ["debug", "verbose", "column_names"]
         self._attrs_ro = ["identifier", "messages"]
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('vhatable.' + classname)
+        self.log = logging.getLogger("vhatable." + classname)
         self.identifier = identifier
         self.units = OrderedDict()
         self.column_names = []
@@ -276,7 +286,7 @@ class AbstractProcessor:
             unit.setup(from_args)
         return self
 
-    @Time('vhatable.corev2.run')
+    @Time("vhatable.corev2.run")
     def run(self):
         """TODO"""
         for row in self.get_raw():

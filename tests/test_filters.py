@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """TODO"""
 
-
 from datetime import datetime
 from unittest.mock import patch
 
@@ -15,8 +14,8 @@ from vhatable.filtersv2 import PartialMultipleAnd as PartialMultipleAndV2
 def test_nb_filters():
     """TODO"""
     list_filters = [i for i in dir(filtersv2) if not i.startswith("__")]
-    list_filters.remove('datetime')
-    list_filters.remove('timedelta')
+    list_filters.remove("datetime")
+    list_filters.remove("timedelta")
     print(list_filters)
     assert len(list_filters) == 6
 
@@ -142,13 +141,7 @@ def test_equal_or_false():
 
 def test_partial_multiple_and_true0():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": None,
-                    "firstName": None,
-                    "lastName": None
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": None, "firstName": None, "lastName": None}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -159,13 +152,7 @@ def test_partial_multiple_and_true0():
 
 def test_partial_multiple_and_true1():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": None,
-                    "firstName": "jo",
-                    "lastName": "do"
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": None, "firstName": "jo", "lastName": "do"}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -176,13 +163,7 @@ def test_partial_multiple_and_true1():
 
 def test_partial_multiple_and_true2():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": "8",
-                    "firstName": "jo",
-                    "lastName": "do"
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": "8", "firstName": "jo", "lastName": "do"}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -193,13 +174,7 @@ def test_partial_multiple_and_true2():
 
 def test_partial_multiple_and_true3():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": "89",
-                    "firstName": None,
-                    "lastName": None
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": "89", "firstName": None, "lastName": None}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -210,13 +185,7 @@ def test_partial_multiple_and_true3():
 
 def test_partial_multiple_and_false1():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": None,
-                    "firstName": "jo",
-                    "lastName": "doee"
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": None, "firstName": "jo", "lastName": "doee"}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -227,13 +196,7 @@ def test_partial_multiple_and_false1():
 
 def test_partial_multiple_and_false2():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": "3",
-                    "firstName": "jo",
-                    "lastName": "do"
-                },
-                True)
+    filterr = PartialMultipleAnd({"mail": "3", "firstName": "jo", "lastName": "do"}, True)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -244,13 +207,7 @@ def test_partial_multiple_and_false2():
 
 def test_partial_multiple_and_false3():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": "8",
-                    "firstName": "jo",
-                    "lastName": "do"
-                },
-                False)
+    filterr = PartialMultipleAnd({"mail": "8", "firstName": "jo", "lastName": "do"}, False)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -261,13 +218,7 @@ def test_partial_multiple_and_false3():
 
 def test_partial_multiple_and_true4():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": "8",
-                    "firstName": "jo",
-                    "lastName": "Do"
-                },
-                False)
+    filterr = PartialMultipleAnd({"mail": "8", "firstName": "jo", "lastName": "Do"}, False)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -278,13 +229,7 @@ def test_partial_multiple_and_true4():
 
 def test_partial_multiple_and_true5():
     """TODO"""
-    filterr = PartialMultipleAnd(
-                {
-                    "mail": None,
-                    "firstName": "jo",
-                    "lastName": "Do"
-                },
-                False)
+    filterr = PartialMultipleAnd({"mail": None, "firstName": "jo", "lastName": "Do"}, False)
     row = {
         "firstName": "John",
         "lastName": "Do",
@@ -386,7 +331,7 @@ def test_partial_and_true3():
 
 def test_date_older_than_in_second():
     """TODO"""
-    patcher = patch('vhatable.filtersv2.OlderThanFilter._get_today')
+    patcher = patch("vhatable.filtersv2.OlderThanFilter._get_today")
     mock_read = patcher.start()
     mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
 
@@ -408,7 +353,7 @@ def test_date_older_than_in_second():
 
 def test_date_older_than_in_millisecond():
     """TODO"""
-    patcher = patch('vhatable.filtersv2.OlderThanFilter._get_today')
+    patcher = patch("vhatable.filtersv2.OlderThanFilter._get_today")
     mock_read = patcher.start()
     mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
 
@@ -426,7 +371,7 @@ def test_date_older_than_in_millisecond():
 
 def test_date_newer_than_in_second():
     """TODO"""
-    patcher = patch('vhatable.filtersv2.NewerThanFilter._get_today')
+    patcher = patch("vhatable.filtersv2.NewerThanFilter._get_today")
     mock_read = patcher.start()
     mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
 
@@ -448,7 +393,7 @@ def test_date_newer_than_in_second():
 
 def test_date_newer_than_in_millisecond():
     """TODO"""
-    patcher = patch('vhatable.filtersv2.NewerThanFilter._get_today')
+    patcher = patch("vhatable.filtersv2.NewerThanFilter._get_today")
     mock_read = patcher.start()
     mock_read.return_value = datetime(2022, 6, 19, 0, 0, 0, 1)
 

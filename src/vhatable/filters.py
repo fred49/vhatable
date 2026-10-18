@@ -25,7 +25,6 @@ of a Vertical or Horizotal table."""
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import datetime
 import logging
 import re
@@ -37,7 +36,7 @@ class Filter:
     """TODO"""
 
     def __init__(self, prop, values=None):
-        """ prop name and value(s)"""
+        """prop name and value(s)"""
         self.prop = prop
         self.values = values
         classname = self.__class__.__name__.lower()
@@ -75,7 +74,7 @@ class Filter:
 
 class PartialOr(Filter):
     """Get the current property into the current row, and match the result with
-     a list of values"""
+    a list of values"""
 
     def __init__(self, prop, values, ignorecase=False, match_raw=False):
         super().__init__(prop, values)
@@ -125,7 +124,7 @@ class PartialOr(Filter):
 
 class PartialMultipleAnd(Filter):
     """Get the current property into the current row, and match the result with
-     a list of values"""
+    a list of values"""
 
     def __init__(self, propvalues, ignorecase=False):
         super().__init__(list(propvalues.keys()), list(propvalues.values()))
@@ -153,9 +152,9 @@ class PartialMultipleAnd(Filter):
 
 class PartialDate(Filter):
     """Get the current property into the current row, and match the result with
-     a list of values.
-     This filter will be activated/enabled if 'value' is not None.
-     """
+    a list of values.
+    This filter will be activated/enabled if 'value' is not None.
+    """
 
     def __init__(self, prop, value):
         super().__init__(prop, value)
@@ -174,8 +173,7 @@ class PartialDate(Filter):
                     return True
         else:
             formatt = "{da:%Y-%m-%d %H:%M:%S}"
-            val = formatt.format(
-                da=datetime.datetime.fromtimestamp(val / 1000))
+            val = formatt.format(da=datetime.datetime.fromtimestamp(val / 1000))
             self.log.debug("type of value: %s", type(val))
             self.log.debug("value: %s", val)
             if self.regex.match(val):

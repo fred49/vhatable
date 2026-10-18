@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import argparse
 import inspect
 import json
@@ -91,6 +90,7 @@ def sample1():
 
 class API:
     """TODO"""
+
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
     CACHEFILENAME = "/tmp/vhatable-cache-big-bang.json"
 
@@ -104,7 +104,7 @@ class API:
                 data = json.loads(file_contents)
         else:
             data = requests.get(self.URL, timeout=1).json()
-            with open(self.CACHEFILENAME, 'w') as json_file:
+            with open(self.CACHEFILENAME, "w") as json_file:
                 json.dump(data, json_file)
         return data
 
@@ -123,14 +123,15 @@ def sample2():
     """Just a sample"""
 
     args = argparse.Namespace(
-            debug=2,
-            sort_reverse=False,
-            sort_sort_by="season",
-            # slice_end=40,
-            # slice_limit=20,
-            release_dates=[],
-            titles=[],
-            vertical=False)
+        debug=2,
+        sort_reverse=False,
+        sort_sort_by="season",
+        # slice_end=40,
+        # slice_limit=20,
+        release_dates=[],
+        titles=[],
+        vertical=False,
+    )
     args.titles = ["ation"]
     args.release_dates = ["2016"]
     # args.sort_sort_by = "release_date"
@@ -140,18 +141,12 @@ def sample2():
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.add_custom_cell(
         ComplexCellBuilder(
-            "show",
-            fmt='{title}\n{imdb_id} {epguide_name}',
-            fmtv='{title} {imdb_id} {epguide_name}'
+            "show", fmt="{title}\n{imdb_id} {epguide_name}", fmtv="{title} {imdb_id} {epguide_name}"
         )
     )
     api = API()
     factory.set_default_processor_builder(
-        ProcessorBuilder(
-            autoload=False,
-            rows=api.list(),
-            column_names=api.column_names()
-        )
+        ProcessorBuilder(autoload=False, rows=api.list(), column_names=api.column_names())
     )
 
     processor = factory.create(args)
@@ -166,14 +161,15 @@ def sample3():
     """Just a sample"""
 
     args = argparse.Namespace(
-            debug=2,
-            sort_reverse=False,
-            sort_sort_by="season",
-            release_dates=[],
-            slice_end=40,
-            slice_limit=20,
-            titles=[],
-            vertical=False)
+        debug=2,
+        sort_reverse=False,
+        sort_sort_by="season",
+        release_dates=[],
+        slice_end=40,
+        slice_limit=20,
+        titles=[],
+        vertical=False,
+    )
 
     api = API()
     factory = ProcessorFactory()
@@ -181,17 +177,13 @@ def sample3():
     factory.add_filters(PartialOr("release_date", args.release_dates))
     factory.add_custom_cell(
         ComplexCellBuilder(
-            "show",
-            fmt='{title}\n{imdb_id} {epguide_name}',
-            fmtv='{title} {imdb_id} {epguide_name}'
+            "show", fmt="{title}\n{imdb_id} {epguide_name}", fmtv="{title} {imdb_id} {epguide_name}"
         )
     )
     factory.set_align_cell("title", "l")
     factory.set_align_cell("show", "c")
 
-    processor = factory.create(
-            args,
-            default_builder=ProcessorBuilder(api=api, autoload=True))
+    processor = factory.create(args, default_builder=ProcessorBuilder(api=api, autoload=True))
 
     helper_print_header("    >>>> Default  <<<<")
     print(processor)
@@ -200,22 +192,21 @@ def sample3():
 
 
 def main():
-    """ Main entrypoint of this sample program."""
+    """Main entrypoint of this sample program."""
     logging.basicConfig(level=logging.INFO)
     map_sample = {}
     for name, obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isfunction(obj) and name.startswith('sample'):
+        if inspect.isfunction(obj) and name.startswith("sample"):
             map_sample[name] = obj
 
-    parser = argparse.ArgumentParser(description='Display some samples')
-    parser.add_argument(
-        'sample', choices=map_sample.keys(),
-        help='Choose the sample to display.')
+    parser = argparse.ArgumentParser(description="Display some samples")
+    parser.add_argument("sample", choices=map_sample.keys(), help="Choose the sample to display.")
     args = parser.parse_args()
 
     obj = map_sample[args.sample]
     print("Sample : ", args.sample, " :", obj.__doc__)
     obj()
+
 
 if __name__ == "__main__":
     main()

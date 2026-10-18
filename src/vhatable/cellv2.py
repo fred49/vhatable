@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import logging
 
 from .cell import BCell, ComplexCell, DateCell, ICell, SCell, SizeCell, TypeCell
@@ -32,13 +31,13 @@ from .cell import BCell, ComplexCell, DateCell, ICell, SCell, SizeCell, TypeCell
 
 class CellBuilder:
     """A helper to configure and build a cell."""
+
     # pylint: disable=too-few-public-methods
     # pylint: disable=[too-many-arguments]
 
     clazz = None
 
-    def __init__(self, cell_name, fmt=None, fmtv=None, fmtf=None,
-                 none="-", clazz=None):
+    def __init__(self, cell_name, fmt=None, fmtv=None, fmtf=None, none="-", clazz=None):
         """Create a builder:
 
         :param str cell_name: coucou
@@ -52,8 +51,15 @@ class CellBuilder:
         self.fmt_vertical = fmtv
         self.fmt_for_filtering = fmtf
 
-    def __call__(self, cell_value, raw_display=False, vertical=False,
-                 extended=False, hidden=False, context=None):
+    def __call__(
+        self,
+        cell_value,
+        raw_display=False,
+        vertical=False,
+        extended=False,
+        hidden=False,
+        context=None,
+    ):
         """Build and return a new cell"""
         cell = self.clazz(cell_value)
         cell.name = self.cell_name
@@ -79,6 +85,7 @@ class CellBuilder:
 
 class StringCellBuilder(CellBuilder):
     """Builder for a StringCell (SCell)"""
+
     # pylint: disable=too-few-public-methods
 
     clazz = SCell
@@ -86,6 +93,7 @@ class StringCellBuilder(CellBuilder):
 
 class IntCellBuilder(CellBuilder):
     """Builder for a ICell"""
+
     # pylint: disable=too-few-public-methods
 
     clazz = ICell
@@ -93,6 +101,7 @@ class IntCellBuilder(CellBuilder):
 
 class BoolCellBuilder(CellBuilder):
     """Builder for a BCell"""
+
     # pylint: disable=too-few-public-methods
 
     clazz = BCell
@@ -100,6 +109,7 @@ class BoolCellBuilder(CellBuilder):
 
 class DateCellBuilder(CellBuilder):
     """Builder for a DateCell"""
+
     # pylint: disable=too-few-public-methods
 
     clazz = DateCell
@@ -116,6 +126,7 @@ class DateCellBuilder(CellBuilder):
 
 class SizeCellBuilder(CellBuilder):
     """Builder for a SizeCell"""
+
     # pylint: disable=too-few-public-methods
 
     clazz = SizeCell
@@ -125,6 +136,7 @@ class TypeCellBuilder(CellBuilder):
     """Builder for a TypeCell.
     It will just render type of the content of the cell.
     Could be used for debug."""
+
     # pylint: disable=too-few-public-methods
 
     clazz = TypeCell
@@ -133,6 +145,7 @@ class TypeCellBuilder(CellBuilder):
 class ComplexCellBuilder(CellBuilder):
     """Builder for a ComplexCell.
     A complex cell is a json."""
+
     # pylint: disable=too-few-public-methods
 
     clazz = ComplexCell
@@ -140,6 +153,7 @@ class ComplexCellBuilder(CellBuilder):
 
 class CellBuilderFactory:
     """TODO"""
+
     # pylint: disable=too-few-public-methods
     # pylint: disable=too-many-instance-attributes
 
@@ -149,12 +163,7 @@ class CellBuilderFactory:
         self.vertical = False
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger("vhatablecli.cellv2." + classname)
-        self.date_cells = [
-            "creationDate",
-            "modificationDate",
-            "expirationDate",
-            "uploadDate"
-        ]
+        self.date_cells = ["creationDate", "modificationDate", "expirationDate", "uploadDate"]
         self.size_cells = ["size"]
         self.custom_cells = {}
 
@@ -177,9 +186,16 @@ class CellBuilderFactory:
             builder_clazz = StringCellBuilder
         return builder_clazz(cell_name)
 
-    def __call__(self, cell_name, cell_value, context=None,
-                 extended=False, vertical=None, hidden=False,
-                 raw_display=None):
+    def __call__(
+        self,
+        cell_name,
+        cell_value,
+        context=None,
+        extended=False,
+        vertical=None,
+        hidden=False,
+        raw_display=None,
+    ):
         if vertical is not None:
             self.vertical = vertical
         if raw_display is not None:
@@ -196,12 +212,13 @@ class CellBuilderFactory:
             self.log.debug("raw_display: %s", self.raw_display)
             self.log.debug("vertical: %s", self.vertical)
         cell = builder(
-                cell_value,
-                raw_display=self.raw_display,
-                vertical=self.vertical,
-                extended=extended,
-                hidden=hidden,
-                context=context)
+            cell_value,
+            raw_display=self.raw_display,
+            vertical=self.vertical,
+            extended=extended,
+            hidden=hidden,
+            context=context,
+        )
         if self.debug >= 3:
             self.log.debug("cell type: %s", type(cell))
             # str method from all cell must return encoded strings

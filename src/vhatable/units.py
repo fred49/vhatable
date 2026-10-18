@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import json
 from collections import OrderedDict
 
@@ -102,10 +101,7 @@ class SortingUnit(Unit):
     def __call__(self, rows):
         if self.sort_by:
             try:
-                rows = sorted(
-                        rows,
-                        reverse=self.reverse,
-                        key=lambda x: x.get(self.sort_by))
+                rows = sorted(rows, reverse=self.reverse, key=lambda x: x.get(self.sort_by))
             except KeyError as ex:
                 self.log.warning("missing sortby key : %s", ex)
         return rows
@@ -113,6 +109,7 @@ class SortingUnit(Unit):
 
 class FormattingUnit(Unit):
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, debug=0, **kwargs):
@@ -126,9 +123,7 @@ class FormattingUnit(Unit):
         self.required_columns = []
         self.compute_column_for_each_row = False
         self._columns = []
-        self._attrs += [
-            "raw_display", "no_cell", "vertical", "extended"
-        ]
+        self._attrs += ["raw_display", "no_cell", "vertical", "extended"]
         self._attrs_ro += ["required_columns"]
 
     @property
@@ -157,6 +152,7 @@ class FormattingUnit(Unit):
                 if key not in columns:
                     columns.append(key)
             return columns
+
         if self.compute_column_for_each_row:
             return compute(row)
         self._columns = compute(row)
@@ -175,9 +171,14 @@ class FormattingUnit(Unit):
                 if cell_name in row:
                     cell_value = row[cell_name]
                 cell = self.cfa(
-                        cell_name, cell_value, context=row_full,
-                        extended=self.extended, vertical=self.vertical,
-                        raw_display=self.raw_display, hidden=False)
+                    cell_name,
+                    cell_value,
+                    context=row_full,
+                    extended=self.extended,
+                    vertical=self.vertical,
+                    raw_display=self.raw_display,
+                    hidden=False,
+                )
                 row_full[cell_name] = cell
             if self.debug >= 2:
                 self.log.debug("row_full: %s", row_full)
@@ -205,8 +206,7 @@ class SlicingUnit(Unit):
             start = self.start
             if self.limit > 0:
                 if self.end > 0:
-                    msg = ("can not set 'start',"
-                           "'end' and 'limit' at the same time")
+                    msg = "can not set 'start','end' and 'limit' at the same time"
                     raise ValueError(msg)
                 end = self.start + self.limit
         elif self.end > 0:
@@ -338,7 +338,6 @@ class TableRender(Unit):
             raise ValueError("Can not find an identifier in the row. Please provide a column name")
         return "\n".join([str(x.get(self.cli_column_name)) for x in rows])
 
-
     def __call__(self, rows):
         if self.cli_mode:
             return self._get_cli_output(rows)
@@ -352,7 +351,7 @@ class TableRender(Unit):
             if column_name in self.aligns:
                 self.table.align[column_name] = self.aligns.get(column_name)
             else:
-                self.table.align[column_name] = 'c'
+                self.table.align[column_name] = "c"
         return self.table.get_string()
 
 

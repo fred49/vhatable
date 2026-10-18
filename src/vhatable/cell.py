@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import datetime
 import logging
 
@@ -33,6 +32,7 @@ from humanfriendly import format_size
 
 class CellFactory:
     """TODO"""
+
     # pylint: disable=too-few-public-methods
     # pylint: disable=too-many-instance-attributes
 
@@ -42,12 +42,7 @@ class CellFactory:
         self.vertical = vertical
         classname = str(self.__class__.__name__.lower())
         self.log = logging.getLogger("vhatablecli.cell." + classname)
-        self.date_cells = [
-            "creationDate",
-            "modificationDate",
-            "expirationDate",
-            "uploadDate"
-        ]
+        self.date_cells = ["creationDate", "modificationDate", "expirationDate", "uploadDate"]
         self.size_cells = ["size"]
         self.custom_cells = {}
 
@@ -187,6 +182,7 @@ class SCell(BaseCell):
     """This class is used to emulate str type for veryprettytable.
     VeryPrettyTable will call the __str__ method on non-unicode objects.
     It requires that the __str__ output is utf-8 encoded."""
+
     # pylint: disable=too-few-public-methods
     # pylint: disable=too-many-instance-attributes
 
@@ -235,8 +231,7 @@ class DateCell(BaseCell):
             div = 1
             if self.millisecond:
                 div = 1000
-            return fmt.format(
-                da=datetime.datetime.fromtimestamp(self.value / div))
+            return fmt.format(da=datetime.datetime.fromtimestamp(self.value / div))
         return self.none
 
     def __div__(self, value):
@@ -245,6 +240,7 @@ class DateCell(BaseCell):
 
 class ICell(int, BaseCell):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, value):
@@ -259,6 +255,7 @@ class ICell(int, BaseCell):
 
 class BCell(BaseCell):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     def __unicode__(self):
@@ -269,6 +266,7 @@ class BCell(BaseCell):
 
 class SizeCell(BaseCell):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     def __div__(self, value):
@@ -291,6 +289,7 @@ class TypeCell(BaseCell):
 
 class ComplexCell(BaseCell):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
     # pylint: disable=too-many-instance-attributes
 
@@ -315,6 +314,7 @@ class ComplexCell(BaseCell):
 
 class CellBuilder:
     """wrapper to build a Cell with extra parameters."""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, formatt, formatv=None, formatf=None, cell=SCell):
@@ -337,6 +337,7 @@ class CellBuilder:
 
 class ComplexCellBuilder(CellBuilder):
     """wrapper to build a ComplexCell with extra parameters."""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, formatt, formatv=None, formatf=None):

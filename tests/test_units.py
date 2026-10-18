@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """TODO"""
 
-
 from argparse import Namespace
 
 from prettytable import PrettyTable
@@ -15,12 +14,14 @@ def test_1():
     """TODO"""
     filters = FilteringUnit()
     filters.add(PartialOr("name", ["value2", "value3"], True))
-    rows = iter([
-        {"name": "value1"},
-        {"name": "value2"},
-        {"name": "value3"},
-        {"name": "value4"},
-    ])
+    rows = iter(
+        [
+            {"name": "value1"},
+            {"name": "value2"},
+            {"name": "value3"},
+            {"name": "value4"},
+        ]
+    )
     assert not filters.matches(next(rows))
     assert filters.matches(next(rows))
     assert filters.matches(next(rows))
@@ -62,8 +63,7 @@ def test_3b():
     assert unit.sort_by is None
     assert unit.debug == 0
 
-    args = Namespace(debug=2, prefix_reverse=True,
-                     prefix_sort_by="name")
+    args = Namespace(debug=2, prefix_reverse=True, prefix_sort_by="name")
     unit.setup(args)
     assert unit.reverse
     assert unit.sort_by == "name"
@@ -98,8 +98,7 @@ def test_5(logger):
     res = unit(rows)
 
     logger.info("aaaa: %s", res)
-    assert res == [{'name': 'value1'}, {'name': 'value2'},
-                   {'name': 'value3'}, {'name': 'value4'}]
+    assert res == [{"name": "value1"}, {"name": "value2"}, {"name": "value3"}, {"name": "value4"}]
 
 
 def test_6(logger):
@@ -116,18 +115,17 @@ def test_6(logger):
     res = unit(rows)
 
     logger.info("aaaa: %s", res)
-    assert res == [{'name': 'value4'}, {'name': 'value3'},
-                   {'name': 'value2'}, {'name': 'value1'}]
+    assert res == [{"name": "value4"}, {"name": "value3"}, {"name": "value2"}, {"name": "value1"}]
 
 
 def test_7(logger):
     """TODO"""
     unit = FormattingUnit(debug=3)
     rows = [
-            {"name": "value3", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value4", "size": 280000000000},
-            {"name": "value1", "size": 2100000000000000},
+        {"name": "value3", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value4", "size": 280000000000},
+        {"name": "value1", "size": 2100000000000000},
     ]
     unit.required_columns = ["name", "size"]
     res = list(unit(rows))
@@ -135,18 +133,18 @@ def test_7(logger):
     for row in res:
         logger.info("cell: %s", row)
 
-    assert res[0]['name'].value == "value3"
-    assert res[0]['size'].value == 80000000
-    assert str(res[0]['size']) == "80 MB"
+    assert res[0]["name"].value == "value3"
+    assert res[0]["size"].value == 80000000
+    assert str(res[0]["size"]) == "80 MB"
 
 
 def test_8(logger):
     """TODO"""
     rows = [
-            {"name": "value3", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value4", "size": 280000000000},
-            {"name": "value1", "size": 2100000000000000},
+        {"name": "value3", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value4", "size": 280000000000},
+        {"name": "value1", "size": 2100000000000000},
     ]
     unit = FormattingUnit(debug=3)
     column_names = ["name", "unknown column", "size"]
@@ -154,7 +152,7 @@ def test_8(logger):
 
     table = VeryPrettyTable()
     table.field_names = column_names
-    table.align = 'l'
+    table.align = "l"
     for row in unit(rows):
         data = []
         for colum in row:
@@ -166,10 +164,10 @@ def test_8(logger):
 def test_9(logger):
     """TODO"""
     rows = [
-            {"name": "value3", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value4", "size": 280000000000},
-            {"name": "value1", "size": 2100000000000000},
+        {"name": "value3", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value4", "size": 280000000000},
+        {"name": "value1", "size": 2100000000000000},
     ]
     unit = FormattingUnit(debug=3)
     column_names = ["name", "unknown column", "size"]
@@ -182,10 +180,10 @@ def test_9(logger):
 def test_10(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -196,10 +194,10 @@ def test_10(print_and_count):
 def test_11(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -211,10 +209,10 @@ def test_11(print_and_count):
 def test_12(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -223,16 +221,16 @@ def test_12(print_and_count):
     res = list(unit(iter(rows)))
     count = print_and_count(res)
     assert count == 1
-    assert res[0]['name'] == "value1"
+    assert res[0]["name"] == "value1"
 
 
 def test_13(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -242,16 +240,16 @@ def test_13(print_and_count):
     res = list(unit(iter(rows)))
     count = print_and_count(res)
     assert count == 1
-    assert res[0]['name'] == "value4"
+    assert res[0]["name"] == "value4"
 
 
 def test_14(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -260,18 +258,18 @@ def test_14(print_and_count):
     res = list(unit(iter(rows)))
     count = print_and_count(res)
     assert count == 3
-    assert res[0]['name'] == "value2"
-    assert res[1]['name'] == "value3"
-    assert res[2]['name'] == "value4"
+    assert res[0]["name"] == "value2"
+    assert res[1]["name"] == "value3"
+    assert res[2]["name"] == "value4"
 
 
 def test_15(print_and_count):
     """TODO"""
     rows = [
-            {"name": "value1", "size": 80000000},
-            {"name": "value2", "size": 110000},
-            {"name": "value3", "size": 280000000000},
-            {"name": "value4", "size": 2100000000000000},
+        {"name": "value1", "size": 80000000},
+        {"name": "value2", "size": 110000},
+        {"name": "value3", "size": 280000000000},
+        {"name": "value4", "size": 2100000000000000},
     ]
     assert len(rows) == 4
     unit = SlicingUnit(debug=3)
@@ -281,4 +279,4 @@ def test_15(print_and_count):
     res = list(unit(iter(rows)))
     count = print_and_count(res)
     assert count == 1
-    assert res[0]['name'] == "value2"
+    assert res[0]["name"] == "value2"

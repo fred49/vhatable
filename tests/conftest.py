@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Tests configuration and global fixtures."""
 
-
 import logging
 
 import pytest
@@ -17,6 +16,7 @@ def fixture_logger():
 @pytest.fixture(name="print_and_count", scope="session")
 def fixture_print_and_count(logger):
     """TODO"""
+
     def inner_print_res(rows):
         res = list(rows)
         logger.info("\nbegin print_and_count")
@@ -26,4 +26,5 @@ def fixture_print_and_count(logger):
             logger.info("row: %s", row)
         logger.info("end print_and_count")
         return cpt
+
     return inner_print_res

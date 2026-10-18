@@ -96,32 +96,32 @@ class Endpoint1(AbstractEndpoint):
                 "creationDate": 1625647954855,
                 "modificationDate": 1625647954855,
                 "name": "My first element",
-                "id": 1
+                "id": 1,
             },
             {
                 "creationDate": 1630922388966,
                 "modificationDate": 1630922389147,
                 "name": "My second element",
-                "id": 2
+                "id": 2,
             },
             {
                 "creationDate": 1631023612633,
                 "modificationDate": 1631023612862,
                 "name": "My third element",
-                "id": 3
+                "id": 3,
             },
             {
                 "creationDate": 1631105647241,
                 "modificationDate": 1631105647309,
                 "name": "My forth element",
-                "id": 4
+                "id": 4,
             },
             {
                 "creationDate": 1631194331337,
                 "modificationDate": 1631194331444,
                 "name": "My fifth element",
-                "id": 5
-            }
+                "id": 5,
+            },
         ]
         self.last_id = 5
 
@@ -139,10 +139,10 @@ class Endpoint1(AbstractEndpoint):
         """FIXME"""
         # pylint: disable=no-self-use
         rbu = ResourceBuilder("element")
-        rbu.add_field('id')
-        rbu.add_field('name', required=True)
-        rbu.add_field('creationDate')
-        rbu.add_field('modificationDate', extended=True)
+        rbu.add_field("id")
+        rbu.add_field("name", required=True)
+        rbu.add_field("creationDate")
+        rbu.add_field("modificationDate", extended=True)
         return rbu
 
 
@@ -156,36 +156,36 @@ class Endpoint2(AbstractEndpoint):
                 "modificationDate": 1625647954855,
                 "name": "My first element",
                 "foo": 0.51,
-                "id": 1
+                "id": 1,
             },
             {
                 "creationDate": 1630922388966,
                 "modificationDate": 1630922389147,
                 "name": "My second element",
                 "foo": 0.07,
-                "id": 2
+                "id": 2,
             },
             {
                 "creationDate": 1631023612633,
                 "modificationDate": 1631023612862,
                 "name": "My third element",
                 "foo": 0.3,
-                "id": 3
+                "id": 3,
             },
             {
                 "creationDate": 1631105647241,
                 "modificationDate": 1631105647309,
                 "name": "My forth element",
                 "foo": 0.2,
-                "id": 4
+                "id": 4,
             },
             {
                 "creationDate": 1631194331337,
                 "modificationDate": 1631194331444,
                 "name": "My fifth element",
                 "foo": 0.43,
-                "id": 5
-            }
+                "id": 5,
+            },
         ]
         self.last_id = 5
 
@@ -204,11 +204,11 @@ class Endpoint2(AbstractEndpoint):
         """FIXME"""
         # pylint: disable=no-self-use
         rbu = ResourceBuilder("element")
-        rbu.add_field('id')
-        rbu.add_field('name', required=True)
-        rbu.add_field('foo')
-        rbu.add_field('creationDate')
-        rbu.add_field('modificationDate', extended=True)
+        rbu.add_field("id")
+        rbu.add_field("name", required=True)
+        rbu.add_field("foo")
+        rbu.add_field("creationDate")
+        rbu.add_field("modificationDate", extended=True)
         return rbu
 
 
@@ -224,9 +224,9 @@ class Endpoint3(AbstractEndpoint):
                 "foo": 0.01,
                 "foo_complex": {
                     "name": "nested object",
-                    "uuid": "f05e7292-e00e-4bd8-94e2-3f9c3316071f"
+                    "uuid": "f05e7292-e00e-4bd8-94e2-3f9c3316071f",
                 },
-                "id": 1
+                "id": 1,
             },
             {
                 "creationDate": 1630922388966,
@@ -235,9 +235,9 @@ class Endpoint3(AbstractEndpoint):
                 "foo": 0.07,
                 "foo_complex": {
                     "name": "nested object",
-                    "uuid": "f06e7292-e00e-4bd8-94e2-3f9c3316071f"
+                    "uuid": "f06e7292-e00e-4bd8-94e2-3f9c3316071f",
                 },
-                "id": 2
+                "id": 2,
             },
             {
                 "creationDate": 1631023612633,
@@ -246,9 +246,9 @@ class Endpoint3(AbstractEndpoint):
                 "foo": 0.1,
                 "foo_complex": {
                     "name": "nested object",
-                    "uuid": "f07e7292-e00e-4bd8-94e2-3f9c3316071f"
+                    "uuid": "f07e7292-e00e-4bd8-94e2-3f9c3316071f",
                 },
-                "id": 3
+                "id": 3,
             },
             {
                 "creationDate": 1631105647241,
@@ -257,9 +257,9 @@ class Endpoint3(AbstractEndpoint):
                 "foo": 0.2,
                 "foo_complex": {
                     "name": "nested object",
-                    "uuid": "f08e7292-e00e-4bd8-94e2-3f9c3316071f"
+                    "uuid": "f08e7292-e00e-4bd8-94e2-3f9c3316071f",
                 },
-                "id": 4
+                "id": 4,
             },
             {
                 "creationDate": 1631194331337,
@@ -268,10 +268,10 @@ class Endpoint3(AbstractEndpoint):
                 "foo": 0.43,
                 "foo_complex": {
                     "name": "nested object",
-                    "uuid": "f09e7292-e00e-4bd8-94e2-3f9c3316071f"
+                    "uuid": "f09e7292-e00e-4bd8-94e2-3f9c3316071f",
                 },
-                "id": 5
-            }
+                "id": 5,
+            },
         ]
         self.last_id = 5
 
@@ -290,17 +290,18 @@ class Endpoint3(AbstractEndpoint):
         """FIXME"""
         # pylint: disable=no-self-use
         rbu = ResourceBuilder("element")
-        rbu.add_field('id')
-        rbu.add_field('name', required=True)
-        rbu.add_field('foo')
-        rbu.add_field('foo_complex')
-        rbu.add_field('creationDate')
-        rbu.add_field('modificationDate', extended=True)
+        rbu.add_field("id")
+        rbu.add_field("name", required=True)
+        rbu.add_field("foo")
+        rbu.add_field("foo_complex")
+        rbu.add_field("creationDate")
+        rbu.add_field("modificationDate", extended=True)
         return rbu
 
 
 class API:
-    """ An sample api that may contain multiple endpoints, one by resource."""
+    """An sample api that may contain multiple endpoints, one by resource."""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self):
@@ -316,7 +317,7 @@ class SomeTitle(Action):
 
     def init(self, args, cli, endpoint):
         super(SomeTitle, self).init(args, cli, endpoint)
-        self.display = not getattr(args, 'no_title', False)
+        self.display = not getattr(args, "no_title", False)
 
     def __call__(self, args, cli, endpoint, data):
         self.init(args, cli, endpoint)
@@ -334,6 +335,7 @@ def helper_print_header(extra=None):
         print(extra)
     print("")
 
+
 def get_default_args():
     """This method allows to return a object containing some properties or
     arguments that can be provided by command line argiments like argparse
@@ -345,6 +347,7 @@ def get_default_args():
     args.raw = False
     args.debug = 0
     return args
+
 
 def sample1():
     """First sample: Just some row data and tests."""
@@ -366,6 +369,7 @@ def sample1():
     for elt in api.endpoint1.list():
         print(elt)
     print("--------")
+
 
 def sample2():
     """Three rendering: simple, with verbose and with extended flag on."""
@@ -391,19 +395,19 @@ def sample2():
     print("")
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
+
 def sample3():
-    """Filtering displayed data by name """
+    """Filtering displayed data by name"""
     args = get_default_args()
     args.names = ["fi"]
 
     api = API()
     tbu = TableFactory(api, api.endpoint1, "creationDate")
-    tbu.add_filters(
-        PartialOr("name", args.names, True)
-    )
+    tbu.add_filters(PartialOr("name", args.names, True))
 
     helper_print_header()
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
 
 def sample4():
     """Filtering displayed data with raw dates"""
@@ -415,6 +419,7 @@ def sample4():
     helper_print_header()
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
+
 def sample5():
     """Filtering displayed data by creationDate"""
     args = get_default_args()
@@ -422,11 +427,10 @@ def sample5():
     args.raw = True
     api = API()
     tbu = TableFactory(api, api.endpoint1, "creationDate")
-    tbu.add_filters(
-        PartialDate("creationDate", args.cdate)
-    )
+    tbu.add_filters(PartialDate("creationDate", args.cdate))
     helper_print_header()
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
 
 def sample6():
     """Using some title/header to the list."""
@@ -435,13 +439,14 @@ def sample6():
     tbu = TableFactory(api, api.endpoint1, "creationDate")
 
     helper_print_header("    >>>> Without a title <<<<")
-    args.no_title=True
+    args.no_title = True
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
     helper_print_header("    >>>> With a title <<<<")
-    args.no_title=False
+    args.no_title = False
     tbu.add_pre_render_class(SomeTitle())
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
 
 def sample7():
     """Using CellBuilder to format the content of a colum."""
@@ -450,7 +455,7 @@ def sample7():
     api = API()
     tbu = TableFactory(api, api.endpoint2, "creationDate")
     # https://docs.python.org/3/library/string.html#format-specification-mini-language
-    tbu.add_custom_cell("foo", CellBuilder('{value:.2%}', '{value:.8%}'))
+    tbu.add_custom_cell("foo", CellBuilder("{value:.2%}", "{value:.8%}"))
 
     helper_print_header("    >>>> Raw data <<<<")
     args.raw = True
@@ -460,13 +465,14 @@ def sample7():
     args.raw = False
     tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
 
+
 def sample8():
-    """Using CellBuilder and vertical mode """
+    """Using CellBuilder and vertical mode"""
     args = get_default_args()
     api = API()
     tbu = TableFactory(api, api.endpoint2, "creationDate")
     # https://docs.python.org/3/library/string.html#format-specification-mini-language
-    tbu.add_custom_cell("foo", CellBuilder('{value:.2%}', '{value:.8%}'))
+    tbu.add_custom_cell("foo", CellBuilder("{value:.2%}", "{value:.8%}"))
     # CellBuilder('horizontal format', 'vertical format', 'filter format'))
     # When you will try to use a Equal filter for example, 'filter format' will
     # be used to format the content of the cell before testing the equality.
@@ -478,20 +484,18 @@ def sample8():
     args.vertical = True
     tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
 
+
 def sample9():
-    """Using ComplexCellBuilder and vertical mode """
+    """Using ComplexCellBuilder and vertical mode"""
     args = get_default_args()
     api = API()
     tbu = TableFactory(api, api.endpoint3, "creationDate")
     # https://docs.python.org/3/library/string.html#format-specification-mini-language
-    tbu.add_custom_cell("foo", CellBuilder('{value:.2%}', '{value:.8%}'))
+    tbu.add_custom_cell("foo", CellBuilder("{value:.2%}", "{value:.8%}"))
     # CellBuilder('horizontal format', 'vertical format', 'filter format'))
     # When you will try to use a Equal filter for example, 'filter format' will
     # be used to format the content of the cell before testing the equality.
-    tbu.add_custom_cell("foo_complex", ComplexCellBuilder(
-        '{name} ({uuid:.8})',
-        '{name} ({uuid})'
-    ))
+    tbu.add_custom_cell("foo_complex", ComplexCellBuilder("{name} ({uuid:.8})", "{name} ({uuid})"))
 
     helper_print_header("    >>>> Horizontal mode <<<<")
     tbu.load_args(args).build().load_v2(api.endpoint3.list()).render()
@@ -499,6 +503,7 @@ def sample9():
     helper_print_header("    >>>> Vertical mode <<<<")
     args.vertical = True
     tbu.load_args(args).build().load_v2(api.endpoint3.list()).render()
+
 
 def sample10():
     """Using count_only flag to disable rendering and displayed only the count
@@ -506,22 +511,22 @@ def sample10():
     """
     args = get_default_args()
     api = API()
-    tbu = TableFactory(api, api.endpoint1, "creationDate",
-                       cli_mode_identifier="id")
+    tbu = TableFactory(api, api.endpoint1, "creationDate", cli_mode_identifier="id")
     # tbu.add_action
     helper_print_header("    >>>> count mode <<<<")
-    args.count_only=True
+    args.count_only = True
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
     helper_print_header("    >>>> cli mode: only id column is displayed <<<<")
-    args.cli_mode=True
-    args.count_only=False
+    args.cli_mode = True
+    args.count_only = False
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
     helper_print_header("    >>>> cli mode: only count result is displayed <<<<")
-    args.cli_mode=True
-    args.count_only=True
+    args.cli_mode = True
+    args.count_only = True
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
 
 def sample11():
     """Using SampleAction to illustrate custom behaviour that can be triggered by a simple flag.
@@ -532,17 +537,16 @@ def sample11():
     args.names = ["My fi"]
     api = API()
     tbu = TableFactory(api, api.endpoint1, "creationDate")
-    tbu.add_filters(
-        PartialOr("name", args.names, True)
-    )
-    tbu.add_action('display_sample', SampleAction("Just a sample action"))
+    tbu.add_filters(PartialOr("name", args.names, True))
+    tbu.add_action("display_sample", SampleAction("Just a sample action"))
 
     helper_print_header("    >>>> Normal mode <<<<")
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
     helper_print_header("    >>>> Action mode <<<<")
-    args.display_sample=True
+    args.display_sample = True
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
+
 
 def sample12():
     """Sample using limit, end and start keywords"""
@@ -569,6 +573,7 @@ def sample12():
     args.start = 2
     tbu.load_args(args).build().load_v2(api.endpoint1.list()).render()
 
+
 def sample13():
     """Sample using reverse or sort_by keywords"""
     args = get_default_args()
@@ -589,6 +594,7 @@ def sample13():
     args.reverse = True
     tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
 
+
 def sample14():
     """Sample csv mode"""
     args = get_default_args()
@@ -603,6 +609,7 @@ def sample14():
     helper_print_header("    >>>> CSV without header  <<<<")
     args.no_headers = True
     tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
+
 
 def sample15():
     """Sample json mode"""
@@ -625,6 +632,7 @@ def sample15():
     args.raw_json = True
     tbu.load_args(args).build().load_v2(api.endpoint2.list()).render()
 
+
 def sample16():
     """Sample csv mode"""
     args = get_default_args()
@@ -638,22 +646,21 @@ def sample16():
 
 
 def main():
-    """ Main entrypoint of this sample program."""
+    """Main entrypoint of this sample program."""
     logging.basicConfig(level=logging.INFO)
     map_sample = {}
-    for name,obj in inspect.getmembers(sys.modules[__name__]):
-        if inspect.isfunction(obj) and name.startswith('sample'):
+    for name, obj in inspect.getmembers(sys.modules[__name__]):
+        if inspect.isfunction(obj) and name.startswith("sample"):
             map_sample[name] = obj
 
-    parser = argparse.ArgumentParser(description='Display some samples')
-    parser.add_argument(
-        'sample', choices=map_sample.keys(),
-        help='Choose the sample to display.')
+    parser = argparse.ArgumentParser(description="Display some samples")
+    parser.add_argument("sample", choices=map_sample.keys(), help="Choose the sample to display.")
     args = parser.parse_args()
 
     obj = map_sample[args.sample]
     print("Sample : ", args.sample, " :", obj.__doc__)
     obj()
+
 
 if __name__ == "__main__":
     main()

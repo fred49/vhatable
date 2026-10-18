@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Testing actions like rsync, hard links, ..."""
 
-
 from vhatable.cellv2 import (
     BoolCellBuilder,
     CellBuilderFactory,
@@ -18,12 +17,7 @@ def test_bool_true(logger):
     """Testing boolean builder"""
     # pylint: disable=redefined-outer-name
     builder = BoolCellBuilder("isBlue")
-    cell = builder(
-            True,
-            raw_display=False,
-            vertical=False,
-            extended=False,
-            hidden=False)
+    cell = builder(True, raw_display=False, vertical=False, extended=False, hidden=False)
     logger.info("cell: %s", cell)
     assert str(cell) == "True"
     assert cell.name == "isBlue"
@@ -37,12 +31,7 @@ def test_bool_false(logger):
     """Testing boolean builder"""
     # pylint: disable=redefined-outer-name
     builder = BoolCellBuilder("isBlue")
-    cell = builder(
-            False,
-            raw_display=True,
-            vertical=True,
-            extended=True,
-            hidden=True)
+    cell = builder(False, raw_display=True, vertical=True, extended=True, hidden=True)
     logger.info("cell: %s", cell)
     assert str(cell) == "False"
     assert cell.name == "isBlue"
@@ -93,10 +82,7 @@ def test_date2():
 def test_date3():
     """Testing date builder"""
     fmt = "{da:%Y-%m-%d}"
-    builder = DateCellBuilder(
-            "creationDate",
-            millisecond=True,
-            fmt=fmt)
+    builder = DateCellBuilder("creationDate", millisecond=True, fmt=fmt)
     assert fmt == builder.fmt
     cell = builder(1685211807.637026 * 1000)
     # pylint: disable=protected-access
@@ -109,11 +95,7 @@ def test_date4():
     """Testing date builder"""
     fmt = "{da:%Y-%m-%d} horizontal"
     fmtv = "{da:%Y-%m-%d} vertical"
-    builder = DateCellBuilder(
-            "creationDate",
-            millisecond=True,
-            fmt=fmt,
-            fmtv=fmtv)
+    builder = DateCellBuilder("creationDate", millisecond=True, fmt=fmt, fmtv=fmtv)
     assert fmt == builder.fmt
     assert fmtv == builder.fmt_vertical
 
@@ -135,11 +117,7 @@ def test_date5():
     """Testing date builder"""
     fmt = "{da:%Y-%m-%d} horizontal"
     fmtf = "{da:%Y-%m-%d} filter"
-    builder = DateCellBuilder(
-            "creationDate",
-            millisecond=True,
-            fmt=fmt,
-            fmtf=fmtf)
+    builder = DateCellBuilder("creationDate", millisecond=True, fmt=fmt, fmtf=fmtf)
     assert fmt == builder.fmt
     assert fmtf == builder.fmt_for_filtering
 
@@ -175,11 +153,7 @@ def test_size(logger):
 def test_complex(logger):
     """Testing int builder"""
     builder = ComplexCellBuilder("author")
-    value = {
-        "uuid": "dddddddd",
-        "firstname": "Author",
-        "lastname": "Name"
-    }
+    value = {"uuid": "dddddddd", "firstname": "Author", "lastname": "Name"}
     cell = builder(value)
     logger.info("cell: %s", cell)
     assert cell.value == value
@@ -190,14 +164,12 @@ def test_complex(logger):
 def test_complex2(logger):
     """Testing int builder"""
     builder = ComplexCellBuilder(
-            "author",
-            fmt='{firstname} {lastname} ({uuid:.8})',
-            fmtv='{firstname} {lastname} ({uuid})'
+        "author", fmt="{firstname} {lastname} ({uuid:.8})", fmtv="{firstname} {lastname} ({uuid})"
     )
     value = {
         "uuid": "126a2a2e-82b5-47e7-8948-6110c8b702be",
         "firstname": "Author",
-        "lastname": "Name"
+        "lastname": "Name",
     }
     cell = builder(value)
     logger.info("cell: %s", cell)
@@ -313,7 +285,7 @@ def test_factory8(logger):
 
     cfa = CellBuilderFactory()
     builder = DateCellBuilder("foobar", millisecond=True)
-    cfa.custom_cells['foobar'] = builder
+    cfa.custom_cells["foobar"] = builder
     logger.info("cfa: %s", cfa)
 
     cell = cfa(cell_name, cell_value)

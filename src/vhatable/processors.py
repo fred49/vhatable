@@ -24,7 +24,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-
 import copy
 import logging
 from argparse import Namespace
@@ -64,24 +63,21 @@ class API:
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
-        raise NotImplementedError(
-            f"class {classname} has not implemented get method")
+        raise NotImplementedError(f"class {classname} has not implemented get method")
 
     def delete(self, row):
         """TODO"""
         # pylint: disable=unused-argument
         # expected: return True|False, update_row
         classname = self.__class__.__name__
-        raise NotImplementedError(
-            f"class {classname} has not implemented delete method")
+        raise NotImplementedError(f"class {classname} has not implemented delete method")
 
     def update(self, row):
         """TODO"""
         # pylint: disable=unused-argument
         classname = self.__class__.__name__
         # expected: return True|False, update_row
-        raise NotImplementedError(
-            f"class {classname} has not implemented update method")
+        raise NotImplementedError(f"class {classname} has not implemented update method")
 
 
 class Processor(AbstractProcessor):
@@ -94,25 +90,24 @@ class Processor(AbstractProcessor):
         else:
             self.api = api
         self.dry_run = dry_run
-        self.add_unit(FormattingUnit(identifier='format'))
-        self.add_unit(FilteringUnit(identifier='filter'))
-        self.add_unit(SortingUnit(identifier='sort'))
-        self.add_unit(SlicingUnit(identifier='slice'))
+        self.add_unit(FormattingUnit(identifier="format"))
+        self.add_unit(FilteringUnit(identifier="filter"))
+        self.add_unit(SortingUnit(identifier="sort"))
+        self.add_unit(SlicingUnit(identifier="slice"))
         self._attrs += ["dry_run"]
 
     def setup(self, from_args):
         """TODO"""
-        if 'format' in self.units:
-            self.units['format'].vertical = getattr(
-                    from_args, "vertical", False)
+        if "format" in self.units:
+            self.units["format"].vertical = getattr(from_args, "vertical", False)
         super().setup(from_args)
         return self
 
     def post_init(self):
         """TODO"""
         self._post_init = True
-        if 'format' in self.units:
-            self.units['format'].required_columns = self.column_names
+        if "format" in self.units:
+            self.units["format"].required_columns = self.column_names
 
     def get_string(self):
         """TODO"""
@@ -126,7 +121,7 @@ class Processor(AbstractProcessor):
                     result.append(string)
         return "\n".join(result)
 
-    @Time('vhatable.corev2.run')
+    @Time("vhatable.corev2.run")
     def run(self):
         """TODO"""
         print(self.get_string())
@@ -139,7 +134,7 @@ class HTableProcessor(Processor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_unit(HeaderRender())
-        self.add_unit(TableRender(identifier='table', typ="render"))
+        self.add_unit(TableRender(identifier="table", typ="render"))
         self.add_unit(FooterRender())
         self.headers = {}
         self.aligns = {}
@@ -147,9 +142,9 @@ class HTableProcessor(Processor):
     def post_init(self):
         """TODO"""
         super().post_init()
-        self.units['table'].required_columns = self.column_names
-        self.units['table'].headers = self.headers
-        self.units['table'].aligns = self.aligns
+        self.units["table"].required_columns = self.column_names
+        self.units["table"].headers = self.headers
+        self.units["table"].aligns = self.aligns
 
 
 class VTableProcessor(Processor):
@@ -191,19 +186,13 @@ class VTableProcessor(Processor):
                         dataa = {"key": column_header, "value": column_data}
                     else:
                         column_data_str = str(column_data)
-                        dataa = {
-                            "key": column_header,
-                            "value": column_data_str
-                        }
+                        dataa = {"key": column_header, "value": column_data_str}
                     t_record = t_format.format(**dataa)
                     record.append(t_record)
                     max_length_line = max(max_length_line, len(t_record))
                 except UnicodeEncodeError as ex:
                     self.log.error("UnicodeEncodeError: %s", ex)
-                    dataa = {
-                        "key": column_header,
-                        "value": "UnicodeEncodeError"
-                    }
+                    dataa = {"key": column_header, "value": "UnicodeEncodeError"}
                     t_record = str(t_format).format(**dataa)
                     record.append(t_record)
             records.append("\n".join(record))
@@ -223,12 +212,12 @@ class JsonProcessor(Processor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit(CellToJsonUnit(identifier='json', typ="render"))
+        self.add_unit(CellToJsonUnit(identifier="json", typ="render"))
 
     def post_init(self):
         """TODO"""
         super().post_init()
-        self.units['json'].required_columns = self.column_names
+        self.units["json"].required_columns = self.column_names
 
 
 class CsvProcessor(Processor):
@@ -287,9 +276,18 @@ class ProcessorBuilder:
     specific processor.
     """
 
-    def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None, api=None, units=None,
-                 autoload=False, extra_args=None):
+    def __init__(
+        self,
+        debug=0,
+        rows=None,
+        column_names=None,
+        autokeys=True,
+        messages=None,
+        api=None,
+        units=None,
+        autoload=False,
+        extra_args=None,
+    ):
         """A ProcessorBuilder is in charge of creating processors.
         it is used by ProcessorFactory.
 
@@ -312,7 +310,7 @@ class ProcessorBuilder:
           @param autoload: Optional; load rows and column names from api. Default: False
           @rtype: ProcessorBuilder
           @returns builder: instance
-          """
+        """
         self.debug = debug
         self.rows = rows
         self.units = units or []
@@ -340,14 +338,14 @@ class ProcessorBuilder:
             if callable(column_names):
                 column_names = column_names()
         processor = clazz(
-                rows=rows,
-                column_names=column_names,
-                debug=self.debug,
-                autokeys=self.autokeys,
-                messages=self.messages,
-                api=self.api,
-                identifier=identifier,
-                **self.extra_args,
+            rows=rows,
+            column_names=column_names,
+            debug=self.debug,
+            autokeys=self.autokeys,
+            messages=self.messages,
+            api=self.api,
+            identifier=identifier,
+            **self.extra_args,
         )
         for unit in self.units:
             processor.add_unit(unit)
@@ -360,18 +358,17 @@ class ProcessorBuilder:
 class DoProcessor(Processor):
     """TODO"""
 
-    def __init__(self, *args,  messages=None, **kwargs):
+    def __init__(self, *args, messages=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.messages[self.identifier] = {
             "nothing_to_do": "Nothing to do.",
             "done": (
-                "{prefix}{_position}/{_count}: "
-                "The ressource '{name}' ({uuid}) was done. ({_time}s)"
+                "{prefix}{_position}/{_count}: The ressource '{name}' ({uuid}) was done. ({_time}s)"
             ),
             "done_failure": (
                 "{prefix}{_position}/{_count}: Failure "
                 "The ressource '{name}' ({uuid}) was not done. ({_time}s)"
-            )
+            ),
         }
         self._update_messages(messages)
 
@@ -381,7 +378,7 @@ class DoProcessor(Processor):
             return True, row
         raise NotImplementedError("_do_row is not implemented.")
 
-    @Time('vhatable.do.run')
+    @Time("vhatable.do.run")
     def run(self):
         """TODO"""
         default_context = {
@@ -390,12 +387,12 @@ class DoProcessor(Processor):
             "prefix": "DRY-RUN: " if self.dry_run else "",
             "_time": 0,
             "_position": 0,
-            "_count": len(self.get_raw())
+            "_count": len(self.get_raw()),
         }
         position = 0
         final_result = True
-        if default_context['_count'] == 0:
-            msg = self._format_messages('nothing_to_do', {})
+        if default_context["_count"] == 0:
+            msg = self._format_messages("nothing_to_do", {})
             self.log.debug(msg)
             print(msg)
         for position, row in enumerate(self.get_raw()):
@@ -407,12 +404,12 @@ class DoProcessor(Processor):
             before = datetime.now()
             result, do_row = self._do_row(row, context)
             after = datetime.now()
-            context['_time'] = after - before
+            context["_time"] = after - before
             context.update(do_row)
             if result:
-                msg = self._format_messages('done', context)
+                msg = self._format_messages("done", context)
             else:
-                msg = self._format_messages('done_failure', context)
+                msg = self._format_messages("done_failure", context)
                 final_result = False
             self.log.debug(msg)
             print(msg)
@@ -423,12 +420,9 @@ class DoProcessor(Processor):
 class DeleteProcessor(DoProcessor):
     """TODO"""
 
-    def __init__(self, *args,  messages=None, **kwargs):
+    def __init__(self, *args, messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit(CellToJsonUnit(
-            identifier='json',
-            dump=False, raw=True)
-        )
+        self.add_unit(CellToJsonUnit(identifier="json", dump=False, raw=True))
         self.messages[self.identifier] = {
             "nothing_to_do": "Nothing to delete.",
             "done": (
@@ -438,14 +432,14 @@ class DeleteProcessor(DoProcessor):
             "done_failure": (
                 "{prefix}{_position}/{_count}: Failure "
                 "The ressource '{name}' ({uuid}) was not deleted. ({_time}s)"
-            )
+            ),
         }
         self._update_messages(messages)
 
     def post_init(self):
         """TODO"""
         super().post_init()
-        self.units['json'].required_columns = self.column_names
+        self.units["json"].required_columns = self.column_names
 
     def _do_row(self, row, context):
         if self.dry_run:
@@ -456,10 +450,9 @@ class DeleteProcessor(DoProcessor):
 class UpdateProcessor(DoProcessor):
     """TODO"""
 
-    def __init__(self, *args,  messages=None, **kwargs):
+    def __init__(self, *args, messages=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_unit(CellToJsonUnit(
-            identifier='json', dump=False, force_raw=True))
+        self.add_unit(CellToJsonUnit(identifier="json", dump=False, force_raw=True))
         self.add_unit(UpdateRowsUnit())
         self.messages[self.identifier] = {
             "nothing_to_do": "Nothing to update.",
@@ -470,18 +463,18 @@ class UpdateProcessor(DoProcessor):
             "done_failure": (
                 "{prefix}{_position}/{_count}: Failure "
                 "The ressource '{name}' ({uuid}) was not updated. ({_time}s)"
-            )
+            ),
         }
         self._update_messages(messages)
 
     def post_init(self):
         """TODO"""
         super().post_init()
-        self.units['json'].required_columns = self.column_names
-        if not self.units['update'].updatable_columns:
+        self.units["json"].required_columns = self.column_names
+        if not self.units["update"].updatable_columns:
             # if updatable_columns was not defined in the constructor,
             # we automatically define all columns as updatable
-            self.units['update'].updatable_columns = self.column_names
+            self.units["update"].updatable_columns = self.column_names
 
     def _do_row(self, row, context):
         if self.dry_run:
@@ -497,7 +490,7 @@ class ProcessorFactory:
     def __init__(self, with_delete_proc=True, with_update_proc=True):
         """TODO"""
         classname = self.__class__.__name__
-        self.log = logging.getLogger('vhatable.' + classname)
+        self.log = logging.getLogger("vhatable." + classname)
 
         self.cfg = OrderedDict()
         self.default_processor_builder_instance = ProcessorBuilder()
@@ -535,7 +528,7 @@ class ProcessorFactory:
         for identifier, proc_cfg in self.cfg.items():
             builder_copy = copy.copy(builder)
             builder_copy.identifier = identifier
-            proc_cfg['builder'] = builder_copy
+            proc_cfg["builder"] = builder_copy
 
     def add_unit(self, unit):
         """TODO"""
@@ -546,10 +539,7 @@ class ProcessorFactory:
         if builder and not isinstance(builder, ProcessorBuilder):
             msg = "Third argument (builder) must be an ProcessorBuilder instance"
             raise ValueError(msg)
-        self.cfg[identifier] = {
-            "builder": builder,
-            "clazz": processor_clazz
-        }
+        self.cfg[identifier] = {"builder": builder, "clazz": processor_clazz}
 
     def set_header_cell(self, column_name, header_value):
         """set a header value for an existing displayed column."""
@@ -579,8 +569,7 @@ class ProcessorFactory:
         return self
 
     def _get_processor(self, args):
-        """Retrieve the proper builder from the config to build the processor.
-        """
+        """Retrieve the proper builder from the config to build the processor."""
         builder = None
         clazz = None
         identifier = None
@@ -608,34 +597,34 @@ class ProcessorFactory:
         """create a new processor and do the setup."""
 
         if args is None:
-            args=Namespace()
+            args = Namespace()
         if default_builder:
             self.set_default_processor_builder(default_builder)
         self.log.debug("self.cfg: %s", self.cfg.keys())
         processor = self._get_processor(args)
 
         msg = "warn:filter unit is not provided/added to the current processor"
-        if hasattr(processor, 'filter'):
+        if hasattr(processor, "filter"):
             processor.filter.add(*self._filters)
         else:
             self.log.debug(msg)
 
         msg = "format unit is not provided/added to the current processor"
-        if hasattr(processor, 'format'):
+        if hasattr(processor, "format"):
             for cell_name, cbuilder in self._custom_cells.items():
                 processor.format.cfa.custom_cells[cell_name] = cbuilder
         else:
             self.log.debug(msg)
 
         msg = "processor.headers does not exist in the current processor"
-        if hasattr(processor, 'headers'):
+        if hasattr(processor, "headers"):
             for column_name, header_value in self._header_cells.items():
                 processor.headers[column_name] = header_value
         else:
             self.log.debug(msg)
 
         msg = "processor.aligns does not exist in the current processor"
-        if hasattr(processor, 'aligns'):
+        if hasattr(processor, "aligns"):
             for column_name, align_value in self._align_cells.items():
                 processor.aligns[column_name] = align_value
         else:

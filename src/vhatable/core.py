@@ -43,11 +43,10 @@ from .cell import CellFactory
 
 class Time:
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
-    def __init__(self,
-                 logger_name,
-                 label="execution time : %(time)s"):
+    def __init__(self, logger_name, label="execution time : %(time)s"):
         self.log = logging.getLogger(logger_name)
         self.enabled = False
         self.label = label
@@ -62,14 +61,15 @@ class Time:
             end = time.time()
             diff = end - start
             # enforce string length to avoid random length
-            diff = f'{diff:.15f}'
+            diff = f"{diff:.15f}"
             if len(args) > 0:
                 first_arg = args[0]
                 self.enabled = getattr(first_arg, "verbose", self.enabled)
-            self.log.debug(self.label, {'time': diff})
+            self.log.debug(self.label, {"time": diff})
             if self.enabled:
-                print(self.label % {'time': diff})
+                print(self.label % {"time": diff})
             return res
+
         return time_wrapper
 
 
@@ -103,8 +103,7 @@ class AbstractTable:
                 matches = 0
                 enabled_filters = 0
                 for func in filters:
-                    self.log.debug(
-                            "filter: %s (enabled=%s)", func, func.is_enable())
+                    self.log.debug("filter: %s (enabled=%s)", func, func.is_enable())
                     if func.is_enable():
                         enabled_filters += 1
                         if func(row):
@@ -195,7 +194,7 @@ class AbstractTable:
     def _display_nb_elts(self):
         """TODO"""
         if self.verbose:
-            meta = {'count': len(self.get_raw())}
+            meta = {"count": len(self.get_raw())}
             self.pprint(self.DEFAULT_TOTAL, meta)
         return True
 
@@ -212,6 +211,7 @@ class AbstractTable:
 
 class BaseTable(AbstractTable):
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
     vertical = True
     start = 0
@@ -225,7 +225,7 @@ class BaseTable(AbstractTable):
     def __init__(self, keys=[], reverse=False, debug=0):
         self.debug = debug
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('vhatable.' + classname)
+        self.log = logging.getLogger("vhatable." + classname)
         self.keys = keys
         # field only use for compatibility with HTable
         self.align = {}
@@ -275,17 +275,18 @@ class BaseTable(AbstractTable):
         """TODO"""
         if self.sortby:
             try:
-                self._rows = sorted(self._rows, reverse=self.reversesort,
-                                    key=lambda x: x.get(self.sortby))
+                self._rows = sorted(
+                    self._rows, reverse=self.reversesort, key=lambda x: x.get(self.sortby)
+                )
             except KeyError as ex:
                 self.log.warning("missing sortby key : %s", ex)
         source = self._rows
         if self.start:
-            source = source[self.start:]
+            source = source[self.start :]
             if self.end:
-                source = source[:self.end - self.start]
+                source = source[: self.end - self.start]
         elif self.end:
-            source = source[:self.end]
+            source = source[: self.end]
         return source
 
     def get_json(self):
@@ -317,7 +318,7 @@ class BaseTable(AbstractTable):
             records.append(";".join(record))
         return "\n".join(records)
 
-    @Time('vhatable.core.render', label='render time : %(time)s')
+    @Time("vhatable.core.render", label="render time : %(time)s")
     def render(self):
         """TODO"""
         if self.json:
@@ -397,7 +398,7 @@ class ConsoleTable(BaseTable):
     def get_string(self):
         self.log.debug("Not Implemented.")
 
-    @Time('vhatable.core.render', label='render time : %(time)s')
+    @Time("vhatable.core.render", label="render time : %(time)s")
     def render(self):
         """TODO"""
         if self.json:
@@ -428,13 +429,14 @@ class ConsoleTable(BaseTable):
 
 class HTable(BaseTable):
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
     def get_string(self):
         """TODO"""
         table = VeryPrettyTable()
         table.field_names = self.keys
-        table.align = 'l'
+        table.align = "l"
         for row in self.get_raw():
             data = []
             for colum in self.keys:
@@ -449,7 +451,7 @@ class Action:
     # we must convert row to cells, otherwise filters won't work.
     # Filters are expecting cells, not raw data.
     # Changing from True to False  will break every already existing actions
-    versions = {1: {'no_cell': True}, 2: {'no_cell': False}}
+    versions = {1: {"no_cell": True}, 2: {"no_cell": False}}
     # Default version will be 1 to avoid breaking changes.
     version = 1
 
@@ -464,7 +466,7 @@ class Action:
         self.dry_run = False
         self.debug = 0
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('vhatable.' + classname)
+        self.log = logging.getLogger("vhatable." + classname)
         self.cli = None
         self.endpoint = None
 
@@ -472,7 +474,7 @@ class Action:
         """Init object members with values in args object"""
         self.cli = cli
         self.endpoint = endpoint
-        for att in ['cli_mode', 'verbose', 'debug', 'dry_run']:
+        for att in ["cli_mode", "verbose", "debug", "dry_run"]:
             if hasattr(args, att):
                 setattr(self, att, getattr(args, att))
 
@@ -510,6 +512,7 @@ class Action:
 
 class ActionV2(Action):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     version = 2
@@ -517,6 +520,7 @@ class ActionV2(Action):
 
 class CountAction(ActionV2):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     DEFAULT_TOTAL = "Ressources found : %(count)s"
@@ -527,13 +531,14 @@ class CountAction(ActionV2):
         if self.cli_mode:
             print((len(data)))
         else:
-            meta = {'count': len(data)}
+            meta = {"count": len(data)}
             self.pprint(self.DEFAULT_TOTAL, meta)
         return True
 
 
 class CliModeAction(Action):
     """TODO"""
+
     # pylint: disable=too-few-public-methods
 
     def __init__(self, identifier="uuid"):
@@ -550,6 +555,7 @@ class CliModeAction(Action):
 
 class SampleAction(Action):
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, name):
@@ -571,6 +577,7 @@ class SampleAction(Action):
 
 class ActionTable(VTable):
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
     action = Action()
@@ -583,14 +590,21 @@ class ActionTable(VTable):
 
 class TableFactory:
     """TODO"""
+
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, cli, endpoint, default_sort_column=None,
-                 default_actions=True, cli_mode_identifier="uuid"):
+    def __init__(
+        self,
+        cli,
+        endpoint,
+        default_sort_column=None,
+        default_actions=True,
+        cli_mode_identifier="uuid",
+    ):
         """TODO"""
         # pylint: disable=too-many-arguments
         classname = str(self.__class__.__name__.lower())
-        self.log = logging.getLogger('vhatable.' + classname)
+        self.log = logging.getLogger("vhatable." + classname)
         self.cli = cli
         self.endpoint = endpoint
         self.args = None
@@ -618,7 +632,7 @@ class TableFactory:
         self._action_classes = OrderedDict()
         self._action_table = ActionTable
         if default_actions:
-            self._action_classes['count_only'] = CountAction()
+            self._action_classes["count_only"] = CountAction()
         self._custom_cells = {}
         self.filters = []
         self._pre_render_classes = []
@@ -636,9 +650,23 @@ class TableFactory:
     def load_args(self, args):
         """load builder attributes from args."""
         attrs = [
-            "vertical", "json", "raw", "raw_json", "csv",
-            "sort_by", "reverse", "extended", "no_cell", "verbose", "cli_mode",
-            "no_headers", "debug", "start", "end", "limit", "fields"
+            "vertical",
+            "json",
+            "raw",
+            "raw_json",
+            "csv",
+            "sort_by",
+            "reverse",
+            "extended",
+            "no_cell",
+            "verbose",
+            "cli_mode",
+            "no_headers",
+            "debug",
+            "start",
+            "end",
+            "limit",
+            "fields",
         ]
         for attr in attrs:
             if hasattr(args, attr):
@@ -691,7 +719,7 @@ class TableFactory:
             raise ValueError("Missing columns")
         table = None
         action_classes = OrderedDict(self._action_classes)
-        action_classes['cli_mode'] = CliModeAction(self.cli_mode_identifier)
+        action_classes["cli_mode"] = CliModeAction(self.cli_mode_identifier)
         self.log.debug("action_classes: %s", action_classes)
         for flag, action in list(action_classes.items()):
             if getattr(self.args, flag, False):
@@ -699,7 +727,7 @@ class TableFactory:
                 # a little bit ugly. :(
                 table.action = action
                 # if no_cell property does not exist, we keep the old behaviour
-                self.no_cell = getattr(action, 'no_cell', True)
+                self.no_cell = getattr(action, "no_cell", True)
                 self.raw = True
                 break
         if table is None:
@@ -711,8 +739,19 @@ class TableFactory:
             for clazz in self._pre_render_classes:
                 table.add_pre_render_class(clazz)
         attrs = [
-            "vertical", "json", "raw", "raw_json", "csv", "cli", "endpoint",
-            "reverse", "extended", "no_cell", "debug", "verbose", "cli_mode",
+            "vertical",
+            "json",
+            "raw",
+            "raw_json",
+            "csv",
+            "cli",
+            "endpoint",
+            "reverse",
+            "extended",
+            "no_cell",
+            "debug",
+            "verbose",
+            "cli_mode",
         ]
         for attr in attrs:
             setattr(table, attr, getattr(self, attr))

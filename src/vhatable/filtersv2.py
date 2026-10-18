@@ -42,7 +42,7 @@ class EqualMultipleOr(Equals):
 
 class PartialMultipleAnd(Filter):
     """Get the current property into the current row, and match the result with
-     ALL values of the list"""
+    ALL values of the list"""
 
     def __init__(self, prop, values):
         super().__init__(prop, values)
