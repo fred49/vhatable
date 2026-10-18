@@ -169,8 +169,8 @@ class PartialDate(Filter):
         val = self.get_val(row)
         if isinstance(val, dict):
             # no idea how it is possible
-            for val in list(val.values()):
-                if self.regex.match(val):
+            for val2 in list(val.values()):
+                if self.regex.match(val2):
                     return True
         else:
             formatt = "{da:%Y-%m-%d %H:%M:%S}"

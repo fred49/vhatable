@@ -6,7 +6,7 @@ from argparse import Namespace
 
 import pytest
 
-from vhatable.processors import API as AbstractAPI
+from vhatable.processors import API as ABSTRACTAPI
 from vhatable.processors import (
     CountProcessor,
     CsvProcessor,
@@ -252,7 +252,7 @@ value5 asdqfsdff qsdf   sdf sdf sdf sddf s ;2.1 PB;-;800.1"""
 def test_delete_processor1():
     """testing DeleteProcessor"""
 
-    class TestAPI(AbstractAPI):
+    class TestAPI(ABSTRACTAPI):
         """TODO"""
 
         def __init__(self):
@@ -296,7 +296,7 @@ def test_delete_processor1():
 def test_delete_processor2():
     """testing DeleteProcessor"""
 
-    class TestAPI(AbstractAPI):
+    class TestAPI(ABSTRACTAPI):
         """TODO"""
 
         def __init__(self):
@@ -347,7 +347,7 @@ def test_delete_processor2():
 def test_update_processor1():
     """testing UpdateProcessor"""
 
-    class TestAPI(AbstractAPI):
+    class TestAPI(ABSTRACTAPI):
         """TODO"""
 
         def __init__(self):

@@ -92,19 +92,19 @@ def sample1():
 class API:
     """TODO"""
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
-    cacheFileName = "/tmp/vhatable-cache-big-bang.json"
+    CACHEFILENAME = "/tmp/vhatable-cache-big-bang.json"
 
     def load_json(self):
         """TODO"""
         # pylint: disable=unspecified-encoding
         data = None
-        if os.path.isfile(self.cacheFileName):
-            with open(self.cacheFileName) as user_file:
+        if os.path.isfile(self.CACHEFILENAME):
+            with open(self.CACHEFILENAME) as user_file:
                 file_contents = user_file.read()
                 data = json.loads(file_contents)
         else:
             data = requests.get(self.URL, timeout=1).json()
-            with open(self.cacheFileName, 'w') as json_file:
+            with open(self.CACHEFILENAME, 'w') as json_file:
                 json.dump(data, json_file)
         return data
 

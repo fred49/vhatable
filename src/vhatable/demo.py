@@ -17,7 +17,7 @@ from vhatable.units import UpdateRowsUnit
 class DemoAPI(API):
     """TODO"""
     URL = "https://epguides.frecar.no/show/bigbangtheory/"
-    cacheFileName = "/tmp/vhatable-demo--cache-big-bang.json"
+    CACHEFILENAME = "/tmp/vhatable-demo--cache-big-bang.json"
 
     def __init__(self):
         super().__init__()
@@ -25,19 +25,19 @@ class DemoAPI(API):
 
     def _persist(self, data):
         # pylint: disable=unspecified-encoding
-        with open(self.cacheFileName, 'w') as json_file:
+        with open(self.CACHEFILENAME, 'w') as json_file:
             json.dump(data, json_file)
 
     def reset(self):
         """remove cache file to reset the current state"""
-        os.remove(self.cacheFileName)
+        os.remove(self.CACHEFILENAME)
 
     def _load_json(self):
         """TODO"""
         # pylint: disable=unspecified-encoding
         data = None
-        if os.path.isfile(self.cacheFileName):
-            with open(self.cacheFileName) as user_file:
+        if os.path.isfile(self.CACHEFILENAME):
+            with open(self.CACHEFILENAME) as user_file:
                 file_contents = user_file.read()
                 data = json.loads(file_contents)
             return data

@@ -87,9 +87,12 @@ class API:
 class Processor(AbstractProcessor):
     """TODO"""
 
-    def __init__(self, *args, dry_run=False, api=API(), **kwargs):
+    def __init__(self, *args, dry_run=False, api=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.api = api
+        if api is None:
+            self.api = API()
+        else:
+            self.api = api
         self.dry_run = dry_run
         self.add_unit(FormattingUnit(identifier='format'))
         self.add_unit(FilteringUnit(identifier='filter'))
@@ -205,9 +208,7 @@ class VTableProcessor(Processor):
                     record.append(t_record)
             records.append("\n".join(record))
         out = []
-        cptline = 0
-        for record in records:
-            cptline += 1
+        for cptline, record in enumerate(records):
             header = "-[ RECORD " + str(cptline) + " ]-"
             # pylint: disable=unused-variable
             range_limit = max_length_line - len(header)
@@ -287,7 +288,7 @@ class ProcessorBuilder:
     """
 
     def __init__(self, debug=0, rows=None, column_names=None,
-                 autokeys=True, messages=None, api=API(), units=None,
+                 autokeys=True, messages=None, api=None, units=None,
                  autoload=False, extra_args=None):
         """A ProcessorBuilder is in charge of creating processors.
         it is used by ProcessorFactory.
@@ -318,7 +319,10 @@ class ProcessorBuilder:
         self.autokeys = autokeys
         self.column_names = column_names
         self.messages = messages
-        self.api = api
+        if api is None:
+            self.api = API()
+        else:
+            self.api = api
         self.extra_args = {}
         if extra_args:
             self.extra_args = extra_args
@@ -394,8 +398,7 @@ class DoProcessor(Processor):
             msg = self._format_messages('nothing_to_do', {})
             self.log.debug(msg)
             print(msg)
-        for row in self.get_raw():
-            position += 1
+        for position, row in enumerate(self.get_raw()):
             context = {
                 **default_context,
                 "_position": position,
@@ -601,8 +604,11 @@ class ProcessorFactory:
             if identifier in processor.units:
                 processor.units[identifier] = unit
 
-    def create(self, args=Namespace(), default_builder=None):
+    def create(self, args=None, default_builder=None):
         """create a new processor and do the setup."""
+
+        if args is None:
+            args=Namespace()
         if default_builder:
             self.set_default_processor_builder(default_builder)
         self.log.debug("self.cfg: %s", self.cfg.keys())

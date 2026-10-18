@@ -24,5 +24,4 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-# from .core import *
-from . import cell, core, filters
+__all__ = ["cell", "core", "filters"]

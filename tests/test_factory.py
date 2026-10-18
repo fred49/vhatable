@@ -6,7 +6,7 @@ from argparse import Namespace
 
 from vhatable.cellv2 import ComplexCellBuilder, DateCellBuilder
 from vhatable.filters import PartialOr
-from vhatable.processors import API as AbstractAPI
+from vhatable.processors import API as ABSTRACTAPI
 from vhatable.processors import ProcessorBuilder, ProcessorFactory
 
 rows = [
@@ -280,7 +280,7 @@ def test_default_processor3():
     assert len(processor.get_string()) == 275
 
 
-class API(AbstractAPI):
+class API(ABSTRACTAPI):
     """TODO"""
 
     def list(self):
