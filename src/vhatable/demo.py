@@ -6,15 +6,13 @@ import logging
 import os
 import sys
 
-import requests
-
 from vhatable.cellv2 import ComplexCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.filtersv2 import EqualMultipleOr, PartialMultipleAnd
 from vhatable.processors import API, ProcessorBuilder, ProcessorFactory, UpdateProcessor
 from vhatable.units import UpdateRowsUnit
 
-RAW_DATA="""
+RAW_DATA = """
 {
   "1": [
     {
@@ -118,6 +116,7 @@ RAW_DATA="""
     ]
 }
 """
+
 
 class DemoAPI(API):
     """TODO"""

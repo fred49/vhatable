@@ -28,16 +28,13 @@ import argparse
 import inspect
 import json
 import logging
-import os
 import sys
-
-import requests
 
 from vhatable.cellv2 import ComplexCellBuilder, DateCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.processors import ProcessorBuilder, ProcessorFactory
 
-RAW_DATA="""
+RAW_DATA = """
 {
   "1": [
     {
@@ -91,6 +88,7 @@ RAW_DATA="""
 ]
 }
 """
+
 
 def helper_print_header(extra=None):
     """Just a tiny helper to display a header between each rendering."""
