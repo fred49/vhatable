@@ -14,6 +14,110 @@ from vhatable.filtersv2 import EqualMultipleOr, PartialMultipleAnd
 from vhatable.processors import API, ProcessorBuilder, ProcessorFactory, UpdateProcessor
 from vhatable.units import UpdateRowsUnit
 
+RAW_DATA="""
+{
+  "1": [
+    {
+        "number": "1",
+        "season": "1",
+        "episode": "1",
+        "airdate": "24 Sep 07",
+        "title": "Pilot",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2913/the-big-bang-theory-1x01-pilot"
+    },
+    {
+        "number": "2",
+        "season": "1",
+        "episode": "2",
+        "airdate": "01 Oct 07",
+        "title": "The Big Bran Hypothesis",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2914/the-big-bang-theory-1x02-the-big-bran-hypothesis"
+    },
+    {
+        "number": "3",
+        "season": "1",
+        "episode": "3",
+        "airdate": "08 Oct 07",
+        "title": "The Fuzzy Boots Corollary",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2915/the-big-bang-theory-1x03-the-fuzzy-boots-corollary"
+    },
+    {
+        "number": "4",
+        "season": "1",
+        "episode": "4",
+        "airdate": "15 Oct 07",
+        "title": "The Luminous Fish Effect",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2916/the-big-bang-theory-1x04-the-luminous-fish-effect"
+    },
+    {
+        "number": "5",
+        "season": "1",
+        "episode": "5",
+        "airdate": "22 Oct 07",
+        "title": "The Hamburger Postulate",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2917/the-big-bang-theory-1x05-the-hamburger-postulate"
+    },
+    {
+        "number": "6",
+        "season": "1",
+        "episode": "6",
+        "airdate": "29 Oct 07",
+        "title": "The Middle-Earth Paradigm",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2918/the-big-bang-theory-1x06-the-middle-earth-paradigm"
+    }
+],
+    "2": [
+    {
+        "number": "18",
+        "season": "2",
+        "episode": "1",
+        "airdate": "22 Sep 08",
+        "title": "The Bad Fish Paradigm",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2930/the-big-bang-theory-2x01-the-bad-fish-paradigm"
+    },
+    {
+        "number": "19",
+        "season": "2",
+        "episode": "2",
+        "airdate": "29 Sep 08",
+        "title": "The Codpiece Topology",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2931/the-big-bang-theory-2x02-the-codpiece-topology"
+    },
+    {
+        "number": "20",
+        "season": "2",
+        "episode": "3",
+        "airdate": "06 Oct 08",
+        "title": "The Barbarian Sublimation",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2932/the-big-bang-theory-2x03-the-barbarian-sublimation"
+    },
+    {
+        "number": "21",
+        "season": "2",
+        "episode": "4",
+        "airdate": "13 Oct 08",
+        "title": "The Griffin Equivalency",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2933/the-big-bang-theory-2x04-the-griffin-equivalency"
+    },
+    {
+        "number": "22",
+        "season": "2",
+        "episode": "5",
+        "airdate": "20 Oct 08",
+        "title": "The Euclid Alternative",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2934/the-big-bang-theory-2x05-the-euclid-alternative"
+    },
+    {
+        "number": "23",
+        "season": "2",
+        "episode": "6",
+        "airdate": "03 Nov 08",
+        "title": "The Cooper-Nowitzki Theorem",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2935/the-big-bang-theory-2x06-the-cooper-nowitzki-theorem"
+    }
+    ]
+}
+"""
 
 class DemoAPI(API):
     """TODO"""
@@ -44,7 +148,7 @@ class DemoAPI(API):
                 data = json.loads(file_contents)
             return data
 
-        data = requests.get(self.URL, timeout=60).json()
+        data = json.loads(RAW_DATA)
         res = {}
         cpt = 0
         for season in data:
@@ -366,3 +470,7 @@ def main():
     else:
         print("ERROR: Missing command. see -h")
         sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()
