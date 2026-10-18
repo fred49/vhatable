@@ -654,3 +654,6 @@ def main():
     obj = map_sample[args.sample]
     print("Sample : ", args.sample, " :", obj.__doc__)
     obj()
+
+if __name__ == "__main__":
+    main()

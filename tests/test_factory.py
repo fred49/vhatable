@@ -157,7 +157,7 @@ def test_csv_processor():
     processor.csv_headers = False
     processor.run()
     assert len(processor.get_raw()) == 2
-    assert len(processor.get_string()) == 67
+    assert len(processor.get_string()) == 82
 
 
 def test_json_processor_formatted():

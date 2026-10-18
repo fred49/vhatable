@@ -25,7 +25,6 @@
 #  Frédéric MARTIN frederic.martin.fma@gmail.com
 #
 
-__version__ = '1.1.2'
 # from .core import *
 from . import core
 from . import cell
