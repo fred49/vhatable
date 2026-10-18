@@ -37,6 +37,60 @@ from vhatable.cellv2 import ComplexCellBuilder, DateCellBuilder
 from vhatable.filters import PartialOr
 from vhatable.processors import ProcessorBuilder, ProcessorFactory
 
+RAW_DATA="""
+{
+  "1": [
+    {
+        "number": "1",
+        "season": "1",
+        "episode": "1",
+        "airdate": "24 Sep 07",
+        "title": "Pilot",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2913/the-big-bang-theory-1x01-pilot"
+    },
+    {
+        "number": "2",
+        "season": "1",
+        "episode": "2",
+        "airdate": "01 Oct 07",
+        "title": "The Big Bran Hypothesis",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2914/the-big-bang-theory-1x02-the-big-bran-hypothesis"
+    },
+    {
+        "number": "3",
+        "season": "1",
+        "episode": "3",
+        "airdate": "08 Oct 07",
+        "title": "The Fuzzy Boots Corollary",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2915/the-big-bang-theory-1x03-the-fuzzy-boots-corollary"
+    },
+    {
+        "number": "4",
+        "season": "1",
+        "episode": "4",
+        "airdate": "15 Oct 07",
+        "title": "The Luminous Fish Effect",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2916/the-big-bang-theory-1x04-the-luminous-fish-effect"
+    },
+    {
+        "number": "5",
+        "season": "1",
+        "episode": "5",
+        "airdate": "22 Oct 07",
+        "title": "The Hamburger Postulate",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2917/the-big-bang-theory-1x05-the-hamburger-postulate"
+    },
+    {
+        "number": "6",
+        "season": "1",
+        "episode": "6",
+        "airdate": "29 Oct 07",
+        "title": "The Middle-Earth Paradigm",
+        "tvmaze link": "https://www.tvmaze.com/episodes/2918/the-big-bang-theory-1x06-the-middle-earth-paradigm"
+    }
+]
+}
+"""
 
 def helper_print_header(extra=None):
     """Just a tiny helper to display a header between each rendering."""
@@ -91,22 +145,10 @@ def sample1():
 class API:
     """TODO"""
 
-    URL = "https://epguides.frecar.no/show/bigbangtheory/"
-    CACHEFILENAME = "/tmp/vhatable-cache-big-bang.json"
-
     def load_json(self):
         """TODO"""
         # pylint: disable=unspecified-encoding
-        data = None
-        if os.path.isfile(self.CACHEFILENAME):
-            with open(self.CACHEFILENAME) as user_file:
-                file_contents = user_file.read()
-                data = json.loads(file_contents)
-        else:
-            data = requests.get(self.URL, timeout=1).json()
-            with open(self.CACHEFILENAME, "w") as json_file:
-                json.dump(data, json_file)
-        return data
+        return json.loads(RAW_DATA)
 
     def list(self):
         """TODO"""
@@ -116,7 +158,7 @@ class API:
 
     def column_names(self):
         """TODO"""
-        return ["season", "number", "title", "release_date", "show"]
+        return ["season", "number", "title", "airdate"]
 
 
 def sample2():
