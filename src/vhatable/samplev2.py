@@ -174,13 +174,12 @@ def sample2():
         titles=[],
         vertical=False,
     )
-    args.titles = ["ation"]
-    args.release_dates = ["2016"]
-    # args.sort_sort_by = "release_date"
+    args.titles = ["The"]
+    args.release_dates = ["Oct"]
 
     factory = ProcessorFactory()
     factory.add_filters(PartialOr("title", args.titles, True))
-    factory.add_filters(PartialOr("release_date", args.release_dates))
+    factory.add_filters(PartialOr("airdate", args.release_dates))
     factory.add_custom_cell(
         ComplexCellBuilder(
             "show", fmt="{title}\n{imdb_id} {epguide_name}", fmtv="{title} {imdb_id} {epguide_name}"
