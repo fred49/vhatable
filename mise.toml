@@ -133,9 +133,6 @@ else
   echo "Created tag $tag"
 fi
 
-# uv installs vhatable again because the tags changed: --version shows the new version
-uv run vhatabletool --version
-
 if [ "${usage_no_push:-false}" = "true" ]; then
   echo "Release done: built dist/ and tagged $tag. Nothing was pushed."
 else
