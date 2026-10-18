@@ -235,6 +235,11 @@ class DateCell(BaseCell):
         return self.none
 
     def __div__(self, value):
+        # python 2
+        return self.value / value
+
+    def __truediv__(self, value):
+        # python 3
         return self.value / value
 
 
