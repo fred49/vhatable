@@ -346,7 +346,8 @@ class TableRender(Unit):
         self.table = prettytable.PrettyTable()
         self.table.set_style(self.tablefmt)
         self.table.field_names = self.get_headers()
-        self.table.add_rows(self.build_rows(rows))
+        # prettytable does not support generators anymore since 3.15.0
+        self.table.add_rows(list(self.build_rows(rows)))
         for column_name in self.columns_to_show:
             if column_name in self.aligns:
                 self.table.align[column_name] = self.aligns.get(column_name)
