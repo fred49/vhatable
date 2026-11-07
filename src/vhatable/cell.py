@@ -149,6 +149,11 @@ class BaseCell:
     def __eq__(self, item):
         return self.value == item
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(self.value)
+
     def __lt__(self, value):
         if value is None:
             return True
@@ -242,6 +247,11 @@ class DateCell(BaseCell):
         # python 3
         return self.value / value
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(str(self.value))
+
 
 class ICell(int, BaseCell):
     """TODO"""
@@ -257,6 +267,11 @@ class ICell(int, BaseCell):
             return str(self.value)
         return str(self.value)
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(str(self.value))
+
 
 class BCell(BaseCell):
     """TODO"""
@@ -268,6 +283,10 @@ class BCell(BaseCell):
             return str(self.value)
         return str(self.value)
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(str(self.value))
 
 class SizeCell(BaseCell):
     """TODO"""
@@ -284,6 +303,11 @@ class SizeCell(BaseCell):
             return self.none
         return format_size(self.value)
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(str(self.value))
+
 
 class TypeCell(BaseCell):
     """TODO"""
@@ -291,6 +315,10 @@ class TypeCell(BaseCell):
     def __str__(self):
         return str(type(self.value))
 
+    def __len__(self):
+        if self.value is None:
+            return 0
+        return len(str(type(self.value)))
 
 class ComplexCell(BaseCell):
     """TODO"""
