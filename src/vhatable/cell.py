@@ -288,6 +288,7 @@ class BCell(BaseCell):
             return 0
         return len(str(self.value))
 
+
 class SizeCell(BaseCell):
     """TODO"""
 
@@ -319,6 +320,7 @@ class TypeCell(BaseCell):
         if self.value is None:
             return 0
         return len(str(type(self.value)))
+
 
 class ComplexCell(BaseCell):
     """TODO"""

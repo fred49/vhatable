@@ -1797,11 +1797,19 @@ dev = [
     { name = "twine", version = "7.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "linshareapi" },
+    { name = "tox", version = "4.30.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "tox", version = "4.65.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "tox", version = "4.67.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "build", marker = "extra == 'dev'", specifier = ">=1.4.0" },
     { name = "humanfriendly", specifier = ">=9.0,<10.0" },
-    { name = "linshareapi", marker = "extra == 'dev'" },
+    { name = "linshareapi", marker = "extra == 'dev'", specifier = ">=1.0.11" },
     { name = "prettytable", specifier = ">=3.7.0,<4.0.0" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "requests", marker = "extra == 'dev'" },
@@ -1812,6 +1820,12 @@ requires-dist = [
     { name = "veryprettytable", specifier = ">=0.8.1,<1.0.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "linshareapi", specifier = ">=1.0.11" },
+    { name = "tox", specifier = ">=4.30.3" },
+]
 
 [[package]]
 name = "virtualenv"

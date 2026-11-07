@@ -180,7 +180,7 @@ description = "Publish to TestPyPI for testing"
 run = '''
 #!/usr/bin/env bash
 
-# set -euo pipefail
+set -xeuo pipefail
 for i in $(seq 1 16)
 do
     python src/vhatable/sample.py sample$i
@@ -189,5 +189,5 @@ done
 python src/vhatable/samplev2.py sample1
 python src/vhatable/samplev2.py sample2
 python src/vhatable/samplev2.py sample3
-python src/vhatable/demo.py
+python src/vhatable/demo.py list
 '''

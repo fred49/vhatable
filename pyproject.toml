@@ -38,7 +38,7 @@ dev = [
     "tox-uv>=1.0.0",
     "twine",
     "requests", # sample2
-    "linshareapi", # sample
+    "linshareapi>=1.0.11", # sample
     "pytest",
 ]
 
@@ -96,3 +96,9 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]  # Allow assert in tests
+
+[dependency-groups]
+dev = [
+    "linshareapi>=1.0.11",
+    "tox>=4.30.3",
+]
